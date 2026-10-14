@@ -1051,7 +1051,7 @@ let _dummyCache=null;
 function touch(o){if(o&&o.dummy)o.edited=true}
 function recordDel(jobIds,userIds){(jobIds||[]).forEach(id=>{if(String(id).startsWith('dj_')&&!db.dummyDel.jobs.includes(id))db.dummyDel.jobs.push(id)});(userIds||[]).forEach(id=>{if(String(id).startsWith('de_')&&!db.dummyDel.users.includes(id))db.dummyDel.users.push(id)})}
 let db=loadDb();
-function save(){_cache={};try{const out=Object.assign({},db,{jobs:db.jobs.filter(j=>!j.dummy||j.edited),users:db.users.filter(u=>!u.dummy||u.edited)});localStorage.setItem(DB_KEY,JSON.stringify(out))}catch(e){toast('Could not save: browser storage is full. Remove large uploads and try again.')}try{if(typeof gsQueue==='function')gsQueue()}catch(e){}}
+function save(){_cache={};try{const h=cfgHash();if(db.cfgHash===undefined)db.cfgHash=h;else if(h!==db.cfgHash){db.cfgHash=h;if(session&&session.kind==='staff'){db.cfgAt=Date.now();db.cfgMine=true}}}catch(e){}try{const out=Object.assign({},db,{jobs:db.jobs.filter(j=>!j.dummy||j.edited),users:db.users.filter(u=>!u.dummy||u.edited)});localStorage.setItem(DB_KEY,JSON.stringify(out))}catch(e){toast('Could not save: browser storage is full. Remove large uploads and try again.')}try{if(typeof gsQueue==='function')gsQueue()}catch(e){}}
 save();
 let session=null;try{session=JSON.parse(localStorage.getItem(SES_KEY))||JSON.parse(sessionStorage.getItem(SES_KEY))}catch(e){}
 function setSession(s,persist){session=s;try{localStorage.removeItem(SES_KEY);sessionStorage.removeItem(SES_KEY);if(s)(persist===false?sessionStorage:localStorage).setItem(SES_KEY,JSON.stringify(s))}catch(e){}}
@@ -1902,7 +1902,7 @@ function loginInner(as,next){
  <form class="form" style="grid-template-columns:1fr" onsubmit="doLogin(event,'${as}','${esc(next)}')">
   <div class="fld"><label for="l-id">${as==='staff'?'Login ID or email':'Email or mobile number'}</label><input id="l-id" name="username" autocomplete="username" value="${esc((()=>{try{return localStorage.getItem('jobsetu_lastid_'+as)||''}catch(e){return ''}})())}"></div>
   <div class="fld"><label for="l-pass">Password</label><input id="l-pass" name="password" type="password" autocomplete="current-password" oninput="this.classList.remove('shake')"><div id="pw-err" class="pwerr" hidden role="alert"></div></div>
-  <label class="check"><input type="checkbox" id="l-rem" checked> Remember me on this device for 30 days <span class="hint">(don't tick on a shared computer)</span></label>
+  <label class="check"><input type="checkbox" id="l-rem"> Remember me on this device for 30 days <span class="hint">(don't tick on a shared computer)</span></label>
   <button class="btn">Log in</button>
   ${as==='staff'?`<p class="hint"><a href="javascript:void 0" onclick="staffForgot()">Forgot login ID or password?</a></p>`:''}
   ${as!=='staff'?`<p class="hint"><a href="javascript:void 0" onclick="forgotPw()">Forgot password?</a> · New here? <a href="#/register${as==='employer'?'/employer':'/candidate'}">Register free</a></p>`:''}
@@ -2259,7 +2259,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2279,7 +2279,7 @@ function gsCollections(){
   staff:(db.staff||[]).map(x=>gsStrip(x,['password','pwh','salt','idh'])),
   notes:(db.notes||[]).slice(-3000),
   activity:(db.activity||[]).filter(a=>!/^d[ej]_/.test(a.empId||'')&&!/^d[cj]_/.test(a.candId||'')).slice(-3000),
-  settings:[Object.assign({id:'site'},gsStrip(co(),['qr']),{services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},sheetAuto:gsCfg().auto,sheetPull:gsCfg().pull})]}}
+  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,gstOn:co().gstOn!==false,company:gsStrip(co(),['qr']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}]:[]}}
 const GS_LABEL={users:'Users',companies:'Companies',jobs:'Jobs',apps:'Applications',payments:'Payments',support:'Support',staff:'Office staff',notes:'Notifications',activity:'Activity',settings:'Settings'};
 let gsTimer=null,gsBusy=false;
 function gsQueue(){if(!gsOn()||!gsCfg().auto)return;clearTimeout(gsTimer);gsTimer=setTimeout(()=>{gsPush(false).catch(()=>{})},2500)}
@@ -2290,7 +2290,7 @@ async function gsPush(all){
  try{const C=gsCollections();
   for(const [c,list] of Object.entries(C)){const H=all?{}:(st.h[c]||{}),nh={},ch=[];
    list.forEach(r=>{if(!r||!r.id)return;const k=gsHash(r);nh[r.id]=k;if(H[r.id]!==k)ch.push(r)});
-   const gone=all?[]:Object.keys(H).filter(id=>!(id in nh));
+   const gone=all||c==='settings'?[]:Object.keys(H).filter(id=>!(id in nh));
    try{for(let i=0;i<ch.length;i+=150){await gsPost({action:'upsert',collection:c,records:ch.slice(i,i+150)});sent+=Math.min(150,ch.length-i)}
    if(gone.length){await gsPost({action:'delete',collection:c,ids:gone});del+=gone.length}}catch(e){if(/unknown collection/.test(String(e.message||e))){st.old=1;continue}throw e}
    st.h[c]=nh;gsSaveState(st)}
@@ -2300,7 +2300,8 @@ async function gsPush(all){
 async function gsGet(c){const u=gsCfg().url;const r=await fetch(u+(u.includes('?')?'&':'?')+'collection='+c);const j=await r.json();if(!j.ok)throw new Error(j.error||'Sheet error');return j.records||[]}
 async function gsPull(){
  if(!gsOn()||!gsCfg().pull||!window.fetch)return 0;
- const [cos,jobs]=await Promise.all([gsGet('companies'),gsGet('jobs')]);
+ const [cos,jobs,sets]=await Promise.all([gsGet('companies'),gsGet('jobs'),gsGet('settings').catch(()=>null)]);
+ let cfgNew=false;try{const site=(sets||[]).find(r=>r&&String(r.id)==='site');if(site&&cfgApply(site))cfgNew=true}catch(e){}
  const mine=new Set(db.users.filter(u=>!u.remote).map(u=>String(u.id)));let n=0;
  cos.forEach(c=>{if(!c||!c.id||mine.has(String(c.id)))return;const comp=gsStrip(c,['id','contactName','status','createdAt','syncedAt']);let u=db.users.find(x=>String(x.id)===String(c.id));
   if(!u){db.users.push({id:String(c.id),role:'employer',remote:true,name:c.contactName||'',email:'',mobile:'',status:c.status||'active',createdAt:+c.createdAt||now(),company:comp});n++}
@@ -2310,9 +2311,9 @@ async function gsPull(){
   ['salary','openings','minExp','createdAt'].forEach(k=>{if(r[k]!==''&&r[k]!=null)r[k]=+r[k]});['contact','whatsapp','pincode'].forEach(k=>{if(r[k]!=null)r[k]=String(r[k])});
   const ix=db.jobs.findIndex(x=>String(x.id)===r.id);if(ix>=0)db.jobs[ix]=r;else{db.jobs.push(r);n++}});
  db.jobs=db.jobs.filter(j=>!j.remote||ids.has(String(j.id)));
- const st=gsState();st.lastPull=now();st.pulled=jobs.length;gsSaveState(st);_cache={};save();return n}
+ const st=gsState();st.lastPull=now();st.pulled=jobs.length;gsSaveState(st);_cache={};save();window._cfgNew=cfgNew;return n}
 function gsBaseline(){const st=gsState(),C=gsCollections();st.h={};for(const [c,list] of Object.entries(C)){st.h[c]={};list.forEach(r=>{if(r&&r.id)st.h[c][r.id]=gsHash(r)})}st.base=now();gsSaveState(st)}
-function gsBoot(){if(!gsOn())return;if(!gsState().h)gsBaseline();gsPull().then(n=>{const a=document.activeElement;if(n&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&/^#\/(jobs|companies|company|)(\?|$|\/)/.test(location.hash||'#/'))route()}).catch(e=>{const st=gsState();st.err='Could not read jobs from the Sheet: '+(e.message||e);gsSaveState(st)});gsQueue()}
+function gsBoot(){if(!gsOn())return;if(!gsState().h)gsBaseline();gsPull().then(n=>{const a=document.activeElement;if((n||window._cfgNew)&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&(window._cfgNew||/^#\/(jobs|companies|company|)(\?|$|\/)/.test(location.hash||'#/')))route()}).catch(e=>{const st=gsState();st.err='Could not read jobs from the Sheet: '+(e.message||e);gsSaveState(st)});gsQueue()}
 function gsPanel(){const c=gsCfg(),st=gsState(),C=gsCollections(),ok=gsOn();
  return `<div class="panel" id="gs-panel"><h3>Google Sheet connection</h3><p class="lead">Every registration, job, application, payment and support request is copied to your Google Sheet automatically. Jobs and companies are read back, so a job posted on one device shows for everyone.</p>
  <div class="gs-status ${ok?(st.err?'warn':'good'):'off'}"><b>${ok?(st.err?'⚠ Connected with an error':'● Connected'):'○ Not connected'}</b><span>${ok?(st.last?'Last sync '+ago(st.last)+(st.lastSent!=null?` · ${st.lastSent} row${st.lastSent===1?'':'s'} sent`:''):'Not synced yet'):'Add the Web App URL and secret key from your Apps Script.'}${st.lastPull?' · jobs read '+ago(st.lastPull):''}</span>${st.err?`<span class="gs-err">${esc(st.err)}</span>`:''}</div>
@@ -2330,7 +2331,23 @@ async function gsPullNow(){if(!gsOn())return;toast('Reading jobs from the Sheet�
 async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:gsCfg().url,key:gsCfg().key});const re=/\/\*GSHEET\*\/[^\n]*?\/\*END\*\//;let html='';
  try{const r=await fetch(location.href.split('#')[0],{cache:'no-store'});html=await r.text()}catch(e){}
  if(!html||!re.test(html)){const M='/*GSHEET'+'*/',E='/*END'+'*/';window._gsLine='const GSHEET='+M+cfg+E+';';openModal(`<h2>Add the connection to your website file</h2><p class="lead">Your browser couldn't read this page's file. Open your website file (index.html) in a text editor, find the line that starts with <b>const GSHEET=</b> and replace the whole line with:</p><pre class="mono gs-pre">${esc(window._gsLine)}</pre><div class="row-btns"><button class="btn" onclick="copyTxt(window._gsLine)">Copy line</button><button class="btn ghost" onclick="closeModal()">Close</button></div>`);return}
- html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
+ html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
+
+/* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
+const SITECFG=/*SITECFG*/null/*END2*/;
+function cfgPick(){return {company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
+function cfgHash(){return gsHash(cfgPick())}
+function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
+ if(x.company&&typeof x.company==='object'){const c=Object.assign({},x.company);if(!c.qr)c.qr=old.qr||'';['accNo','ifsc','gstin','pan','sac','upi','prefix','accName','bank','branch','legal','address','state'].forEach(k=>{if(c[k]!=null)c[k]=String(c[k])});if(typeof c.gstOn==='string')c.gstOn=c.gstOn!=='false';db.settings.company=c}
+ if(x.services&&typeof x.services==='object'&&Object.keys(x.services).length)db.services=x.services;
+ if(x.plans&&x.plans.employer&&x.plans.candidate)db.plans=x.plans;
+ if(x.freeRights&&typeof x.freeRights==='object'&&Object.keys(x.freeRights).length)db.freeRights=x.freeRights;
+ if(x.trialDays!=null&&x.trialDays!=='')db.trialDays=+x.trialDays;
+ db.cfgAt=+x.cfgAt;db.cfgMine=false;db.cfgHash=cfgHash();_cache={};save();return true}
+function cfgEnsureStamp(){if(isAdminNow()&&!db.cfgAt){db.cfgAt=now();db.cfgMine=true;save()}}
+function setGstOn(on){if(!isAdminNow())return;db.settings=db.settings||{};db.settings.company=Object.assign({},co(),{gstOn:!!on});save();
+ const t=document.getElementById('gst-st');if(t)t.textContent=on?'ON':'OFF';document.querySelectorAll('.gst-only').forEach(e=>e.hidden=!on);const g=document.querySelector('.gst-tog');if(g)g.classList.toggle('on',!!on);
+ toast(on?'GST billing turned ON. Plan prices now include GST.':'GST billing turned OFF. Prices and invoices will not show GST.')}
 
 /* ============ GST, payments & invoices ============ */
 const GST_DEF=18;
@@ -2462,9 +2479,9 @@ function pgInvoices(){const g=gate(['candidate','employer']);if(g.block)return g
  return `<section class="wrap narrow"><div class="page-h"><h1>Payments &amp; invoices</h1><p class="lead">Every plan you buy comes with ${gstOn()?'a GST tax invoice':'an invoice'}. Download it as a PDF anytime.</p></div>
  ${L.length?`<div class="tbl"><table><thead><tr><th>Invoice</th><th>Plan</th><th>Amount</th>${L.some(x=>payGst(x)>0)?'<th>GST</th>':''}<th>Total</th><th>Status</th><th></th></tr></thead><tbody>${L.map(x=>`<tr><td><strong>${esc(x.invoiceNo||'—')}</strong><br><span class="hint">${fmtDate(x.at)} · ${esc(x.method||'')}</span></td><td>${esc(x.planName)}</td><td>${rupee2(x.amount)}</td>${L.some(y=>payGst(y)>0)?`<td>${payGst(x)?rupee2(payGst(x)):'—'}</td>`:''}<td><strong>${rupee2(payTotal(x))}</strong></td><td>${chip(payStatus(x))}</td><td><button class="btn ghost sm" onclick="downloadInvoice('${x.id}')">⬇ PDF</button></td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">No payments yet. <a href="#/plans">See plans</a></div>`}
  <div class="row-btns"><button class="btn" onclick="openPlanPicker()">Buy or extend a plan</button></div></section>`}
-function companyPanel(){const c=co();const f=(id,l,v,ph,extra)=>`<div class="fld"><label for="${id}">${l}</label><input id="${id}" value="${esc(v||'')}" placeholder="${esc(ph||'')}" ${extra||''}></div>`;
+function companyPanel(){cfgEnsureStamp();const c=co();const f=(id,l,v,ph,extra)=>`<div class="fld"><label for="${id}">${l}</label><input id="${id}" value="${esc(v||'')}" placeholder="${esc(ph||'')}" ${extra||''}></div>`;
  return `<div class="panel"><h3>Company &amp; bank details</h3><p class="lead">Company details appear on every invoice. Bank and UPI details are shown only on the checkout page (never on invoices), and payments go to the account saved here.</p>
- <div class="gst-tog ${c.gstOn!==false?'on':''}"><label class="switch-row"><input type="checkbox" id="co-gston" ${c.gstOn!==false?'checked':''} onchange="this.closest('.gst-tog').classList.toggle('on',this.checked);document.querySelectorAll('.gst-only').forEach(e=>e.hidden=!this.checked);document.getElementById('gst-st').textContent=this.checked?'ON':'OFF (click Save to apply)'"><span><b>GST billing</b><small>Currently <b id="gst-st">${c.gstOn!==false?'ON':'OFF'}</b>. When on, GST is added to every plan price and shown on invoices with your GSTIN. When off, prices have no GST and no GST number appears anywhere.</small></span></label></div>
+ <div class="gst-tog ${c.gstOn!==false?'on':''}"><label class="switch-row"><input type="checkbox" id="co-gston" ${c.gstOn!==false?'checked':''} onchange="setGstOn(this.checked)"><span><b>GST billing</b><small>Currently <b id="gst-st">${c.gstOn!==false?'ON':'OFF'}</b>. Changes save immediately. When on, GST is added to every plan price and shown on invoices with your GSTIN. When off, prices have no GST and no GST number appears anywhere.</small></span></label></div>
  <h4 class="form-sec" style="margin-top:14px">Company${c.gstOn!==false?' and GST':''}</h4><div class="grid2">${f('co-legal','Company legal name',c.legal,'JobSetu1 Pvt Ltd')}<div class="gst-only" ${c.gstOn===false?'hidden':''}>${f('co-gstin','GSTIN',c.gstin,'22AAAAA0000A1Z5','maxlength="15" style="text-transform:uppercase"')}</div>${f('co-pan','PAN',c.pan,'AAAAA0000A','maxlength="10" style="text-transform:uppercase"')}<div class="fld"><label for="co-state">State</label><select id="co-state">${sel(STATES,c.state,'Select state')}</select></div><div class="gst-only" ${c.gstOn===false?'hidden':''}>${f('co-sac','SAC code (for invoices)',c.sac,'Ask your CA')}${f('co-rate','GST rate (%)',c.gstRate,'18','type="number" min="0" max="28" step="0.01"')}</div>${f('co-prefix','Invoice number prefix',c.prefix,'JS1','maxlength="8"')}</div>
  <div class="fld" style="margin-top:10px"><label for="co-addr">Registered address</label><textarea id="co-addr" style="min-height:64px">${esc(c.address)}</textarea></div>
  <h4 class="form-sec" style="margin-top:14px">Bank account (payments are received here)</h4><div class="grid2">${f('co-accname','Account holder name',c.accName,'As per bank records')}${f('co-bank','Bank name',c.bank,'e.g. HDFC Bank')}${f('co-accno','Account number',c.accNo,'9–18 digits','inputmode="numeric"')}${f('co-ifsc','IFSC code',c.ifsc,'HDFC0001234','maxlength="11" style="text-transform:uppercase"')}${f('co-branch','Branch',c.branch,'Branch name')}${f('co-upi','UPI ID',c.upi,'company@okhdfcbank')}</div>
@@ -3348,6 +3365,7 @@ if(!db.staffSecV1){(db.staff||[]).forEach(x=>{const OLD=['240be518fabd2724ddb6f0
  else if(def){x.status='disabled';delete x.password}
  else if(x.password){setStaffPw(x,x.password)}});
  try{remSave(remList().filter(r=>r.kind!=='staff'))}catch(e){}db.staffSecV1=true;save()}
+try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 cbInit();
 route();
 setTimeout(gsBoot,800);setInterval(()=>{if(gsOn())gsPull().catch(()=>{})},10*60*1000);
