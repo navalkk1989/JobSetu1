@@ -868,6 +868,91 @@ body::before{opacity:0!important}
 .foot .fbottom nav{display:flex;flex-wrap:wrap;gap:4px 16px}@media (min-width:761px){.foot .fbottom{padding-right:190px}}.foot .fbottom a{color:#C9D5F7;text-decoration:none}
 @media (max-width:760px){.foot{padding-top:28px!important}.foot .fcols{grid-template-columns:repeat(3,1fr)!important;gap:16px 14px!important}.foot .fbrand{grid-column:1/-1}.foot .fbrand p{max-width:none}.foot h4{font-size:12px!important}.foot .fcols a{font-size:13px;margin-bottom:6px}.foot .fbottom{justify-content:center;text-align:center;padding-bottom:72px}.foot .fbottom nav{justify-content:center}}
 @media (max-width:360px){.foot .fcols{grid-template-columns:1fr 1fr!important}}
+
+/* ================= mobile app mode ================= */
+html.app{-webkit-text-size-adjust:100%;--an-h:64px}
+html.app body{font-size:15px;padding-bottom:calc(var(--an-h) + 10px + env(safe-area-inset-bottom,0px));overscroll-behavior-y:contain;-webkit-user-select:none;user-select:none}
+html.app input,html.app textarea,html.app select,html.app [contenteditable]{-webkit-user-select:text;user-select:text}
+html.app *{-webkit-tap-highlight-color:transparent}
+html.app footer.foot{display:none!important}
+html.app .wrap{padding-left:14px!important;padding-right:14px!important}
+/* header */
+html.app header.top{background:linear-gradient(120deg,#0A1A44,#1F3C88)!important;border:0!important;box-shadow:0 6px 18px -12px rgba(10,26,68,.7)!important}
+html.app header.top .nav{min-height:56px;padding-top:6px;padding-bottom:6px;gap:10px}
+html.app header.top .links,html.app header.top .ltf-badge,html.app header.top .postjob-btn,html.app header.top .btn.gold,html.app header.top details.umenu,html.app header.top .right>a.btn:not(.bell){display:none!important}
+html.app header.top .logo .brand-img{height:34px!important;background:#fff;border-radius:10px;padding:2px 8px}
+html.app header.top .bell{background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.18)!important;color:#fff!important;min-height:38px;width:42px;border-radius:12px}
+html.app #planbar .planbar{font-size:12.5px}
+html.app #planbar .planbar .wrap{padding-top:8px;padding-bottom:8px;gap:8px}
+html.app #planbar .planbar p{margin:0;line-height:1.4}
+/* type & controls sized for phones */
+html.app h1{font-size:23px!important;line-height:1.2!important;letter-spacing:-.01em}
+html.app h2{font-size:19px!important;line-height:1.25!important}
+html.app h3{font-size:16.5px!important}
+html.app .page-h{padding-top:14px!important;margin-bottom:12px!important}
+html.app .page-h .lead,html.app .lead{font-size:14px!important;line-height:1.5}
+html.app .sec{padding-top:18px!important;padding-bottom:18px!important}
+html.app input:not([type=checkbox]):not([type=radio]):not([type=file]),html.app select,html.app textarea{font-size:16px!important;min-height:48px;border-radius:12px!important}
+html.app textarea{min-height:96px}
+html.app .btn{min-height:46px;border-radius:13px!important;font-size:15px;padding-left:16px;padding-right:16px}
+html.app .btn.sm{min-height:36px;font-size:13.5px;border-radius:10px!important;padding-left:12px;padding-right:12px}
+html.app .row-btns{gap:10px}
+html.app .row-btns .btn{flex:1 1 auto}
+html.app .panel{border-radius:18px!important;padding:16px!important}
+html.app .form,html.app .grid2{grid-template-columns:1fr!important;gap:12px!important}
+html.app .fld label{font-size:13.5px}
+html.app .grid{grid-template-columns:1fr!important;gap:12px!important}
+html.app .tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px}
+html.app .tbl table{font-size:13.5px}
+html.app .stat b{font-size:20px!important}
+/* home hero tighter */
+html.app .hero2{padding:16px 0 28px!important}
+html.app .hero2 h1{font-size:26px!important}
+/* staff & dashboards: sidebar becomes sticky chips */
+html.app .split{display:block!important}
+html.app .side{position:sticky!important;top:calc(56px + env(safe-area-inset-top,0px))!important;z-index:15;display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;overflow-x:auto;gap:8px;margin:0 -14px 14px!important;padding:10px 14px!important;background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);scrollbar-width:none}
+html.app .side::-webkit-scrollbar{display:none}
+html.app .side a{white-space:nowrap;flex:0 0 auto;border-radius:999px!important;padding:8px 14px!important;background:var(--surface);border:1px solid var(--line);font-size:13.5px;font-weight:600}
+html.app .side a.on{background:linear-gradient(120deg,#1F3C88,#1846A8)!important;color:#fff!important;border-color:transparent}
+html.app .res-h{flex-wrap:wrap;gap:10px}
+html.app .res-h .btn{min-height:38px;font-size:13px}
+/* modals become bottom sheets */
+html.app .modal{place-items:end center!important;padding:0!important;z-index:66!important}
+html.app .modal-card{max-width:none!important;width:100%!important;border-radius:24px 24px 0 0!important;max-height:92vh!important;padding:22px 16px calc(22px + env(safe-area-inset-bottom,0px))!important;animation:appUp .22s ease-out}
+@keyframes appUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+/* chat button & toasts sit above the tab bar */
+html.app .cb-fab{bottom:calc(var(--an-h) + 18px + env(safe-area-inset-bottom,0px))!important;padding:6px!important;right:14px!important}
+html.app .cb-fab .cb-l{display:none}
+html.app .cb-panel{bottom:0!important;z-index:70!important;height:min(86vh,640px)!important}
+html.app #toasts{bottom:calc(var(--an-h) + 22px + env(safe-area-inset-bottom,0px))!important}
+/* bottom tab bar */
+.appnav{display:none}
+html.app .appnav{position:fixed;left:0;right:0;bottom:0;z-index:58;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;align-items:end;height:calc(var(--an-h) + env(safe-area-inset-bottom,0px));padding:0 6px env(safe-area-inset-bottom,0px);background:rgba(255,255,255,.97);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);border-top:1px solid rgba(14,47,122,.1);box-shadow:0 -10px 30px -18px rgba(10,26,68,.45)}
+html.app .an-i{appearance:none;border:0;background:none;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:var(--an-h);color:#6B7590;text-decoration:none;position:relative;cursor:pointer}
+html.app .an-ic{position:relative;display:grid;place-items:center;width:52px;height:30px;border-radius:999px;transition:background .2s,color .2s}
+html.app .an-l{font-size:11px;font-weight:700;letter-spacing:.01em}
+html.app .an-i.on{color:#1F3C88}
+html.app .an-i.on .an-ic{background:#E5ECFB}
+html.app .an-badge{position:absolute;top:-2px;right:8px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#E5484D;color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center;border:2px solid #fff}
+html.app .an-i.fab .an-ic{width:56px;height:56px;margin-top:-26px;border-radius:18px;background:linear-gradient(135deg,#F28C28,#F5B731);color:#fff;box-shadow:0 10px 22px -8px rgba(242,140,40,.85),0 0 0 4px #fff}
+html.app .an-i.fab.on .an-ic{background:linear-gradient(135deg,#E07A12,#F2A91E)}
+/* "Me / More" sheet */
+#appsheet{position:fixed;inset:0;z-index:65}
+#appsheet[hidden]{display:none}
+#appsheet .as-bg{position:absolute;inset:0;background:rgba(6,14,38,.5);opacity:0;transition:opacity .18s}
+#appsheet .as-card{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--bg,#F4F6FA);border-radius:24px 24px 0 0;padding:8px 14px calc(16px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .2s ease-out}
+#appsheet.in .as-bg{opacity:1}#appsheet.in .as-card{transform:none}
+#appsheet .as-grip{width:42px;height:5px;border-radius:9px;background:#CDD4E3;margin:4px auto 12px}
+#appsheet .as-head{display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px;background:linear-gradient(120deg,#0A1A44,#1F3C88);color:#fff;margin-bottom:12px}
+#appsheet .as-head .avatar{width:48px;height:48px;border-radius:14px;flex:0 0 auto}
+#appsheet .as-head strong{display:block;font-size:16.5px}#appsheet .as-head span{font-size:13px;color:#C9D5F7}
+#appsheet .as-list{background:var(--surface,#fff);border-radius:16px;margin-bottom:12px;overflow:hidden;border:1px solid var(--line,#DCE2EC)}
+#appsheet .as-row{appearance:none;border:0;background:none;width:100%;display:flex;align-items:center;gap:12px;padding:14px;font:inherit;font-size:15px;color:var(--ink,#121A2E);text-decoration:none;text-align:left;border-bottom:1px solid var(--line,#DCE2EC)}
+#appsheet .as-row:last-child{border-bottom:0}
+#appsheet .as-row>svg:first-child{color:#1F3C88;flex:0 0 auto}#appsheet .as-row span{flex:1}#appsheet .as-row>svg:last-child{color:#A3ACC2}
+#appsheet .as-row.danger,#appsheet .as-row.danger>svg:first-child{color:#C2362B}
+#appsheet .as-ver{text-align:center;font-size:12px;color:#8A93AA;margin:4px 0 0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) html.app .appnav,html.app:not([data-theme="light"]) .appnav{background:rgba(14,21,44,.97);border-top-color:rgba(255,255,255,.08)}html.app:not([data-theme="light"]) .an-i.on .an-ic{background:rgba(120,150,255,.18)}html.app:not([data-theme="light"]) .an-i.on{color:#AFC4FF}html.app:not([data-theme="light"]) .an-badge{border-color:#0E152C}html.app:not([data-theme="light"]) .an-i.fab .an-ic{box-shadow:0 10px 22px -8px rgba(242,140,40,.85),0 0 0 4px #0E152C}}
 </style>
 </head>
 <body>
@@ -879,7 +964,7 @@ body::before{opacity:0!important}
     <div class="fbrand"><a class="logo" href="#/" id="flogo" aria-label="JobSetu1 home"></a><p>Connecting job seekers and employers across India. JobSetu1 never asks job seekers to pay an employer for a job.</p><div class="fcontact" id="fcontact"></div></div>
     <div><h4>Job seekers</h4><a href="#/jobs">Find jobs</a><a href="#/companies">Browse companies</a><a href="#/register/candidate">Create free profile</a><a href="#/plans">Job seeker plans</a></div>
     <div><h4>Employers</h4><a href="#/register/employer">Register free</a><a href="#/post-job">Post a job</a><a href="#/plans">Employer plans</a></div>
-    <div><h4>Company</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a></div>
+    <div><h4>Company</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a><a href="JobSetu1.apk" download="JobSetu1.apk">📱 Android app</a></div>
   </div>
   <div class="wrap fbottom"><span>© <span id="fyear">2026</span> JobSetu1. All rights reserved.</span><nav aria-label="Legal"><a href="#/privacy">Privacy policy</a><a href="#/terms">Terms &amp; conditions</a><a href="#/refund">Refund policy</a><a href="#/terms">Fraud alert</a></nav></div>
 </footer>
@@ -889,6 +974,8 @@ body::before{opacity:0!important}
 
 <script>
 /* ============ constants ============ */
+const APP=(()=>{try{if(/JobSetu1App/i.test(navigator.userAgent)||/[?&]app=1\b/.test(location.search)){sessionStorage.setItem('js1_app','1');return true}return sessionStorage.getItem('js1_app')==='1'}catch(e){return /JobSetu1App/i.test(navigator.userAgent)}})();
+if(APP)document.documentElement.classList.add('app');
 const DB_KEY='jobsetu_db_v4', SES_KEY='jobsetu_session_v1', DAY=864e5;
 const STATES=["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"];
 const CITIES=["Agra","Ahmedabad","Amritsar","Bengaluru","Bhopal","Bhubaneswar","Chandigarh","Chennai","Coimbatore","Dehradun","Delhi","Faridabad","Ghaziabad","Gurugram","Guwahati","Hyderabad","Indore","Jaipur","Jalandhar","Kanpur","Kochi","Kolkata","Lucknow","Ludhiana","Madurai","Mumbai","Mysuru","Nagpur","Nashik","Navi Mumbai","Noida","Panipat","Patna","Pune","Raipur","Rajkot","Ranchi","Rohtak","Sonipat","Surat","Thane","Vadodara","Varanasi","Visakhapatnam"];
@@ -1866,7 +1953,7 @@ function submitCand(e){
 }
 let gReady=false;
 function gClientId(){return String((db.settings||{}).googleClientId||GOOGLE_CLIENT_ID||'').trim()}
-function gOn(){return !!db.services.googleLogin&&/^[\w-]+\.apps\.googleusercontent\.com$/.test(gClientId())}
+function gOn(){return !APP&&!!db.services.googleLogin&&/^[\w-]+\.apps\.googleusercontent\.com$/.test(gClientId())}
 let gLoading=false;
 function initGoogle(cb){
  if(!gOn()||gReady){if(cb&&gReady)cb();return}if(gLoading)return;gLoading=true;
@@ -2307,7 +2394,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2382,7 +2469,7 @@ async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:
  html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
 
 /* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
-const SITECFG=/*SITECFG*/{"cfgAt":1792062908360,"support":{"phone":"+91 8448103956","whatsapp":"+91 8448103956","email":"navalkk1989@gmail.com","hours":"Mon-Sat, 10 Am To 6 Pm"},"grievance":{"name":"Naval Kishor","email":"navalkk1989@gmail.com","address":"Gurgaon Sec 14, 122001"},"googleClientId":"977440539267-v44gjhgsbq5pr8hfvr3icn5ou29tf0bc.apps.googleusercontent.com","company":{"gstOn":false,"rzpKey":"","city":"","legal":"JobSetu1","address":"Gurugram Sec-14 , 122001","state":"Haryana","gstin":"","pan":"","sac":"","gstRate":18,"prefix":"JS1","accName":"Naval Kishor","bank":"AU Bank","accNo":"2601255912120815","ifsc":"AUBL0002559","branch":"","upi":"navalk1989-2@okaxis","qr":""},"services":{"candidateReg":true,"employerReg":true,"jobPosting":true,"applications":true,"payments":true,"googleLogin":true,"matchAlerts":true,"freeEmployer":true,"freeCandidate":false},"plans":{"employer":[{"id":"e3","name":"Quarterly","price":1,"months":3},{"id":"e6","name":"Half-yearly","price":2,"months":6},{"id":"e12","name":"Yearly","price":3,"months":12}],"candidate":[{"id":"c3","name":"Quarterly","price":1,"months":3},{"id":"c6","name":"Half-yearly","price":2,"months":6},{"id":"c12","name":"Yearly","price":3,"months":12}]},"freeRights":{"employer":{"post":true,"find":true,"details":true,"download":true},"candidate":{"search":true,"apply":true,"contacts":true,"location":true}},"trialDays":180}/*END2*/;
+const SITECFG=/*SITECFG*/null/*END2*/;
 function cfgPick(){return {support:(db.settings||{}).support||null,grievance:(db.settings||{}).grievance||null,googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
 function cfgHash(){return gsHash(cfgPick())}
 function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
@@ -2847,7 +2934,7 @@ function pgAbout(){return `<section class="wrap sec legal"><h1>About us</h1>
 <h2>For job seekers</h2><ul><li>Free registration, job search and applications.</li><li>Profiles matched to jobs that fit your skills, industry and location.</li><li>Job alerts and direct company contact details.</li><li>Optional Premium plans that put your resume at the top for employers.</li></ul>
 <h2>For employers</h2><ul><li>Post jobs and download resumes free of cost.</li><li>Verified company profiles that job seekers can trust.</li><li>Premium tools: refined resumes, applicant management, analytics and job boost.</li></ul>
 <h2>What we stand for</h2><ul><li><b>Safe hiring:</b> JobSetu1 never asks job seekers to pay an employer for a job. We review company documents to reduce fake job posts.</li><li><b>Privacy:</b> your personal data is protected and never sold.</li><li><b>Simple and fair:</b> clear prices, GST invoices and quick support.</li></ul>
-<div class="row-btns" style="margin-top:18px"><a class="btn" href="#/jobs">Find jobs</a><a class="btn ghost" href="#/register/employer">Hire with JobSetu1</a><a class="btn ghost" href="#/contact">Contact us</a></div></section>`}
+<div class="row-btns" style="margin-top:18px"><a class="btn" href="#/jobs">Find jobs</a><a class="btn ghost" href="#/register/employer">Hire with JobSetu1</a><a class="btn ghost" href="#/contact">Contact us</a>${APP?'':'<a class="btn ghost" href="JobSetu1.apk" download="JobSetu1.apk">📱 Get the Android app</a>'}</div></section>`}
 function pgContact(){const c=supportInfo(),g=grvInfo(),k=co(),wa=(c.whatsapp||c.phone).replace(/\D/g,''),waNum=wa.length===10?'91'+wa:wa;
  const addr=[k.address,[k.city,k.state].filter(Boolean).join(', ')].filter(Boolean).join(', ');
  return `<section class="wrap sec"><div class="page-h"><h1>Contact us</h1><p class="lead">We're here to help job seekers and employers. Reach us any way you like.</p></div>
@@ -3482,6 +3569,49 @@ if(!db.staffSecV1){(db.staff||[]).forEach(x=>{const OLD=['240be518fabd2724ddb6f0
  else if(def){x.status='disabled';delete x.password}
  else if(x.password){setStaffPw(x,x.password)}});
  try{remSave(remList().filter(r=>r.kind!=='staff'))}catch(e){}db.staffSecV1=true;save()}
+
+/* ============ mobile app mode (Android app) ============ */
+const AIC={home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',building:'<path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h3a1 1 0 0 1 1 1v11M3 21h18M8 7h4M8 11h4M8 15h4"/>',star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',brief:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',bell:'<path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5 6.5-5s5.5 1.5 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.3 0 4 1.2 4.6 3.5"/>',plus:'<path d="M12 5v14M5 12h14"/>',grid:'<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',rupee:'<path d="M7 4h11M7 8.5h11M9 4c4 0 6 1.8 6 4.5S13 13 9 13H7l8 7"/>',menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',chat:'<path d="M4 5h16v11H8l-4 4z"/>',chev:'<path d="m9 6 6 6-6 6"/>',out:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',refresh:'<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>',cog:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',doc:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',crown:'<path d="M3 17.5h18l-1.7-9.6-4.7 4L12 4.5 9.4 11.9l-4.7-4z"/>'};
+const aic=(k,sz)=>`<svg viewBox="0 0 24 24" width="${sz||22}" height="${sz||22}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${AIC[k]||''}</svg>`;
+function staffTabList(){const u=me(),r=u?.role,isA=r==='admin';const t=[['overview','Overview','grid'],['candidates','Job seekers','users'],['employers','Employers','building'],['priority','Top priority','star'],['activity','Employer activity','brief'],['support','Support requests','chat'],['jobs','Jobs','brief'],['applications','Applications','doc'],['payments','Revenue dashboard','rupee'],['services','Services','cog']];
+ if(isA){t.splice(1,0,['settings','Site settings','cog']);t.push(['plans','Plans & pricing','star'],['staff','Office staff','users'])}
+ return u?.office?t.filter(x=>x[0]!=='payments'&&x[0]!=='services'):t}
+function appTabs(){const u=me(),r=u?.role;
+ if(!u)return [['#/','Home','home'],['#/jobs','Jobs','search'],['#/companies','Companies','building'],['#/plans','Plans','star'],['#/login','Log in','user']];
+ if(r==='candidate')return [['#/','Home','home'],['#/jobs','Jobs','search'],['#/dashboard','My jobs','brief'],['#/notifications','Alerts','bell'],['sheet','Me','user']];
+ if(r==='employer')return [['#/employer','Home','home'],['#/candidates','Talent','users'],['#/post-job','Post job','plus',1],['#/notifications','Alerts','bell'],['sheet','Me','user']];
+ const b='#/'+r;return [[b,'Overview','grid'],[b+'/candidates','Seekers','users'],[b+'/employers','Employers','building'],u.office?[b+'/support','Support','chat']:[b+'/payments','Revenue','rupee'],['sheet','More','menu']]}
+function appActive(tabs){const h=((location.hash||'#/').split('?')[0].replace(/\/$/,''))||'#';let best=-1,len=-1;
+ tabs.forEach(([href],i)=>{if(href==='sheet')return;const x=href.replace(/\/$/,'')||'#';const hit=x==='#'?h==='#':(h===x||h.startsWith(x+'/'));if(hit&&x.length>len){best=i;len=x.length}});
+ if(best<0&&/^#\/(register|office|login)/.test(h))best=tabs.findIndex(t=>t[0]==='#/login');
+ if(best<0&&/^#\/(job|company)\//.test(h))best=tabs.findIndex(t=>t[0]===(h.startsWith('#/job/')?'#/jobs':'#/companies'));
+ return best}
+function renderAppNav(){if(!APP)return;let nav=document.getElementById('appnav');if(!nav){nav=document.createElement('nav');nav.id='appnav';nav.setAttribute('aria-label','App');document.body.appendChild(nav)}
+ const u=me(),tabs=appTabs(),act=appActive(tabs),unread=u?db.notes.filter(n=>n.userId===u.id&&!n.read).length:0;
+ nav.className='appnav n'+tabs.length;
+ nav.innerHTML=tabs.map(([href,l,ic,fab],i)=>{const badge=ic==='bell'&&unread?`<b class="an-badge">${unread>9?'9+':unread}</b>`:'';const inner=`<span class="an-ic">${aic(ic,fab?26:22)}${badge}</span><span class="an-l">${l}</span>`;
+  return href==='sheet'?`<button type="button" class="an-i${i===act?' on':''}" onclick="appSheet(true)">${inner}</button>`:`<a class="an-i${fab?' fab':''}${i===act?' on':''}" href="${href}">${inner}</a>`}).join('')}
+function appSheet(open){let sh=document.getElementById('appsheet');if(!sh){sh=document.createElement('div');sh.id='appsheet';sh.hidden=true;sh.innerHTML='<div class="as-bg" onclick="appSheet(false)"></div><div class="as-card" role="dialog" aria-modal="true" aria-label="Menu"></div>';document.body.appendChild(sh)}
+ if(!open){sh.classList.remove('in');setTimeout(()=>{sh.hidden=true},180);return}
+ const u=me();if(!u)return go('#/login');const r=u.role,row=(href,ic,l,extra)=>`<a class="as-row" href="${href}" onclick="appSheet(false)">${aic(ic,20)}<span>${l}</span>${extra||''}${aic('chev',16)}</a>`,act=(fn,ic,l,cls)=>`<button type="button" class="as-row${cls?' '+cls:''}" onclick="appSheet(false);${fn}">${aic(ic,20)}<span>${l}</span>${aic('chev',16)}</button>`;
+ let links='';
+ if(r==='candidate')links=row('#/profile','user','My profile')+act('openResume()','doc','Upload / update resume')+act('openPhoto()','user',u.photo?'Change profile photo':'Add profile photo')+row('#/premium','crown',hasPremium(u)?'Premium tools':'Get Premium Service')+row('#/invoices','rupee','Payments & invoices')+row('#/companies','building','Companies')+row('#/plans','star','Plans');
+ else if(r==='employer')links=row('#/company-profile','building','Company profile')+row('#/post-job','plus','Post a job')+row('#/candidates','users','Find candidates')+row('#/premium','crown',hasPremium(u)?'Premium tools':'Get Premium Service')+row('#/invoices','rupee','Payments & invoices')+row('#/jobs','search','Browse jobs')+row('#/plans','star','Plans');
+ else links=staffTabList().map(([k,l,ic])=>row('#/'+r+'/'+k,ic,l)).join('')+row('#/notifications','bell','Notifications');
+ const pic=r==='employer'&&u.company?.docs?.logo?.data?`<img class="avatar" src="${u.company.docs.logo.data}" alt="">`:avatar(u);
+ sh.querySelector('.as-card').innerHTML=`<div class="as-grip"></div><div class="as-head">${pic}<div><strong>${esc(u.name)}</strong><span>${r==='candidate'?'Job seeker':r==='employer'?esc(u.company?.name||'Employer'):r==='admin'?'Admin':u.office?'Office executive':'Manager'}</span></div></div>
+ <div class="as-list">${links}</div><div class="as-list">${row('#/about','info','About us')}${row('#/contact','chat','Contact us')}${act('cbToggle(true)','chat','Chat with JobSetu1')}${row('#/privacy','doc','Privacy policy')}${row('#/terms','doc','Terms & conditions')}${row('#/refund','doc','Refund policy')}${act('location.reload()','refresh','Refresh app')}</div>
+ <div class="as-list">${act('logout()','out','Log out','danger')}</div><p class="as-ver">JobSetu1 app${window.AndroidApp&&AndroidApp.appVersion?' v'+esc(AndroidApp.appVersion()):''}</p>`;
+ sh.hidden=false;requestAnimationFrame(()=>sh.classList.add('in'))}
+window.appBack=function(){try{if(!$('#modal').hidden){closeModal();return true}const sh=document.getElementById('appsheet');if(sh&&!sh.hidden){appSheet(false);return true}if(typeof cbOpen!=='undefined'&&cbOpen){cbToggle(false);return true}const d=document.querySelector('details.umenu[open]');if(d){d.removeAttribute('open');return true}}catch(e){}return false};
+function appAfterRoute(){if(!APP)return;renderAppNav();const sh=document.getElementById('appsheet');if(sh&&!sh.hidden)appSheet(false);const on=document.querySelector('.side a.on');if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
+/* downloads inside the Android app go through the native bridge */
+function appGuessMime(n){const e=(n.split('.').pop()||'').toLowerCase();return {pdf:'application/pdf',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',xls:'application/vnd.ms-excel',csv:'text/csv',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',html:'text/html',txt:'text/plain'}[e]||'application/octet-stream'}
+async function appSaveUrl(url,name){try{const b=await (await fetch(url)).blob();const d=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result));fr.onerror=rej;fr.readAsDataURL(b)});
+ const where=AndroidApp.saveFile(name||'download',(b.type&&b.type!=='application/octet-stream')?b.type:appGuessMime(name||''),d.slice(d.indexOf(',')+1));toast(where?'Saved to '+where+'.':'Could not save the file. Please try again.')}catch(e){toast('Could not save the file.')}}
+if(APP&&window.AndroidApp&&AndroidApp.saveFile){const oc=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){if(this.hasAttribute('download')&&/^(blob:|data:)/.test(this.href)){appSaveUrl(this.href,this.getAttribute('download'));return}return oc.call(this)};
+ document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[download]');if(a&&/^(blob:|data:)/.test(a.href)){e.preventDefault();appSaveUrl(a.href,a.getAttribute('download'))}},true)}
+if(APP){const _rA=route;route=function(){_rA.apply(this,arguments);appAfterRoute()}}
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
 cbInit();
