@@ -1786,7 +1786,7 @@ const G_ICON='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"
 function pgRegCand(){
  if(!db.services.candidateReg)return paused('Job seeker registration is paused right now. Please try again later.');
  return `<section class="wrap narrow"><div class="page-h"><h1>Register as a job seeker</h1><p class="lead">Free forever. After this, you'll set up your profile so we can match you with jobs.</p></div>
- <div class="panel">${db.services.googleLogin?`<button class="btn ghost wide" type="button" onclick="googleLogin()">${G_ICON} Continue with Google</button><div class="or">or register with mobile and email</div>`:''}
+ <div class="panel">${gOn()?`<button class="btn ghost wide" type="button" onclick="googleLogin()">${G_ICON} Continue with Google</button><div class="or">or register with mobile and email</div>`:''}
  <form class="form" onsubmit="submitCand(event)" novalidate>
   <div class="fld full"><label for="c-name">Full name</label><input id="c-name" autocomplete="name"></div>
   ${dobField('c-dob','')}
@@ -1818,10 +1818,13 @@ function submitCand(e){
  setSession({kind:'user',id:u.id});toast('Account created. Now set up your profile.');go('#/profile');
 }
 let gReady=false;
-function initGoogle(){
- if(!GOOGLE_CLIENT_ID||gReady||!db.services.googleLogin)return;
+function gClientId(){return String((db.settings||{}).googleClientId||GOOGLE_CLIENT_ID||'').trim()}
+function gOn(){return !!db.services.googleLogin&&/^[\w-]+\.apps\.googleusercontent\.com$/.test(gClientId())}
+let gLoading=false;
+function initGoogle(cb){
+ if(!gOn()||gReady){if(cb&&gReady)cb();return}if(gLoading)return;gLoading=true;
  const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;
- s.onload=()=>{try{google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onGoogleCredential,auto_select:true,cancel_on_tap_outside:false,itp_support:true});gReady=true;if(!me())google.accounts.id.prompt()}catch(e){}};
+ s.onload=()=>{try{google.accounts.id.initialize({client_id:gClientId(),callback:onGoogleCredential,auto_select:true,cancel_on_tap_outside:false,itp_support:true});gReady=true;if(cb)cb();else if(!me())google.accounts.id.prompt()}catch(e){}};s.onerror=()=>{gLoading=false;toast('Google sign-in could not load. Check your internet connection.')};
  document.head.appendChild(s);
 }
 function onGoogleCredential(r){
@@ -1832,10 +1835,10 @@ function onGoogleCredential(r){
 }
 function googleLogin(){
  if(!db.services.googleLogin)return toast('Google sign-in is turned off right now.');
- if(gReady){google.accounts.id.prompt();return}
- openModal(`<h2>${G_ICON} Continue with Google</h2><p class="hint">Demo sign-in. When a Google Client ID is added to this site, the Gmail account already signed in on this browser is picked up and logged in automatically.</p>
- <form class="form" style="margin-top:14px" onsubmit="doGoogle(event)"><div class="fld full"><label for="g-name">Name on Google account</label><input id="g-name"></div><div class="fld full"><label for="g-email">Gmail address</label><input id="g-email" type="email"></div>
- <div class="fld full row-btns"><button class="btn">Continue</button><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button></div></form>`)}
+ if(!gOn())return toast('Google sign-in isn\'t set up yet. Please register or log in with your email or mobile number.');
+ const show=()=>{openModal(`<h2>${G_ICON} Continue with Google</h2><p class="hint">Choose your Google account. We only get your name and Gmail address. Your Google password is never shared with us.</p><div id="g-btn" style="display:flex;justify-content:center;margin:18px 0 8px;min-height:44px"></div><div class="row-btns" style="justify-content:center"><button type="button" class="btn ghost" onclick="closeModal()">Cancel</button></div>`);
+  try{google.accounts.id.renderButton(document.getElementById('g-btn'),{type:'standard',theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280});google.accounts.id.prompt()}catch(e){toast('Google sign-in could not start. Try again.')}};
+ if(gReady)return show();toast('Loading Google sign-in…');initGoogle(show)}
 function doGoogle(e){e.preventDefault();const name=val('g-name'),email=val('g-email');if(!name||!isEmail(email))return toast('Enter your name and a valid Gmail address.');closeModal();googleSignIn(name,email)}
 function googleSignIn(name,email){
  email=email.toLowerCase();let u=db.users.find(x=>x.email===email);
@@ -1898,7 +1901,7 @@ function loginInner(as,next){
  const want=as==='staff'?['admin','manager']:[as==='employer'?'employer':'candidate'],saved=remList().filter(r=>want.includes(r.role));
  return `<h2>${as==='staff'?'Office staff login':'Log in'}</h2>${as==='staff'?'':`<div class="row-btns" style="margin:0 0 16px">${tab('seeker','Job seeker')}${tab('employer','Employer')}</div>`}
  ${saved.length?`<div class="saved"><span class="hint">Remembered on this device. One tap to log in:</span>${saved.map(r=>`<div class="saved-row"><button type="button" class="btn ghost" onclick="quickLogin('${r.id}')">${avatar(getUser(r.id)||{name:r.name})}<span><strong>${esc(r.name)}</strong><br><span class="hint">${esc(r.email)}</span></span></button><button type="button" class="btn ghost sm" aria-label="Forget ${esc(r.name)}" title="Forget on this device" onclick="remForget('${r.id}')">✕</button></div>`).join('')}<div class="or">or log in with a different account</div></div>`:''}
- ${as==='seeker'&&db.services.googleLogin?`<button class="btn ghost wide" type="button" onclick="googleLogin()">${G_ICON} Continue with Google</button><div class="or">or</div>`:''}
+ ${as==='seeker'&&gOn()?`<button class="btn ghost wide" type="button" onclick="googleLogin()">${G_ICON} Continue with Google</button><div class="or">or</div>`:''}
  <form class="form" style="grid-template-columns:1fr" onsubmit="doLogin(event,'${as}','${esc(next)}')">
   <div class="fld"><label for="l-id">${as==='staff'?'Login ID or email':'Email or mobile number'}</label><input id="l-id" name="username" autocomplete="username" value="${esc((()=>{try{return localStorage.getItem('jobsetu_lastid_'+as)||''}catch(e){return ''}})())}"></div>
   <div class="fld"><label for="l-pass">Password</label><input id="l-pass" name="password" type="password" autocomplete="current-password" oninput="this.classList.remove('shake')"><div id="pw-err" class="pwerr" hidden role="alert"></div></div>
@@ -2259,7 +2262,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2279,7 +2282,7 @@ function gsCollections(){
   staff:(db.staff||[]).map(x=>gsStrip(x,['password','pwh','salt','idh'])),
   notes:(db.notes||[]).slice(-3000),
   activity:(db.activity||[]).filter(a=>!/^d[ej]_/.test(a.empId||'')&&!/^d[cj]_/.test(a.candId||'')).slice(-3000),
-  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,gstOn:co().gstOn!==false,company:gsStrip(co(),['qr']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}]:[]}}
+  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,googleClientId:(db.settings||{}).googleClientId||'',gstOn:co().gstOn!==false,company:gsStrip(co(),['qr']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}]:[]}}
 const GS_LABEL={users:'Users',companies:'Companies',jobs:'Jobs',apps:'Applications',payments:'Payments',support:'Support',staff:'Office staff',notes:'Notifications',activity:'Activity',settings:'Settings'};
 let gsTimer=null,gsBusy=false;
 function gsQueue(){if(!gsOn()||!gsCfg().auto)return;clearTimeout(gsTimer);gsTimer=setTimeout(()=>{gsPush(false).catch(()=>{})},2500)}
@@ -2334,8 +2337,8 @@ async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:
  html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
 
 /* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
-const SITECFG=/*SITECFG*/{"cfgAt":1792000254691,"company":{"gstOn":false,"legal":"JobSetu1","address":"","state":"Haryana","gstin":"","pan":"","sac":"","gstRate":18,"prefix":"JS1","accName":"","bank":"","accNo":"","ifsc":"","branch":"","upi":"","qr":""},"services":{"candidateReg":true,"employerReg":true,"jobPosting":true,"applications":true,"payments":true,"googleLogin":true,"matchAlerts":true,"freeEmployer":true,"freeCandidate":true},"plans":{"employer":[{"id":"e3","name":"Quarterly","price":200,"months":3},{"id":"e6","name":"Half-yearly","price":500,"months":6},{"id":"e12","name":"Yearly","price":800,"months":12}],"candidate":[{"id":"c3","name":"Quarterly","price":200,"months":3},{"id":"c6","name":"Half-yearly","price":500,"months":6},{"id":"c12","name":"Yearly","price":800,"months":12}]},"freeRights":{"employer":{"post":true,"find":true,"details":true,"download":true},"candidate":{"search":true,"apply":true,"contacts":true,"location":true}},"trialDays":180}/*END2*/;
-function cfgPick(){return {company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
+const SITECFG=/*SITECFG*/null/*END2*/;
+function cfgPick(){return {googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
 function cfgHash(){return gsHash(cfgPick())}
 function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
  if(x.company&&typeof x.company==='object'){const c=Object.assign({},x.company);if(!c.qr)c.qr=old.qr||'';['accNo','ifsc','gstin','pan','sac','upi','prefix','accName','bank','branch','legal','address','state'].forEach(k=>{if(c[k]!=null)c[k]=String(c[k])});if(typeof c.gstOn==='string')c.gstOn=c.gstOn!=='false';db.settings.company=c}
@@ -2343,6 +2346,7 @@ function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=
  if(x.plans&&x.plans.employer&&x.plans.candidate)db.plans=x.plans;
  if(x.freeRights&&typeof x.freeRights==='object'&&Object.keys(x.freeRights).length)db.freeRights=x.freeRights;
  if(x.trialDays!=null&&x.trialDays!=='')db.trialDays=+x.trialDays;
+ if(x.googleClientId!=null){const g=String(x.googleClientId).trim();if(g!==(db.settings.googleClientId||'')){db.settings.googleClientId=g;gReady=false;gLoading=false;setTimeout(()=>{try{initGoogle()}catch(e){}},0)}}
  db.cfgAt=+x.cfgAt;db.cfgMine=false;db.cfgHash=cfgHash();_cache={};save();return true}
 function cfgEnsureStamp(){if(isAdminNow()&&!db.cfgAt){db.cfgAt=now();db.cfgMine=true;save()}}
 function setGstOn(on){if(!isAdminNow())return;db.settings=db.settings||{};db.settings.company=Object.assign({},co(),{gstOn:!!on});save();
@@ -2516,7 +2520,7 @@ function pgStaff(role,tab,q){q=q||new URLSearchParams();
  const planCell=x=>planActive(x)?`${esc(x.plan.name)} till ${fmtDate(x.plan.expires)}`:'<span class="hint">None</span>';
  if(tab==='settings'&&isAdmin){
   const v=db.settings?.pwVideo;
-  body=companyPanel()+gsPanel()+supportPanel()+`<div class="panel"><h3>Wrong-password video</h3><p class="lead">Shown in a small circle under the password box when someone enters a wrong password. Use a short video you own or have rights to (MP4 or WebM, up to 1.5 MB, 3–8 seconds works best). It plays muted and loops.</p>
+  body=companyPanel()+gsPanel()+googlePanel()+supportPanel()+`<div class="panel"><h3>Wrong-password video</h3><p class="lead">Shown in a small circle under the password box when someone enters a wrong password. Use a short video you own or have rights to (MP4 or WebM, up to 1.5 MB, 3–8 seconds works best). It plays muted and loops.</p>
   <div class="pcard" style="margin-top:12px">${v?`<video class="pwvid" src="${v}" autoplay muted playsinline loop></video>`:`<div class="pwvid pwanim"><span>${LOCK_SVG}</span></div>`}<div class="info"><p><strong>${v?'Custom video in use':'Default animation in use'}</strong></p><p class="hint">${v?esc(db.settings.pwVideoName||'video'):'A spinning ring with a shaking lock.'}</p></div></div>
   <div class="fld" style="margin-top:14px"><label for="set-vid">Upload video</label><input id="set-vid" type="file" accept="video/mp4,video/webm"></div>
   <div class="row-btns"><button class="btn" onclick="savePwVideo()">Save video</button>${v?'<button class="btn danger" onclick="removePwVideo()">Use default animation</button>':''}</div></div>`;
@@ -2712,6 +2716,13 @@ function sfSave(){if(!_sf||_sf.step!==3||!_sf.acc||Date.now()-_sf.ok>15*60*1000)
  const min=a.role==='admin'?8:6;if(p.length<min)return toast(`Password needs at least ${min} characters.`);if(p!==p2)return toast('The two passwords don\'t match.');
  if(lid!==(a.loginId||''))setLoginId(a,lid);if(!a.email)a.email=_sf.email;setStaffPw(a,p);save();_sf=null;
  setSession({kind:'staff',id:a.id},false);closeModal();go('#/'+a.role);setTimeout(()=>showCreds('Password changed. You are logged in',a.loginId,p,a.email),60)}
+function googlePanel(){const id=gClientId(),ok=gOn();return `<div class="panel" id="g-panel"><h3>${G_ICON} Google sign-in</h3><p class="lead">Lets job seekers register and log in with their Gmail account in one click. Paste the <b>Client ID</b> from Google Cloud below.</p>
+ <div class="gs-status ${ok?'good':'off'}"><b>${ok?'● Real Google sign-in is on':'○ Not set up'}</b><span>${ok?'The "Continue with Google" button is shown on the login and job seeker registration pages.':'The "Continue with Google" button stays hidden until a Client ID is added.'}${db.services.googleLogin?'':' Google sign-in is also switched off in Services.'}</span></div>
+ <div class="fld" style="margin-top:12px"><label for="g-cid">Google Client ID</label><input id="g-cid" value="${esc(id)}" placeholder="1234567890-abc123.apps.googleusercontent.com" autocomplete="off"></div>
+ <p class="hint">In Google Cloud, add this exact address under <b>Authorized JavaScript origins</b>: <b class="mono">${esc(location.origin)}</b></p>
+ <div class="row-btns"><button class="btn" onclick="saveGoogleId()">Save Client ID</button>${id?'<button class="btn ghost" onclick="saveGoogleId(true)">Remove</button>':''}</div></div>`}
+function saveGoogleId(clear){if(!isAdminNow())return;const v=clear?'':val('g-cid').replace(/\s/g,'');if(v&&!/^[\w-]+\.apps\.googleusercontent\.com$/.test(v))return toast('The Client ID should end with .apps.googleusercontent.com');
+ db.settings=db.settings||{};db.settings.googleClientId=v;gReady=false;gLoading=false;save();toast(v?'Google Client ID saved. The Continue with Google button is now live.':'Google Client ID removed.');route();if(v)initGoogle()}
 function changeAdminLogin(){if(!isAdminNow())return;const s=me(),lid=val('a-login').toLowerCase();if(lid===(s.loginId||''))return toast('This is already your login ID.');const e=loginIdError(lid,s.id);if(e)return toast(e);setLoginId(s,lid);save();toast('Admin login ID updated. Use '+lid+' next time you log in.');route()}
 function delStaff(id){if(!isAdminNow())return;askConfirm('Remove this manager?','Remove',()=>{db.staff=db.staff.filter(s=>s.id!==id);save();route()})}
 function changeAdminPw(){if(!isAdminNow())return;const p=val('a-pass');if(p.length<8)return toast('Admin password needs at least 8 characters.');setStaffPw(me(),p);save();toast('Admin password updated.');route()}
@@ -3358,6 +3369,7 @@ if(!db.plansV3){db.plans={employer:[{id:'e3',name:'Quarterly',price:200,months:3
 if(!db.techInd){(db.users||[]).forEach(u=>{if(u.company&&u.company.industry==='Home Services & Repair')u.company.industry=TECH_IND;if(u.profile&&u.profile.tech&&!u.profile.industry)u.profile.industry=TECH_IND});const r1=getUser('u_cand1'),r2=getUser('u_cand2');if(r1&&r1.profile&&!r1.profile.industry)Object.assign(r1.profile,{industry:'Logistics & Supply Chain',jobTypes:['Work From Office','Field Job'],degree:'B.Com',university:'Maharshi Dayanand University',eduYear:'2019'});if(r2&&r2.profile&&!r2.profile.industry)Object.assign(r2.profile,{industry:'BPO / Call Centre',jobTypes:['Work From Home','Work From Office'],degree:'B.Com',university:'Delhi University',eduYear:'2025'});db.techInd=true;save()}
 if(!db.freeAllV1){db.services.freeEmployer=true;db.services.freeCandidate=true;db.freeRights={employer:{post:true,find:true,details:true,download:true},candidate:{search:true,apply:true,contacts:true,location:true}};db.freeAllV1=true;save()}
 if(/\/(admin|office)\/?$/i.test(location.pathname)&&(!location.hash||location.hash==='#'||location.hash==='#/'))history.replaceState(null,'','#/office');
+{const pm=location.pathname.match(/\/(privacy|terms)\/?$/i);if(pm&&(!location.hash||location.hash==='#'||location.hash==='#/'))history.replaceState(null,'','#/'+pm[1].toLowerCase())}
 if(!db.dobV1){const r1=getUser('u_cand1'),r2=getUser('u_cand2');if(r1&&r1.profile&&!r1.profile.dob)r1.profile.dob='1997-06-14';if(r2&&r2.profile&&!r2.profile.dob)r2.profile.dob='2003-02-21';db.dobV1=true;save()}
 if(!db.staffSecV1){(db.staff||[]).forEach(x=>{const OLD=['240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9','866485796cfa8d7c0cf7111640205b83076433547577511d81f8030ae99ecea5'],def=!!x.password&&OLD.includes(sha256(x.password))||(x.id==='s_admin'||x.id==='s_mgr1')&&!x.loginId;
  if(x.id==='s_admin'&&(def||(!x.password&&!x.pwh))){Object.assign(x,STAFF_SEED.admin(x.createdAt||now()));delete x.email;delete x.password;delete x.loginId}
