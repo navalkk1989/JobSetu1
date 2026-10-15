@@ -1114,18 +1114,27 @@ function otpField(id,label,type,ph,value){
  <div class="inline" id="${id}-otp" hidden><input id="${id}-code" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit OTP"><button type="button" class="btn" onclick="verifyOtp('${id}')">Verify</button></div>
  <small id="${id}-st" class="hint"></small></div>`}
 function otpReset(id){if(otps[id]&&otps[id].value!==val(id)){delete otps[id];const st=document.getElementById(id+'-st');st.className='hint';st.textContent='';document.getElementById(id+'-otp').hidden=true}}
-function sendOtp(id){
+const EOTP_ERR={too_many:'Too many codes were sent to this email. Wait 15 minutes and try again.',daily_limit:'Email codes are busy today. Please try again tomorrow, or contact support.',bad_email:'Enter a valid email address.',otp_expired:'This code has expired. Click Send OTP to get a new one.',otp_wrong:'That code is incorrect. Check the email and try again.'};
+async function sendOtp(id){
  const v=val(id),isTel=document.getElementById(id).type==='tel';
  if(isTel&&!isMobile(v)){toast('Enter a valid 10-digit mobile number.');return}
  if(!isTel&&!isEmail(v)){toast('Enter a valid email address.');return}
+ if(!isTel&&typeof gsOn==='function'&&gsOn()){const btn=document.querySelector(`[onclick="sendOtp('${id}')"]`),st=document.getElementById(id+'-st');if(btn){btn.disabled=true;btn.textContent='Sending…'}
+  try{const r=await gsPost({action:'emailOtp',email:v.toLowerCase()});otps[id]={remote:true,value:v,verified:false};document.getElementById(id+'-otp').hidden=false;st.className='hint';st.textContent=`We emailed a 6-digit code to ${r.to||v}. It's valid for 10 minutes. Check Spam if you don't see it.`;toast('Code sent to '+(r.to||v)+'.');const c=document.getElementById(id+'-code');if(c)c.focus()}
+  catch(e){const m=String(e&&e.message||e);if(/unknown collection/.test(m)){toast('Email codes need the Apps Script version 7. Using a demo code for now.');}else{st.className='err-t';st.textContent=EOTP_ERR[m]||('Could not send the code: '+m);return}}
+  finally{if(btn){btn.disabled=false;btn.textContent='Send again'}}
+  if(otps[id]&&otps[id].remote)return}
  const code=String(Math.floor(100000+Math.random()*900000));
  otps[id]={code,value:v,verified:false};
  document.getElementById(id+'-otp').hidden=false;
  const st=document.getElementById(id+'-st');st.className='hint';st.textContent=`OTP sent to ${v}.`;
  toast(`Demo OTP for ${v}: ${code}`,9000);
 }
-function verifyOtp(id){
+async function verifyOtp(id){
  const o=otps[id],code=val(id+'-code'),st=document.getElementById(id+'-st');
+ if(o&&o.remote){if(o.value!==val(id)){st.className='err-t';st.textContent='The email changed. Click Send OTP again.';return}if(!/^\d{6}$/.test(code)){st.className='err-t';st.textContent='Enter the 6-digit code from the email.';return}
+  try{await gsPost({action:'emailOtpVerify',email:o.value.toLowerCase(),code});o.verified=true;st.className='ok-t';st.textContent='Verified';document.getElementById(id+'-otp').hidden=true}
+  catch(e){const m=String(e&&e.message||e);st.className='err-t';st.textContent=EOTP_ERR[m]||('Could not check the code: '+m)}return}
  if(o&&o.value===val(id)&&o.code===code){o.verified=true;st.className='ok-t';st.textContent='Verified';document.getElementById(id+'-otp').hidden=true}
  else{st.className='err-t';st.textContent='That OTP is incorrect. Check it and try again, or send a new one.'}
 }
@@ -2262,7 +2271,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2337,7 +2346,7 @@ async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:
  html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
 
 /* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
-const SITECFG=/*SITECFG*/{"cfgAt":1792041186297,"googleClientId":"","company":{"gstOn":false,"legal":"JobSetu1","address":"","state":"Haryana","gstin":"","pan":"","sac":"","gstRate":18,"prefix":"JS1","accName":"","bank":"","accNo":"","ifsc":"","branch":"","upi":"","qr":""},"services":{"candidateReg":true,"employerReg":true,"jobPosting":true,"applications":true,"payments":true,"googleLogin":true,"matchAlerts":true,"freeEmployer":true,"freeCandidate":true},"plans":{"employer":[{"id":"e3","name":"Quarterly","price":200,"months":3},{"id":"e6","name":"Half-yearly","price":500,"months":6},{"id":"e12","name":"Yearly","price":800,"months":12}],"candidate":[{"id":"c3","name":"Quarterly","price":200,"months":3},{"id":"c6","name":"Half-yearly","price":500,"months":6},{"id":"c12","name":"Yearly","price":800,"months":12}]},"freeRights":{"employer":{"post":true,"find":true,"details":true,"download":true},"candidate":{"search":true,"apply":true,"contacts":true,"location":true}},"trialDays":180}/*END2*/;
+const SITECFG=/*SITECFG*/null/*END2*/;
 function cfgPick(){return {googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
 function cfgHash(){return gsHash(cfgPick())}
 function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
