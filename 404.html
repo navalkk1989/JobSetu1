@@ -968,6 +968,12 @@ html.app .an-i.fab.on .an-ic{background:linear-gradient(135deg,#E07A12,#F2A91E)}
 .vis-pct{font:800 18px/1 "Bricolage Grotesque",Manrope,sans-serif;color:#1F3C88;min-width:52px;text-align:right}
 .vis-sw{width:44px;height:24px;border-radius:99px;background:#1f9d55;position:relative;flex:0 0 auto;opacity:.6}.vis-sw::after{content:"";position:absolute;top:3px;left:23px;width:18px;height:18px;border-radius:50%;background:#fff}
 .vis-slide{padding:4px 4px 0}.vis-slide input[type=range]{width:100%;accent-color:#1F3C88;height:28px}.vis-slide.dis{opacity:.45}.vis-slide .hint{margin:2px 0 0}
+.otp-one{grid-column:1/-1;margin:-4px 0 4px;padding:8px 12px;border-radius:10px;background:#fff7e8;border:1px solid #f5d9a6;color:#8a5a00;font-size:13.5px;font-weight:700}.otp-one span{font-weight:500;color:#9a7a3c}
+.app-foot{display:none}
+html.app .app-foot{display:block;margin:26px 0 6px;padding:16px 14px 6px;border-top:1px solid var(--line);text-align:center;font-size:13px;color:var(--muted)}
+html.app .app-foot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin-bottom:12px}html.app .app-foot nav a{color:var(--muted);text-decoration:none}
+html.app .app-foot .app-office{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;border:1px dashed #9fb0d8;background:#f5f8ff;color:#1F3C88;font-weight:700;text-decoration:none}
+html.app .app-foot p{margin:12px 0 0;font-size:12px}
 </style>
 </head>
 <body>
@@ -1944,6 +1950,7 @@ function pgRegCand(){
   ${dobField('c-dob','')}
   ${otpField('c-mobile','Mobile number','tel','10-digit mobile number')}
   ${otpField('c-email','Email address','email','you@example.com')}
+  <p class="otp-one">ℹ️ OTP verify one of them only <span>(mobile or email)</span></p>
   ${jobTypePick('c',[])}
   <div class="fld full"><label for="c-ind">Industry type <span class="hint">(where you want to work)</span></label><select id="c-ind" onchange="$('#c-tech-b').hidden=this.value!==TECH_IND">${sel(INDUSTRIES,'','Select industry')}</select></div>
   <div class="fld full" id="c-tech-b" hidden><label for="c-tech">Trade</label><select id="c-tech">${sel(TECH_TYPES,'','Select trade')}</select></div>
@@ -1957,9 +1964,8 @@ function submitCand(e){
  if(!name)return toast('Enter your full name.');
  {const de=dobError(val('c-dob'));if(de)return toast(de)}
  if(!isMobile(mobile))return toast('Enter a valid 10-digit mobile number.');
- if(!otpOk('c-mobile'))return toast('Verify your mobile number with the OTP.');
  if(!isEmail(email))return toast('Enter a valid email address.');
- if(!otpOk('c-email'))return toast('Verify your email with the OTP.');
+ if(!otpOk('c-mobile')&&!otpOk('c-email'))return toast('Verify the OTP on your mobile number or your email (any one is enough).');
  if(pass.length<6)return toast('Password needs at least 6 characters.');
  const jts=pickedJobTypes('c');if(!jts.length)return toast('Choose at least one job type.');
  if(!val('c-ind'))return toast('Choose an industry type.');
@@ -2004,9 +2010,10 @@ function pgRegEmp(){
  return `<section class="wrap narrow"><div class="page-h"><h1>Register as an employer</h1><p class="lead">Registration is free. ${freeRight('employer','post')?'Post unlimited jobs free of cost.':'Choose a plan after registering to start posting jobs.'}</p></div>
  <div class="panel"><form class="form" onsubmit="submitEmp(event)" novalidate>
   <h3 class="form-sec" style="border:0;padding-top:0;margin-top:0">Account</h3>
+  <div class="fld full"><label for="e-name">Your name</label><input id="e-name" autocomplete="name"></div>
   ${otpField('e-mobile','Mobile number','tel','10-digit mobile number')}
-  <div class="fld"><label for="e-name">Your name</label><input id="e-name" autocomplete="name"></div>
-  <div class="fld"><label for="e-email">Email address</label><input id="e-email" type="email" autocomplete="email"></div>
+  ${otpField('e-email','Email address','email','you@company.com')}
+  <p class="otp-one">ℹ️ OTP verify one of them only <span>(mobile or email)</span></p>
   <div class="fld full"><label for="e-pass">Create password</label><input id="e-pass" type="password" autocomplete="new-password"><small class="hint">At least 6 characters. You'll use it to log in on this site.</small></div>
   <h3 class="form-sec">Company</h3>
   <div class="fld"><label for="e-co">Company name</label><input id="e-co" autocomplete="organization"></div>
@@ -2030,10 +2037,10 @@ function pgRegEmp(){
 async function submitEmp(e){
  e.preventDefault();
  const mobile=val('e-mobile'),name=val('e-name'),email=val('e-email').toLowerCase(),pass=val('e-pass'),co=val('e-co'),size=val('e-size'),web=val('e-web'),gst=val('e-gst').toUpperCase();
- if(!isMobile(mobile))return toast('Enter a valid 10-digit mobile number.');
- if(!otpOk('e-mobile'))return toast('Verify your mobile number with the OTP.');
  if(!name)return toast('Enter your name.');
+ if(!isMobile(mobile))return toast('Enter a valid 10-digit mobile number.');
  if(!isEmail(email))return toast('Enter a valid email address.');
+ if(!otpOk('e-mobile')&&!otpOk('e-email'))return toast('Verify the OTP on your mobile number or your email (any one is enough).');
  if(pass.length<6)return toast('Password needs at least 6 characters.');
  if(!co)return toast('Enter your company name.');
  if(!val('e-type'))return toast('Select your company type.');
@@ -2061,7 +2068,6 @@ function loginInner(as,next){
   <label class="check"><input type="checkbox" id="l-rem"> Remember me on this device for 30 days <span class="hint">(don't tick on a shared computer)</span></label>
   <button class="btn">Log in</button>
   ${as==='staff'?`<p class="hint"><a href="javascript:void 0" onclick="staffForgot()">Forgot login ID or password?</a></p>`:''}
-  ${as!=='staff'&&APP?`<a class="office-link" href="#/office">${LOCK_SVG}<span><b>Office / Admin login</b><small>For JobSetu1 admin and office staff</small></span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>`:''}
   ${as!=='staff'?`<p class="hint"><a href="javascript:void 0" onclick="forgotPw()">Forgot password?</a> · New here? <a href="#/register${as==='employer'?'/employer':'/candidate'}">Register free</a></p>`:''}
  </form>
  `}
@@ -2413,7 +2419,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2488,7 +2494,7 @@ async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:
  html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
 
 /* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
-const SITECFG=/*SITECFG*/{"cfgAt":1792082591301,"visibility":{"cand":{"on":false,"pct":96},"emp":{"on":false,"pct":100}},"support":{"phone":"+91 8448103956","whatsapp":"+91 8448103956","email":"navalkk1989@gmail.com","hours":"Mon - Sat, 10 Am To 6 Pm"},"grievance":{"name":"Naval Kishor","email":"navalkk1989@gmail.com","address":"Gurgaon Sec 14, 122001"},"googleClientId":"977440539267-v44gjhgsbq5pr8hfvr3icn5ou29tf0bc.apps.googleusercontent.com","company":{"gstOn":false,"rzpKey":"","city":"Gurugram","legal":"JobSetu1","gstin":"","pan":"","state":"Haryana","sac":"","gstRate":18,"prefix":"JS1","address":"Gurgaon Sec 14, 122001","accName":"","bank":"","accNo":"","ifsc":"","branch":"","upi":"","qr":""},"services":{"candidateReg":true,"employerReg":true,"jobPosting":true,"applications":true,"payments":true,"googleLogin":true,"matchAlerts":true,"freeEmployer":true,"freeCandidate":true},"plans":{"employer":[{"id":"e3","name":"Quarterly","price":200,"months":3},{"id":"e6","name":"Half-yearly","price":500,"months":6},{"id":"e12","name":"Yearly","price":800,"months":12}],"candidate":[{"id":"c3","name":"Quarterly","price":200,"months":3},{"id":"c6","name":"Half-yearly","price":500,"months":6},{"id":"c12","name":"Yearly","price":800,"months":12}]},"freeRights":{"employer":{"post":true,"find":true,"details":true,"download":true},"candidate":{"search":true,"apply":true,"contacts":true,"location":true}},"trialDays":180}/*END2*/;
+const SITECFG=/*SITECFG*/null/*END2*/;
 function cfgPick(){return {visibility:(db.settings||{}).visibility||null,support:(db.settings||{}).support||null,grievance:(db.settings||{}).grievance||null,googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
 function cfgHash(){return gsHash(cfgPick())}
 function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
@@ -3649,7 +3655,9 @@ function appSheet(open){let sh=document.getElementById('appsheet');if(!sh){sh=do
  <div class="as-list">${act('logout()','out','Log out','danger')}</div><p class="as-ver">JobSetu1 app${window.AndroidApp&&AndroidApp.appVersion?' v'+esc(AndroidApp.appVersion()):''}</p>`;
  sh.hidden=false;requestAnimationFrame(()=>sh.classList.add('in'))}
 window.appBack=function(){try{if(!$('#modal').hidden){closeModal();return true}const sh=document.getElementById('appsheet');if(sh&&!sh.hidden){appSheet(false);return true}if(typeof cbOpen!=='undefined'&&cbOpen){cbToggle(false);return true}const d=document.querySelector('details.umenu[open]');if(d){d.removeAttribute('open');return true}}catch(e){}return false};
-function appAfterRoute(){if(!APP)return;renderAppNav();const sh=document.getElementById('appsheet');if(sh&&!sh.hidden)appSheet(false);const on=document.querySelector('.side a.on');if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
+function appFooter(){const a=document.getElementById('app');if(!a||a.querySelector('.app-foot'))return;const f=document.createElement('div');f.className='app-foot';
+ f.innerHTML=`<nav><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/privacy">Privacy</a><a href="#/terms">Terms</a><a href="#/refund">Refund</a></nav><p>© ${new Date().getFullYear()} JobSetu1</p>`;a.appendChild(f)}
+function appAfterRoute(){if(!APP)return;renderAppNav();appFooter();const sh=document.getElementById('appsheet');if(sh&&!sh.hidden)appSheet(false);const on=document.querySelector('.side a.on');if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
 /* downloads inside the Android app go through the native bridge */
 function appGuessMime(n){const e=(n.split('.').pop()||'').toLowerCase();return {pdf:'application/pdf',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',xls:'application/vnd.ms-excel',csv:'text/csv',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',html:'text/html',txt:'text/plain'}[e]||'application/octet-stream'}
 async function appSaveUrl(url,name){try{const b=await (await fetch(url)).blob();const d=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result));fr.onerror=rej;fr.readAsDataURL(b)});
