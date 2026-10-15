@@ -851,6 +851,10 @@ body::before{opacity:0!important}
 @media (hover:none){.btn:hover{filter:none}.btn.ghost:hover{border-color:inherit}}
 .contact-grid{align-items:start}.contact-grid>.panel{margin-top:0!important}
 .rzp-note{display:grid;gap:4px;padding:12px 14px;border-radius:12px;background:#eef3ff;border:1px solid #c9d6f5;color:#1b2a52}.rzp-note span{color:#4a5675;font-size:.92rem}
+.btn.is-clean,.btn.is-clean.primary,.btn.is-clean.gold,.btn.is-clean.alt{background:#eef1f6!important;background-image:none!important;color:#6b7590!important;border-color:#dfe3ec!important;box-shadow:none!important;filter:none!important;transform:none!important}
+.btn.is-clean::before{content:"✓ ";font-weight:700;color:#1f9d55}
+.btn[data-sv]:not(.is-clean){animation:svPulse 1.6s ease-out 1}
+@keyframes svPulse{0%{box-shadow:0 0 0 0 rgba(233,162,59,.55)}100%{box-shadow:0 0 0 10px rgba(233,162,59,0)}}
 </style>
 </head>
 <body>
@@ -928,6 +932,20 @@ function runYes(){const f=pendingYes;pendingYes=null;closeModal();f&&f()}
 
 /* ============ data ============ */
 
+
+/* ============ save buttons: grey when saved, highlighted when something changed ============ */
+const SAVE_RE=/\b(save|update)\b/i;
+function isSaveBtn(b){if(!(b&&b.matches&&b.matches('button,.btn'))||b.classList.contains('pw-eye')||!SAVE_RE.test(b.textContent||'')||/^\s*open/i.test(b.getAttribute('onclick')||''))return false;const sc=saveScope(b);return !!(sc&&sc!==document.body&&sc.querySelector('input,select,textarea'))}
+function saveScope(b){let el=b.parentElement;while(el&&el!==document.body){if(el.matches('.fld,.panel,form,.modal-card')&&el.querySelector('input,select,textarea'))return el;el=el.parentElement}return b.closest('.panel,form,.modal-card')||document.body}
+function markSaveBtns(root){(root||document).querySelectorAll('button:not([data-sv]),.btn:not([data-sv])').forEach(b=>{if(!isSaveBtn(b))return;b.dataset.sv='1';b.classList.add('is-clean');if(!b.title)b.title='Saved. Change something to save again.'})}
+function setSaveState(scope,clean){if(!scope)return;scope.querySelectorAll('[data-sv]').forEach(b=>{if(saveScope(b)===scope||scope.contains(saveScope(b))||saveScope(b).contains(scope)){b.classList.toggle('is-clean',clean);b.title=clean?'Saved. Change something to save again.':'You have unsaved changes'}})}
+function onFieldEdit(e){const t=e.target;if(!t||!t.matches||!t.matches('input,select,textarea')||t.type==='checkbox'&&t.id==='co-gston')return;document.querySelectorAll('[data-sv]').forEach(b=>{const sc=saveScope(b);if(sc.contains(t)){b.classList.remove('is-clean');b.title='You have unsaved changes'}})}
+document.addEventListener('input',onFieldEdit,true);document.addEventListener('change',onFieldEdit,true);
+let _lastSaveBtn=null,_lastSaveAt=0;
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-sv]');if(b){_lastSaveBtn=b;_lastSaveAt=Date.now()}},true);
+document.addEventListener('submit',e=>{const b=e.target.querySelector('[data-sv]');if(b){_lastSaveBtn=b;_lastSaveAt=Date.now()}},true);
+function savedOk(){if(_lastSaveBtn&&Date.now()-_lastSaveAt<4000&&document.contains(_lastSaveBtn)){const sc=saveScope(_lastSaveBtn);sc.querySelectorAll('[data-sv]').forEach(b=>{if(saveScope(b)===sc){b.classList.add('is-clean');b.title='Saved. Change something to save again.'}});_lastSaveBtn.blur()}}
+try{new MutationObserver(()=>markSaveBtns()).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}
 /* ============ show / hide password ============ */
 const EYE_O='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
  EYE_C='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a10 10 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
@@ -1056,7 +1074,7 @@ let _dummyCache=null;
 function touch(o){if(o&&o.dummy)o.edited=true}
 function recordDel(jobIds,userIds){(jobIds||[]).forEach(id=>{if(String(id).startsWith('dj_')&&!db.dummyDel.jobs.includes(id))db.dummyDel.jobs.push(id)});(userIds||[]).forEach(id=>{if(String(id).startsWith('de_')&&!db.dummyDel.users.includes(id))db.dummyDel.users.push(id)})}
 let db=loadDb();
-function save(){_cache={};try{const h=cfgHash();if(db.cfgHash===undefined)db.cfgHash=h;else if(h!==db.cfgHash){db.cfgHash=h;if(session&&session.kind==='staff'){db.cfgAt=Date.now();db.cfgMine=true}}}catch(e){}try{const out=Object.assign({},db,{jobs:db.jobs.filter(j=>!j.dummy||j.edited),users:db.users.filter(u=>!u.dummy||u.edited)});localStorage.setItem(DB_KEY,JSON.stringify(out))}catch(e){toast('Could not save: browser storage is full. Remove large uploads and try again.')}try{if(typeof gsQueue==='function')gsQueue()}catch(e){}}
+function save(){_cache={};try{if(typeof savedOk==='function')setTimeout(savedOk,0)}catch(e){}try{const h=cfgHash();if(db.cfgHash===undefined)db.cfgHash=h;else if(h!==db.cfgHash){db.cfgHash=h;if(session&&session.kind==='staff'){db.cfgAt=Date.now();db.cfgMine=true}}}catch(e){}try{const out=Object.assign({},db,{jobs:db.jobs.filter(j=>!j.dummy||j.edited),users:db.users.filter(u=>!u.dummy||u.edited)});localStorage.setItem(DB_KEY,JSON.stringify(out))}catch(e){toast('Could not save: browser storage is full. Remove large uploads and try again.')}try{if(typeof gsQueue==='function')gsQueue()}catch(e){}}
 save();
 let session=null;try{session=JSON.parse(localStorage.getItem(SES_KEY))||JSON.parse(sessionStorage.getItem(SES_KEY))}catch(e){}
 function setSession(s,persist){session=s;try{localStorage.removeItem(SES_KEY);sessionStorage.removeItem(SES_KEY);if(s)(persist===false?sessionStorage:localStorage).setItem(SES_KEY,JSON.stringify(s))}catch(e){}}
