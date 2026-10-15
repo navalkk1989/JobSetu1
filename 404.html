@@ -855,6 +855,19 @@ body::before{opacity:0!important}
 .btn.is-clean::before{content:"✓ ";font-weight:700;color:#1f9d55}
 .btn[data-sv]:not(.is-clean){animation:svPulse 1.6s ease-out 1}
 @keyframes svPulse{0%{box-shadow:0 0 0 0 rgba(233,162,59,.55)}100%{box-shadow:0 0 0 10px rgba(233,162,59,0)}}
+/* compact footer */
+.foot{padding:36px 0 0!important;margin-top:48px!important;font-size:13.5px}
+.foot .fcols{grid-template-columns:1.6fr 1fr 1fr 1fr!important;gap:20px 32px!important;align-items:start}
+.foot .fcols a{display:block;margin:0 0 7px;text-decoration:none;line-height:1.35}
+.foot .fcols a:hover,.foot .fbottom a:hover{text-decoration:underline;text-underline-offset:3px}
+.foot h4{margin:0 0 10px!important;font-size:13px!important;text-transform:uppercase;letter-spacing:.08em!important;color:#fff!important}
+.foot .logo .brand-img,.foot .brand-img{height:44px!important;padding:3px 8px!important;border-radius:10px!important}
+.foot .fbrand p{margin:10px 0 8px;max-width:340px;line-height:1.5;font-size:13px}
+.foot .fcontact{display:flex;flex-wrap:wrap;gap:4px 14px}.foot .fcontact a{display:inline!important;margin:0!important;text-decoration:none;font-size:13px}
+.foot .fbottom{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 20px;margin-top:22px;padding-top:14px;padding-bottom:16px;border-top:1px solid rgba(175,192,234,.18);font-size:12.5px;color:#8FA2D4}
+.foot .fbottom nav{display:flex;flex-wrap:wrap;gap:4px 16px}@media (min-width:761px){.foot .fbottom{padding-right:190px}}.foot .fbottom a{color:#C9D5F7;text-decoration:none}
+@media (max-width:760px){.foot{padding-top:28px!important}.foot .fcols{grid-template-columns:repeat(3,1fr)!important;gap:16px 14px!important}.foot .fbrand{grid-column:1/-1}.foot .fbrand p{max-width:none}.foot h4{font-size:12px!important}.foot .fcols a{font-size:13px;margin-bottom:6px}.foot .fbottom{justify-content:center;text-align:center;padding-bottom:72px}.foot .fbottom nav{justify-content:center}}
+@media (max-width:360px){.foot .fcols{grid-template-columns:1fr 1fr!important}}
 </style>
 </head>
 <body>
@@ -863,11 +876,12 @@ body::before{opacity:0!important}
 <main id="app"></main>
 <footer class="foot">
   <div class="wrap fcols">
-    <div><a class="logo" href="#/" id="flogo" aria-label="JobSetu1 home"></a><p>Connecting job seekers and employers across India.</p><p>JobSetu1 never asks job seekers to pay an employer for a job.</p></div>
+    <div class="fbrand"><a class="logo" href="#/" id="flogo" aria-label="JobSetu1 home"></a><p>Connecting job seekers and employers across India. JobSetu1 never asks job seekers to pay an employer for a job.</p><div class="fcontact" id="fcontact"></div></div>
     <div><h4>Job seekers</h4><a href="#/jobs">Find jobs</a><a href="#/companies">Browse companies</a><a href="#/register/candidate">Create free profile</a><a href="#/plans">Job seeker plans</a></div>
     <div><h4>Employers</h4><a href="#/register/employer">Register free</a><a href="#/post-job">Post a job</a><a href="#/plans">Employer plans</a></div>
-    <div><h4>JobSetu1</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><span id="fcontact"></span><a href="#/privacy">Privacy policy</a><a href="#/terms">Terms &amp; conditions</a><a href="#/refund">Refund policy</a><a href="#/terms">Fraud alert</a></div>
+    <div><h4>Company</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a></div>
   </div>
+  <div class="wrap fbottom"><span>© <span id="fyear">2026</span> JobSetu1. All rights reserved.</span><nav aria-label="Legal"><a href="#/privacy">Privacy policy</a><a href="#/terms">Terms &amp; conditions</a><a href="#/refund">Refund policy</a><a href="#/terms">Fraud alert</a></nav></div>
 </footer>
 <datalist id="cities"></datalist>
 <div id="modal" class="modal" hidden onclick="if(event.target===this)closeModal()"><div class="modal-card" id="modal-card" role="dialog" aria-modal="true"></div></div>
@@ -2293,7 +2307,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2368,7 +2382,7 @@ async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:
  html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
 
 /* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
-const SITECFG=/*SITECFG*/{"cfgAt":1792062908360,"support":{"phone":"+91 8448103956","whatsapp":"+91 8448103956","email":"navalkk1989@gmail.com","hours":"Mon-Sat, 10 Am To 6 Pm"},"grievance":{"name":"Naval Kishor","email":"navalkk1989@gmail.com","address":"Gurgaon Sec 14, 122001"},"googleClientId":"977440539267-v44gjhgsbq5pr8hfvr3icn5ou29tf0bc.apps.googleusercontent.com","company":{"gstOn":false,"rzpKey":"","city":"","legal":"JobSetu1","address":"Gurugram Sec-14 , 122001","state":"Haryana","gstin":"","pan":"","sac":"","gstRate":18,"prefix":"JS1","accName":"Naval Kishor","bank":"AU Bank","accNo":"2601255912120815","ifsc":"AUBL0002559","branch":"","upi":"navalk1989-2@okaxis","qr":""},"services":{"candidateReg":true,"employerReg":true,"jobPosting":true,"applications":true,"payments":true,"googleLogin":true,"matchAlerts":true,"freeEmployer":true,"freeCandidate":false},"plans":{"employer":[{"id":"e3","name":"Quarterly","price":1,"months":3},{"id":"e6","name":"Half-yearly","price":2,"months":6},{"id":"e12","name":"Yearly","price":3,"months":12}],"candidate":[{"id":"c3","name":"Quarterly","price":1,"months":3},{"id":"c6","name":"Half-yearly","price":2,"months":6},{"id":"c12","name":"Yearly","price":3,"months":12}]},"freeRights":{"employer":{"post":true,"find":true,"details":true,"download":true},"candidate":{"search":true,"apply":true,"contacts":true,"location":true}},"trialDays":180}/*END2*/;
+const SITECFG=/*SITECFG*/null/*END2*/;
 function cfgPick(){return {support:(db.settings||{}).support||null,grievance:(db.settings||{}).grievance||null,googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
 function cfgHash(){return gsHash(cfgPick())}
 function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
@@ -3430,7 +3444,7 @@ function route(){
   case 'contact':html=pgContact();break;
   default:html=notFound();
  }
- $('#app').innerHTML=html;markStats();initVidStrip();if($('#set-qr')&&co().upi)renderQR('set-qr',`upi://pay?pa=${co().upi}&pn=${encodeURIComponent(co().accName||co().legal)}&cu=INR`,co().qr);if($('#fcontact'))$('#fcontact').innerHTML=footContact();startSlides();if($('#sal-fill'))salFill();renderHeader(k==='job'?'jobs':k==='candidate'?'candidates':k==='company'?'companies':k);document.title=k==='premium'?'JobSetu1 Premium Service':'JobSetu1 – Jobs and hiring across India';const fl=$('#flogo');if(fl&&!fl.innerHTML)fl.innerHTML=LOGO;
+ $('#app').innerHTML=html;markStats();initVidStrip();if($('#set-qr')&&co().upi)renderQR('set-qr',`upi://pay?pa=${co().upi}&pn=${encodeURIComponent(co().accName||co().legal)}&cu=INR`,co().qr);if($('#fyear'))$('#fyear').textContent=new Date().getFullYear();if($('#fcontact'))$('#fcontact').innerHTML=footContact();startSlides();if($('#sal-fill'))salFill();renderHeader(k==='job'?'jobs':k==='candidate'?'candidates':k==='company'?'companies':k);document.title=k==='premium'?'JobSetu1 Premium Service':'JobSetu1 – Jobs and hiring across India';const fl=$('#flogo');if(fl&&!fl.innerHTML)fl.innerHTML=LOGO;
  if(!route.keepScroll)window.scrollTo(0,0);
 }
 $('#cities').innerHTML=CITIES.map(c=>`<option value="${c}">`).join('');
