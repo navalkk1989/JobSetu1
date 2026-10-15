@@ -953,6 +953,21 @@ html.app .an-i.fab.on .an-ic{background:linear-gradient(135deg,#E07A12,#F2A91E)}
 #appsheet .as-row.danger,#appsheet .as-row.danger>svg:first-child{color:#C2362B}
 #appsheet .as-ver{text-align:center;font-size:12px;color:#8A93AA;margin:4px 0 0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) html.app .appnav,html.app:not([data-theme="light"]) .appnav{background:rgba(14,21,44,.97);border-top-color:rgba(255,255,255,.08)}html.app:not([data-theme="light"]) .an-i.on .an-ic{background:rgba(120,150,255,.18)}html.app:not([data-theme="light"]) .an-i.on{color:#AFC4FF}html.app:not([data-theme="light"]) .an-badge{border-color:#0E152C}html.app:not([data-theme="light"]) .an-i.fab .an-ic{box-shadow:0 10px 22px -8px rgba(242,140,40,.85),0 0 0 4px #0E152C}}
+.app-dl{background:linear-gradient(135deg,#F28C28,#F5B731)!important;color:#1b1200!important;border:0!important;font-weight:800;gap:6px;box-shadow:0 8px 18px -10px rgba(242,140,40,.9)}
+.app-dl:hover{filter:brightness(1.05)}
+.nav-app{display:none!important}
+@media (max-width:980px){.app-dl span{display:none}.app-dl{padding-left:9px!important;padding-right:9px!important}}
+@media (max-width:560px){header.top .app-dl{display:none!important}header.top .links .nav-app{order:-1;display:inline-flex!important;align-items:center;gap:4px;padding:3px 10px!important;border-radius:999px;background:linear-gradient(135deg,#F28C28,#F5B731);color:#1b1200!important;font-weight:800}}
+.office-link{display:flex;align-items:center;gap:12px;margin:14px 0 4px;padding:12px 14px;border-radius:14px;border:1px dashed #9fb0d8;background:#f5f8ff;color:#1F3C88;text-decoration:none}
+.office-link>svg:first-child{width:26px;height:26px;flex:0 0 auto}
+.office-link span{flex:1;display:flex;flex-direction:column;line-height:1.3}.office-link small{color:#5b6478;font-size:12.5px}
+.vis-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}@media(max-width:800px){.vis-grid{grid-template-columns:1fr}}
+.vis-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--surface)}.vis-card h4{margin:0 0 10px;font-size:15px}
+.vis-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:#f5f8ff;margin-bottom:8px}.vis-row>div{flex:1}.vis-row b{display:block;font-size:14px}.vis-row small{color:#5b6478;font-size:12.5px;line-height:1.35;display:block}
+.vis-row.locked{background:#eef9f1}.vis-row.off .vis-pct{color:#8A93AA}
+.vis-pct{font:800 18px/1 "Bricolage Grotesque",Manrope,sans-serif;color:#1F3C88;min-width:52px;text-align:right}
+.vis-sw{width:44px;height:24px;border-radius:99px;background:#1f9d55;position:relative;flex:0 0 auto;opacity:.6}.vis-sw::after{content:"";position:absolute;top:3px;left:23px;width:18px;height:18px;border-radius:50%;background:#fff}
+.vis-slide{padding:4px 4px 0}.vis-slide input[type=range]{width:100%;accent-color:#1F3C88;height:28px}.vis-slide.dis{opacity:.45}.vis-slide .hint{margin:2px 0 0}
 </style>
 </head>
 <body>
@@ -1285,9 +1300,11 @@ function renderHeader(cur){
  if(r==='manager')links+=`<a href="#/manager" data-k="manager">Manager panel</a>`;
  if(!u)links+=`<a href="#/register/employer" data-k="register">For employers</a>`;
  links+=`<a href="#/plans" data-k="plans">Plans</a>`;
+ if(!u&&!APP)links+=`<a class="nav-app" href="JobSetu1.apk" download="JobSetu1.apk">📱 Download App</a>`;
  const right=u?`${r==='employer'?`<a class="btn sm postjob-btn${cur==='post-job'?' on':''}" href="#/post-job" aria-label="Post a job"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Post a job</span></a>`:''}${(r==='candidate'||r==='employer')?goldBtn(u):''}${u?`<a class="btn ghost sm bell" href="#/notifications" aria-label="Notifications, ${unread} unread">${BELL}${unread?`<b>${unread}</b>`:''}</a>`:''}${userMenu(u)}`
   :`<a class="btn ghost sm" href="#/login">Log in</a><a class="btn sm" href="#/register">Register free</a>`;
- $('#top').innerHTML=`<div class="wrap nav"><a class="logo" href="#/" aria-label="JobSetu1 home">${LOGO}</a><a class="ltf-badge" href="${u?'#/plans':'#/register'}" title="JobSetu1 is life time free to search, apply and post jobs" aria-label="Life time free"><img src="${LTF_IMG}" alt="Life Time Free"></a><nav class="links" aria-label="Main">${links}</nav><div class="spacer"></div><div class="right">${right}</div></div>`;
+ const dlApp=APP||u?'':`<a class="btn sm app-dl" href="JobSetu1.apk" download="JobSetu1.apk" title="Download the JobSetu1 Android app" aria-label="Download mobile app"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7.5v7M9 11.5l3 3 3-3M10.5 18.5h3"/></svg><span>Download App</span></a>`;
+ $('#top').innerHTML=`<div class="wrap nav"><a class="logo" href="#/" aria-label="JobSetu1 home">${LOGO}</a><a class="ltf-badge" href="${u?'#/plans':'#/register'}" title="JobSetu1 is life time free to search, apply and post jobs" aria-label="Life time free"><img src="${LTF_IMG}" alt="Life Time Free"></a><nav class="links" aria-label="Main">${links}</nav><div class="spacer"></div><div class="right">${dlApp}${right}</div></div>`;
  document.querySelectorAll('.links a').forEach(a=>{if(a.dataset.k===cur)a.classList.add('on')});
  const pb=$('#planbar');
  if(r==='candidate'){const act=hasPremium(u),fr=!planActive(u)&&candFree(u);pb.innerHTML=`<div class="planbar"><div class="wrap"><p>${act?`${CROWN} Premium Service is active until ${fmtDate(u.plan.expires)}. Your resume is listed first for employers.`:fr?`🎉 Job search, apply and company contacts are free for you. Want more? Get Premium Service.`:svcOn('freeCandidate')?'Get your resume on top, auto-apply to jobs and see who viewed your profile.':'Search and apply for jobs free. For Premium Service (company contacts, resume on top, auto-apply and more), buy a plan from '+planFrom('candidate')+'.'}</p><a class="btn gold sm" href="#/premium">${CROWN}${act?'Open Premium tools':'Get Premium Service'}</a></div></div>`}
@@ -1501,6 +1518,7 @@ function userMenu(u){
  if(r==='candidate')items=`<a href="#/profile">Edit profile</a><button onclick="openResume()">Update resume</button>${u.profile?.resume?`<button onclick="downloadResume('${u.id}')">Download resume</button>`:''}<button onclick="openPhoto()">${u.photo?'Change profile photo':'Add profile photo'}</button><hr><a href="#/dashboard">My dashboard</a><a href="#/premium">${hasPremium(u)?'Premium tools':'Get Premium Service'}</a><a href="#/invoices">Payments &amp; invoices</a><a href="#/notifications">Notifications</a>`;
  else if(r==='employer')items=`<a href="#/employer">Dashboard</a><a href="#/company-profile">Edit profile</a><a href="#/post-job">Post a job</a><a href="#/premium">${hasPremium(u)?'Premium tools':'Get Premium Service'}</a><a href="#/invoices">Payments &amp; invoices</a><a href="#/notifications">Notifications</a>`;
  else items=`<a href="#/${r}">${r==='admin'?'Admin panel':'Manager panel'}</a><a href="#/notifications">Notifications</a>${r==='admin'?'<a href="#/admin/settings">⚙ Site settings (upload video)</a>':''}`;
+ if(!APP)items+=`<a href="JobSetu1.apk" download="JobSetu1.apk">📱 Download Android app</a>`;
  const pic=r==='employer'&&u.company?.docs?.logo?.data?`<img class="avatar" src="${u.company.docs.logo.data}" alt="">`:avatar(u);
  return `<details class="umenu"><summary aria-label="Account menu">${pic}<span class="who">${esc(u.name)}</span></summary><div class="umenu-list">${items}<hr><button onclick="logout()">Log out</button></div></details>`}
 document.addEventListener('click',e=>{document.querySelectorAll('details.umenu[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('.umenu-list a,.umenu-list button'))d.removeAttribute('open')})});
@@ -1908,7 +1926,7 @@ function applyJob(jobId){
  if(db.apps.some(a=>a.jobId===jobId&&a.candId===u.id))return;
  const score=matchScore(j,u);
  db.apps.push({id:uid('a'),jobId,candId:u.id,employerId:j.employerId,score,status:'Applied',at:now()});
- if(db.services.matchAlerts)notify(j.employerId,'New application: '+j.title,`${u.name} applied with a ${score}% profile match${u.profile?.designation?' ('+u.profile.designation+')':''}.`,'#/candidate/'+u.id+'?job='+j.id);
+ _cache={};if(db.services.matchAlerts&&appVisible(db.apps[db.apps.length-1]))notify(j.employerId,'New application: '+j.title,`${u.name} applied with a ${score}% profile match${u.profile?.designation?' ('+u.profile.designation+')':''}.`,'#/candidate/'+u.id+'?job='+j.id);
  save();toast('Application sent to '+j.company+'.');route();
 }
 
@@ -2043,6 +2061,7 @@ function loginInner(as,next){
   <label class="check"><input type="checkbox" id="l-rem"> Remember me on this device for 30 days <span class="hint">(don't tick on a shared computer)</span></label>
   <button class="btn">Log in</button>
   ${as==='staff'?`<p class="hint"><a href="javascript:void 0" onclick="staffForgot()">Forgot login ID or password?</a></p>`:''}
+  ${as!=='staff'&&APP?`<a class="office-link" href="#/office">${LOCK_SVG}<span><b>Office / Admin login</b><small>For JobSetu1 admin and office staff</small></span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>`:''}
   ${as!=='staff'?`<p class="hint"><a href="javascript:void 0" onclick="forgotPw()">Forgot password?</a> · New here? <a href="#/register${as==='employer'?'/employer':'/candidate'}">Register free</a></p>`:''}
  </form>
  `}
@@ -2233,7 +2252,7 @@ function accessBanner(u){
 function pgEmpDash(){
  const g=gate(['employer']);if(g.block)return g.block;const u=g.u,c=u.company||{};
  const jobs=db.jobs.filter(j=>j.employerId===u.id).sort((a,b)=>b.createdAt-a.createdAt);
- const apps=db.apps.filter(a=>a.employerId===u.id).sort((a,b)=>premSort(getUser(a.candId),getUser(b.candId))||b.score-a.score||b.at-a.at);
+ const apps=empApps(u.id).sort((a,b)=>premSort(getUser(a.candId),getUser(b.candId))||b.score-a.score||b.at-a.at);
  const week=apps.filter(a=>a.at>now()-7*DAY).length;
  return `<section class="wrap"><div class="page-h" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end"><div><h1 class="co" style="color:var(--ink);gap:12px">${coLogo(u.id,'co-logo lg')}${esc(c.name)}</h1><p class="lead" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="chip">${esc(c.type||'Company type not set')}</span><span class="chip">${esc(c.industry||'Industry not set')}</span>${c.verified?'<span class="chip good">Documents verified</span>':'<span class="chip warn">Documents under review</span>'}</p></div><div class="row-btns" style="margin:0"><a class="btn ghost" href="#/company-profile">Edit profile</a><a class="btn ghost" href="#/company/${u.id}">View public page</a><a class="btn alt" href="#/post-job">Post a job</a></div></div>
  ${accessBanner(u)}
@@ -2243,7 +2262,7 @@ function pgEmpDash(){
  ${apps.length?`<div class="tbl"><table><thead><tr><th>Candidate</th><th>Job</th><th>Match</th><th>Applied</th><th>Status</th><th></th></tr></thead><tbody>${apps.map(a=>{const cd=getUser(a.candId),j=db.jobs.find(x=>x.id===a.jobId);return `<tr class="${isPremium(cd)?'prow':''}"><td>${esc(cd?.name||'Deleted user')} ${premBadge(cd)}<br><span class="hint">${esc(cd?.profile?.designation||cd?.profile?.workStatus||'')}</span></td><td>${esc(j?.title||'Removed job')}</td><td class="match">${a.score}%</td><td>${fmtDate(a.at)}</td>
   <td><select aria-label="Application status" onchange="setAppStatus('${a.id}',this.value)">${sel(['Applied','Shortlisted','Interview','Hired','Rejected'],a.status)}</select></td><td><div class="acts">${cd?`<a class="btn ghost sm" href="#/candidate/${cd.id}?job=${a.jobId}">View profile</a>${contactBtn(cd.id)}`:''}</div></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">No applications yet. They will appear here with a match score, and you\'ll get a notification for each one.</div>'}
  <div class="sec-h" style="margin-top:30px"><h2>My jobs</h2></div>
- ${jobs.length?`<div class="tbl"><table><thead><tr><th>Job</th><th>Location</th><th>Openings</th><th>Applications</th><th>Status</th><th>Posted</th><th></th></tr></thead><tbody>${jobs.map(j=>`<tr><td><a href="#/job/${j.id}">${esc(j.title)}</a></td><td>${esc(j.city)}</td><td>${esc(j.openings)}</td><td>${db.apps.filter(a=>a.jobId===j.id).length}</td><td>${statusChip(j.status)}</td><td>${fmtDate(j.createdAt)}</td>
+ ${jobs.length?`<div class="tbl"><table><thead><tr><th>Job</th><th>Location</th><th>Openings</th><th>Applications</th><th>Status</th><th>Posted</th><th></th></tr></thead><tbody>${jobs.map(j=>`<tr><td><a href="#/job/${j.id}">${esc(j.title)}</a></td><td>${esc(j.city)}</td><td>${esc(j.openings)}</td><td>${empApps(u.id).filter(a=>a.jobId===j.id).length}</td><td>${statusChip(j.status)}</td><td>${fmtDate(j.createdAt)}</td>
   <td><div class="acts"><a class="btn ghost sm" href="#/post-job/${j.id}">Edit</a>${j.status==='stopped'?'<span class="hint">Stopped by JobSetu1</span>':`<button class="btn ghost sm" onclick="toggleMyJob('${j.id}')">${j.status==='open'?'Close':'Reopen'}</button>`}<button class="btn danger sm" onclick="delMyJob('${j.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">You haven\'t posted a job yet. <a href="#/post-job">Post your first job</a>.</div>'}
  </section>`}
 function setAppStatus(id,s){const a=db.apps.find(x=>x.id===id);if(!a)return;a.status=s;const j=db.jobs.find(x=>x.id===a.jobId);notify(a.candId,'Application update: '+(j?.title||'job'),`${j?.company||'The employer'} marked your application as ${s}.`,'#/dashboard');save();toast('Status updated to '+s+'.')}
@@ -2394,7 +2413,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2414,7 +2433,7 @@ function gsCollections(){
   staff:(db.staff||[]).map(x=>gsStrip(x,['password','pwh','salt','idh'])),
   notes:(db.notes||[]).slice(-3000),
   activity:(db.activity||[]).filter(a=>!/^d[ej]_/.test(a.empId||'')&&!/^d[cj]_/.test(a.candId||'')).slice(-3000),
-  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,support:(db.settings||{}).support||supportInfo(),grievance:(db.settings||{}).grievance||grvInfo(),googleClientId:(db.settings||{}).googleClientId||'',gstOn:co().gstOn!==false,company:gsStrip(co(),['qr']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}]:[]}}
+  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,visibility:(db.settings||{}).visibility||{},support:(db.settings||{}).support||supportInfo(),grievance:(db.settings||{}).grievance||grvInfo(),googleClientId:(db.settings||{}).googleClientId||'',gstOn:co().gstOn!==false,company:gsStrip(co(),['qr']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}]:[]}}
 const GS_LABEL={users:'Users',companies:'Companies',jobs:'Jobs',apps:'Applications',payments:'Payments',support:'Support',staff:'Office staff',notes:'Notifications',activity:'Activity',settings:'Settings'};
 let gsTimer=null,gsBusy=false;
 function gsQueue(){if(!gsOn()||!gsCfg().auto)return;clearTimeout(gsTimer);gsTimer=setTimeout(()=>{gsPush(false).catch(()=>{})},2500)}
@@ -2469,8 +2488,8 @@ async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:
  html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
 
 /* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
-const SITECFG=/*SITECFG*/{"cfgAt":1792077235028,"support":{"phone":"+91 8448103956","whatsapp":"+91 8448103956","email":"navalkk1989@gmail.com","hours":"Mon - Sat, 10 Am To 6 Pm"},"grievance":{"name":"Naval Kishor","email":"navalkk1989@gmail.com","address":"Gurgaon Sec 14, 122001"},"googleClientId":"977440539267-v44gjhgsbq5pr8hfvr3icn5ou29tf0bc.apps.googleusercontent.com","company":{"gstOn":false,"rzpKey":"","city":"Gurugram","legal":"JobSetu1","gstin":"","pan":"","state":"Haryana","sac":"","gstRate":18,"prefix":"JS1","address":"Gurgaon Sec 14, 122001","accName":"","bank":"","accNo":"","ifsc":"","branch":"","upi":"","qr":""},"services":{"candidateReg":true,"employerReg":true,"jobPosting":true,"applications":true,"payments":true,"googleLogin":true,"matchAlerts":true,"freeEmployer":true,"freeCandidate":true},"plans":{"employer":[{"id":"e3","name":"Quarterly","price":200,"months":3},{"id":"e6","name":"Half-yearly","price":500,"months":6},{"id":"e12","name":"Yearly","price":800,"months":12}],"candidate":[{"id":"c3","name":"Quarterly","price":200,"months":3},{"id":"c6","name":"Half-yearly","price":500,"months":6},{"id":"c12","name":"Yearly","price":800,"months":12}]},"freeRights":{"employer":{"post":true,"find":true,"details":true,"download":true},"candidate":{"search":true,"apply":true,"contacts":true,"location":true}},"trialDays":180}/*END2*/;
-function cfgPick(){return {support:(db.settings||{}).support||null,grievance:(db.settings||{}).grievance||null,googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
+const SITECFG=/*SITECFG*/null/*END2*/;
+function cfgPick(){return {visibility:(db.settings||{}).visibility||null,support:(db.settings||{}).support||null,grievance:(db.settings||{}).grievance||null,googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
 function cfgHash(){return gsHash(cfgPick())}
 function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
  if(x.company&&typeof x.company==='object'){const c=Object.assign({},x.company);if(!c.qr)c.qr=old.qr||'';['accNo','ifsc','gstin','pan','sac','upi','prefix','accName','bank','branch','legal','address','state'].forEach(k=>{if(c[k]!=null)c[k]=String(c[k])});if(typeof c.gstOn==='string')c.gstOn=c.gstOn!=='false';db.settings.company=c}
@@ -2478,7 +2497,7 @@ function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=
  if(x.plans&&x.plans.employer&&x.plans.candidate)db.plans=x.plans;
  if(x.freeRights&&typeof x.freeRights==='object'&&Object.keys(x.freeRights).length)db.freeRights=x.freeRights;
  if(x.trialDays!=null&&x.trialDays!=='')db.trialDays=+x.trialDays;
- ['support','grievance'].forEach(k=>{let v=x[k];if(typeof v==='string'){try{v=JSON.parse(v)}catch(e){v=null}}if(v&&typeof v==='object')db.settings[k]=v});
+ ['support','grievance','visibility'].forEach(k=>{let v=x[k];if(typeof v==='string'){try{v=JSON.parse(v)}catch(e){v=null}}if(v&&typeof v==='object')db.settings[k]=v});
  if(x.googleClientId!=null){const g=String(x.googleClientId).trim();if(g!==(db.settings.googleClientId||'')){db.settings.googleClientId=g;gReady=false;gLoading=false;setTimeout(()=>{try{initGoogle()}catch(e){}},0)}}
  db.cfgAt=+x.cfgAt;db.cfgMine=false;db.cfgHash=cfgHash();_cache={};save();return true}
 function cfgEnsureStamp(){if(isAdminNow()&&!db.cfgAt){db.cfgAt=now();db.cfgMine=true;save()}}
@@ -2486,6 +2505,31 @@ function setGstOn(on){if(!isAdminNow())return;db.settings=db.settings||{};db.set
  const t=document.getElementById('gst-st');if(t)t.textContent=on?'ON':'OFF';document.querySelectorAll('.gst-only').forEach(e=>e.hidden=!on);const g=document.querySelector('.gst-tog');if(g)g.classList.toggle('on',!!on);
  toast(on?'GST billing turned ON. Plan prices now include GST.':'GST billing turned OFF. Prices and invoices will not show GST.')}
 
+
+/* ============ application visibility for free accounts (admin controlled) ============ */
+function visCfg(){const v=(db.settings||{}).visibility||{};const f=x=>({on:!!(x&&x.on),pct:Math.min(100,Math.max(1,Math.round(+((x&&x.pct)||100))))});return {cand:f(v.cand),emp:f(v.emp)}}
+function candVisPct(c){if(!c||hasPremium(c))return 100;const v=visCfg().cand;return v.on?v.pct:100}
+function empVisPct(e){if(!e||hasPremium(e))return 100;const v=visCfg().emp;return v.on?v.pct:100}
+function candVisibleSet(){if(_cache.cvis)return _cache.cvis;const by={};(db.apps||[]).forEach(a=>{(by[a.candId]=by[a.candId]||[]).push(a)});const set=new Set();
+ Object.entries(by).forEach(([cid,L])=>{const p=candVisPct(getUser(cid));L.sort((a,b)=>(a.at||0)-(b.at||0));const keep=p>=100?L.length:Math.ceil(L.length*p/100);L.slice(0,keep).forEach(a=>set.add(a.id))});
+ _cache.cvis=set;return set}
+function empApps(empId){_cache.eapps=_cache.eapps||{};if(_cache.eapps[empId])return _cache.eapps[empId].slice();const cv=candVisibleSet(),p=empVisPct(getUser(empId)),byJob={};
+ (db.apps||[]).forEach(a=>{if(a.employerId===empId&&cv.has(a.id))(byJob[a.jobId]=byJob[a.jobId]||[]).push(a)});const out=[];
+ Object.values(byJob).forEach(L=>{L.sort((a,b)=>(a.at||0)-(b.at||0));const keep=p>=100?L.length:Math.ceil(L.length*p/100);out.push(...L.slice(0,keep))});
+ _cache.eapps[empId]=out;return out.slice()}
+function appVisible(a){return !!a&&empApps(a.employerId).some(x=>x.id===a.id)}
+function visPanel(){const v=visCfg();const box=(k,who,whoS,ex)=>{const c=v[k];return `<div class="vis-card"><h4>${who}</h4>
+  <div class="vis-row locked"><div><b>Premium ${whoS}</b><small>Premium Service is always 100%. Nothing is hidden.</small></div><span class="vis-pct">100%</span><span class="vis-sw on" aria-hidden="true"></span></div>
+  <div class="vis-row ${c.on?'':'off'}" id="vis-${k}"><div><b>Free ${whoS}</b><small>${ex}</small></div><span class="vis-pct" id="vis-${k}-n">${c.on?c.pct:100}%</span>
+   <label class="switch-row" style="margin:0"><input type="checkbox" ${c.on?'checked':''} onchange="setVis('${k}',{on:this.checked})" aria-label="Limit free ${whoS}"></label></div>
+  <div class="vis-slide ${c.on?'':'dis'}"><input type="range" min="1" max="100" step="1" value="${c.pct}" ${c.on?'':'disabled'} aria-label="Percentage for free ${whoS}" oninput="document.getElementById('vis-${k}-n').textContent=this.value+'%';this.nextElementSibling.textContent=visExample('${k}',+this.value)" onchange="setVis('${k}',{pct:+this.value})"><p class="hint">${visExample(k,c.pct)}</p></div></div>`};
+ return `<div class="panel" id="vis-panel"><h3>Application visibility for free accounts</h3><p class="lead">Choose what share of applications free accounts get. Premium accounts always get 100%. Changes save immediately and reach every visitor.</p>
+ <div class="vis-grid">${box('cand','👤 For job seekers','job seekers','Share of their job applications that reach employers.')}${box('emp','🏢 For employers','employers','Share of applicants on each job whose details they can see.')}</div>
+ <p class="hint" style="margin-top:10px">The earliest applications are delivered first. Admin and office staff always see every application. When a limit is on, the Terms &amp; conditions tell users that free accounts have limited visibility.</p></div>`}
+function visExample(k,p){const n=Math.ceil(10*p/100);return k==='cand'?`Example: a free job seeker applies to 10 jobs → ${n} reach employers.`:`Example: 10 people apply to a free employer's job → the employer sees ${n}.`}
+function setVis(k,ch){if(!isAdminNow())return;db.settings=db.settings||{};const v=visCfg();v[k]=Object.assign(v[k],ch);db.settings.visibility=v;_cache={};save();
+ const c=v[k],row=document.getElementById('vis-'+k);if(row){row.classList.toggle('off',!c.on);document.getElementById('vis-'+k+'-n').textContent=(c.on?c.pct:100)+'%';const sl=row.nextElementSibling;sl.classList.toggle('dis',!c.on);sl.querySelector('input').disabled=!c.on}
+ toast(c.on?`Free ${k==='cand'?'job seekers':'employers'}: ${c.pct}% visibility saved.`:`Free ${k==='cand'?'job seekers':'employers'}: limit off (100%).`)}
 /* ============ GST, payments & invoices ============ */
 const GST_DEF=18;
 function co(){return Object.assign({gstOn:true,rzpKey:'',city:'',legal:'JobSetu1',address:'',state:'Haryana',gstin:'',pan:'',sac:'',gstRate:GST_DEF,prefix:'JS1',accName:'',bank:'',accNo:'',ifsc:'',branch:'',upi:'',qr:''},(db.settings||{}).company||{})}
@@ -2668,7 +2712,7 @@ function pgStaff(role,tab,q){q=q||new URLSearchParams();
  const planCell=x=>planActive(x)?`${esc(x.plan.name)} till ${fmtDate(x.plan.expires)}`:'<span class="hint">None</span>';
  if(tab==='settings'&&isAdmin){
   const v=db.settings?.pwVideo;
-  body=companyPanel()+rzpPanel()+gsPanel()+googlePanel()+supportPanel()+`<div class="panel"><h3>Wrong-password video</h3><p class="lead">Shown in a small circle under the password box when someone enters a wrong password. Use a short video you own or have rights to (MP4 or WebM, up to 1.5 MB, 3–8 seconds works best). It plays muted and loops.</p>
+  body=companyPanel()+visPanel()+rzpPanel()+gsPanel()+googlePanel()+supportPanel()+`<div class="panel"><h3>Wrong-password video</h3><p class="lead">Shown in a small circle under the password box when someone enters a wrong password. Use a short video you own or have rights to (MP4 or WebM, up to 1.5 MB, 3–8 seconds works best). It plays muted and loops.</p>
   <div class="pcard" style="margin-top:12px">${v?`<video class="pwvid" src="${v}" autoplay muted playsinline loop></video>`:`<div class="pwvid pwanim"><span>${LOCK_SVG}</span></div>`}<div class="info"><p><strong>${v?'Custom video in use':'Default animation in use'}</strong></p><p class="hint">${v?esc(db.settings.pwVideoName||'video'):'A spinning ring with a shaking lock.'}</p></div></div>
   <div class="fld" style="margin-top:14px"><label for="set-vid">Upload video</label><input id="set-vid" type="file" accept="video/mp4,video/webm"></div>
   <div class="row-btns"><button class="btn" onclick="savePwVideo()">Save video</button>${v?'<button class="btn danger" onclick="removePwVideo()">Use default animation</button>':''}</div></div>`;
@@ -2740,7 +2784,7 @@ function pgStaff(role,tab,q){q=q||new URLSearchParams();
   <div class="tbl"><table><thead><tr>${isAdmin?`<th><input type="checkbox" aria-label="Select all on this page" onchange="selPage(this)"></th>`:''}<th>Job</th><th>Company</th><th>Industry</th><th>City</th><th>Salary</th><th>Apps</th><th>Posted</th><th>Status</th><th></th></tr></thead><tbody>${rows.map(j=>`<tr>${isAdmin?`<td><input type="checkbox" class="jsel" value="${j.id}" ${selJobs.has(j.id)?'checked':''} aria-label="Select ${esc(j.title)}" onchange="selToggle(this)"></td>`:''}<td><a href="#/job/${j.id}">${esc(j.title)}</a> ${j.dummy?'<span class="chip warn">Dummy</span>':''}</td><td>${esc(j.company)}</td><td>${esc(getUser(j.employerId)?.company?.industry||'—')}</td><td>${esc(j.city)}</td><td>${rupee(j.salary)}</td><td>${appCount[j.id]||0}</td><td>${fmtDate(j.createdAt)}</td><td>${statusChip(j.status)}</td>
    <td><div class="acts"><button class="btn ghost sm" onclick="toggleJob('${j.id}')">${j.status==='stopped'?'Resume':'Stop'}</button>${isAdmin?`<button class="btn ghost sm" onclick="editJob('${j.id}')">Edit</button><button class="btn danger sm" onclick="delJob('${j.id}')">Delete</button>`:''}</div></td></tr>`).join('')||'<tr><td colspan="10">No jobs match.</td></tr>'}</tbody></table></div>${pager(list.length,pgN,50,href)}`;
  }else if(tab==='applications'){
-  body=`<div class="tbl"><table><thead><tr><th>Candidate</th><th>Job</th><th>Company</th><th>Match</th><th>Applied</th><th>Status</th>${isAdmin?'<th></th>':''}</tr></thead><tbody>${[...db.apps].sort((a,b)=>b.at-a.at).map(a=>{const c=getUser(a.candId),j=db.jobs.find(x=>x.id===a.jobId);return `<tr><td>${c?`<a href="#/candidate/${c.id}?job=${a.jobId}">${esc(c.name)}</a>`:'Deleted'}</td><td>${esc(j?.title||'Removed')}</td><td>${esc(j?.company||'—')}</td><td>${a.score}%</td><td>${fmtDate(a.at)}</td><td>${statusChip(a.status)}</td>${isAdmin?`<td><button class="btn danger sm" onclick="delApp('${a.id}')">Delete</button></td>`:''}</tr>`}).join('')||'<tr><td colspan="7">No applications yet.</td></tr>'}</tbody></table></div>`;
+  body=`<div class="tbl"><table><thead><tr><th>Candidate</th><th>Job</th><th>Company</th><th>Match</th><th>Applied</th><th>Status</th><th>Employer sees</th>${isAdmin?'<th></th>':''}</tr></thead><tbody>${[...db.apps].sort((a,b)=>b.at-a.at).map(a=>{const c=getUser(a.candId),j=db.jobs.find(x=>x.id===a.jobId);return `<tr><td>${c?`<a href="#/candidate/${c.id}?job=${a.jobId}">${esc(c.name)}</a>`:'Deleted'}</td><td>${esc(j?.title||'Removed')}</td><td>${esc(j?.company||'—')}</td><td>${a.score}%</td><td>${fmtDate(a.at)}</td><td>${statusChip(a.status)}</td><td>${appVisible(a)?'<span class="chip good">Yes</span>':'<span class="chip warn">Hidden (free limit)</span>'}</td>${isAdmin?`<td><button class="btn danger sm" onclick="delApp('${a.id}')">Delete</button></td>`:''}</tr>`}).join('')||'<tr><td colspan="8">No applications yet.</td></tr>'}</tbody></table></div>`;
  }else if(tab==='payments'){
   body=pgRevenue(q,isAdmin);
  }else if(tab==='services'){
@@ -2915,6 +2959,7 @@ function pgTerms(){
 <h2>Indemnity</h2><p>You agree to compensate JobSetu1 for any loss or claim that results from your breach of these terms or your misuse of the platform.</p>
 <h2>Changes to these terms</h2><p>We may revise these terms. We'll post the updated version on this page and, for important changes, notify registered users. Continuing to use JobSetu1 after the change means you accept the revised terms.</p>
 <h2>Governing law</h2><p>These terms are governed by the laws of India. Disputes are subject to the exclusive jurisdiction of the courts at ${esc(co().city||'Gurugram')}, India.</p>
+${(()=>{const v=visCfg();return v.cand.on||v.emp.on?`<h2>Free accounts and application visibility</h2><p>Free accounts have limited visibility. ${v.cand.on?`For free job seekers, about ${v.cand.pct}% of job applications (the earliest ones) are shared with employers. `:''}${v.emp.on?`Free employers can see the details of about ${v.emp.pct}% of the applicants on each job (the earliest ones). `:''}Premium Service accounts get 100% visibility.</p>`:''})()}
 <h2>Refunds</h2><p>Plan payments are non-refundable, except when the same plan was paid for twice by mistake. See our <a href="#/refund">Refund policy</a>.</p>
 <h2>Contact</h2><p>Questions about these terms: ${supportInfo().email?`<a href="mailto:${esc(supportInfo().email)}">${esc(supportInfo().email)}</a>`:'<a href="#/contact">Contact us</a>'}</p></section>`}
 
@@ -3052,7 +3097,7 @@ function setAuto(k,v){const u=me();if(!hasPremium(u))return;u.autoApply=Object.a
 function doAutoApply(u,job,score){if(db.apps.some(a=>a.jobId===job.id&&a.candId===u.id))return false;
  db.apps.push({id:uid('a'),jobId:job.id,candId:u.id,employerId:job.employerId,score,status:'Applied',at:now(),auto:true});
  notify(u.id,'Auto-applied: '+job.title,`We applied to ${job.title} at ${job.company}, ${job.city} for you (${score}% match).`,'#/job/'+job.id);
- if(svcOn('matchAlerts'))notify(job.employerId,'New application: '+job.title,`${u.name} applied with a ${score}% profile match.`,'#/candidate/'+u.id+'?job='+job.id);return true}
+ _cache={};if(svcOn('matchAlerts')&&appVisible(db.apps[db.apps.length-1]))notify(job.employerId,'New application: '+job.title,`${u.name} applied with a ${score}% profile match.`,'#/candidate/'+u.id+'?job='+job.id);return true}
 function autoApplyNow(){const u=me();if(!hasPremium(u))return;if(!svcOn('applications'))return toast('Applications are paused right now.');if(!profileReady(u)){toast('Add your skills, work status and preferred location first.');return go('#/profile')}
  const min=(u.autoApply||{}).min||60;let n=0;
  openJobs().map(j=>({j,s:matchScore(j,u)})).filter(x=>x.s>=min&&!db.apps.some(a=>a.jobId===x.j.id&&a.candId===u.id)).sort((a,b)=>b.s-a.s).slice(0,10).forEach(x=>{if(doAutoApply(u,x.j,x.s))n++});
@@ -3120,7 +3165,7 @@ function empPremiumPage(u,q){
  const myJobs=db.jobs.filter(j=>j.employerId===u.id),myOpen=myJobs.filter(j=>j.status==='open'),A=db.activity||[],since=now()-30*DAY;
  const cands=()=>db.users.filter(c=>c.role==='candidate'&&c.status==='active'&&profileReady(c));
  if(t==='overview'){
-  const apps30=db.apps.filter(a=>a.employerId===u.id&&a.at>since).length,jv30=A.filter(a=>a.type==='jobview'&&a.empId===u.id&&a.at>since).length,mine=k=>A.filter(a=>a.type===k&&a.empId===u.id).length;
+  const apps30=empApps(u.id).filter(a=>a.at>since).length,jv30=A.filter(a=>a.type==='jobview'&&a.empId===u.id&&a.at>since).length,mine=k=>A.filter(a=>a.type===k&&a.empId===u.id).length;
   body=`<div class="stats">${statBox(myOpen.length,'Open jobs')}${statBox(jv30,'Job views in 30 days')}${statBox(apps30,'Applications in 30 days')}${statBox(mine('view'),'Profiles you viewed')}${statBox(mine('download'),'Resumes you downloaded')}${statBox(mine('contact'),'Candidates you contacted')}</div>
   <div class="banner good"><p><strong>★ Job visibility is on.</strong> Your jobs carry a Featured badge and appear at the top of Recommended results and on the home page.</p></div>
   <div class="pgrid">${EMP_PREMIUM.map(tile).join('')}</div>`;
@@ -3138,14 +3183,14 @@ function empPremiumPage(u,q){
   ${need.length?`<h3 style="margin-top:20px">${res.length} matching candidate${res.length===1?'':'s'}</h3>${res.length?`<div class="clist">${res.map(({c,k})=>candRow(c,k,'')).join('')}</div>`:'<div class="empty">No resumes match yet. Try fewer skills, or ask our team to find candidates for you.</div>'}`:''}
   <div class="panel goldpanel" style="margin-top:18px"><h3>${CROWN} Want us to do it for you?</h3><p class="lead">Our team will refine resumes for these skills and share a shortlist with you.</p><button class="btn gold" onclick="requestShortlist()">Request a resume shortlist</button></div>`;
  }else if(t==='applicants'){
-  const jf=q.get('job')||'',apps=db.apps.filter(a=>a.employerId===u.id&&(!jf||a.jobId===jf));
-  body=`<div class="toolbar"><select aria-label="Filter by job" onchange="go('#/premium?t=applicants'+(this.value?'&job='+this.value:''))" style="width:auto;min-width:220px"><option value="">All jobs (${(n=>n+" applicant"+(n===1?"":"s"))(db.apps.filter(a=>a.employerId===u.id).length)})</option>${myJobs.map(j=>`<option value="${j.id}"${j.id===jf?' selected':''}>${esc(j.title)} · ${esc(j.city)}</option>`).join('')}</select><span class="spacer"></span><label class="sortby">Move selected to <select id="bulk-st">${sel(STAGES,'Shortlisted')}</select></label><button class="btn sm" onclick="moveApps()">Move</button></div>
+  const jf=q.get('job')||'',apps=empApps(u.id).filter(a=>!jf||a.jobId===jf);
+  body=`<div class="toolbar"><select aria-label="Filter by job" onchange="go('#/premium?t=applicants'+(this.value?'&job='+this.value:''))" style="width:auto;min-width:220px"><option value="">All jobs (${(n=>n+" applicant"+(n===1?"":"s"))(empApps(u.id).length)})</option>${myJobs.map(j=>`<option value="${j.id}"${j.id===jf?' selected':''}>${esc(j.title)} · ${esc(j.city)}</option>`).join('')}</select><span class="spacer"></span><label class="sortby">Move selected to <select id="bulk-st">${sel(STAGES,'Shortlisted')}</select></label><button class="btn sm" onclick="moveApps()">Move</button></div>
   ${apps.length?`<div class="board">${STAGES.map(st=>{const L=apps.filter(a=>a.status===st).sort((a,b)=>premSort(getUser(a.candId),getUser(b.candId))||b.score-a.score);return `<div class="bcol"><h3>${st} <span class="chip">${L.length}</span></h3>${L.map(a=>{const c=getUser(a.candId),j=db.jobs.find(x=>x.id===a.jobId);return `<div class="bcard"><label class="check" style="font-weight:700"><input type="checkbox" class="asel" value="${a.id}"> ${esc(c?.name||'Deleted user')}</label> ${premBadge(c)}<p class="hint">${esc(j?.title||'Removed job')} · ${a.score}% match${a.auto?' · auto-applied':''}</p>${a.note?`<p class="hint">📝 ${esc(a.note)}</p>`:''}<select aria-label="Stage for ${esc(c?.name||'applicant')}" onchange="moveApps(['${a.id}'],this.value)">${sel(STAGES,st)}</select><div class="acts">${c?`<a class="btn ghost sm" href="#/candidate/${c.id}?job=${a.jobId}">View</a>`:''}<button class="btn ghost sm" onclick="appNote('${a.id}')">Note</button>${c?contactBtn(c.id):''}</div></div>`}).join('')||'<p class="hint" style="margin:4px">No one here.</p>'}</div>`}).join('')}</div>`:'<div class="empty">No applicants yet.</div>'}`;
  }else if(t==='analytics'){
   const jv={};A.forEach(a=>{if(a.type==='jobview'&&a.empId===u.id)jv[a.jobId]=(jv[a.jobId]||0)+1});
-  const rows=myJobs.map(j=>{const ap=db.apps.filter(a=>a.jobId===j.id);return {j,views:jv[j.id]||0,apps:ap.length,short:ap.filter(a=>['Shortlisted','Interview','Hired'].includes(a.status)).length,hired:ap.filter(a=>a.status==='Hired').length}}).sort((a,b)=>b.views-a.views||b.apps-a.apps);
+  const rows=myJobs.map(j=>{const ap=empApps(u.id).filter(a=>a.jobId===j.id);return {j,views:jv[j.id]||0,apps:ap.length,short:ap.filter(a=>['Shortlisted','Interview','Hired'].includes(a.status)).length,hired:ap.filter(a=>a.status==='Hired').length}}).sort((a,b)=>b.views-a.views||b.apps-a.apps);
   const mine=k=>A.filter(a=>a.type===k&&a.empId===u.id).length,maxV=Math.max(1,...rows.map(r=>r.views)),maxA=Math.max(1,...rows.map(r=>r.apps));
-  body=`<div class="stats">${statBox(A.filter(a=>a.type==='jobview'&&a.empId===u.id&&a.at>since).length,'Job views in 30 days')}${statBox(db.apps.filter(a=>a.employerId===u.id&&a.at>since).length,'Applications in 30 days')}${statBox(mine('view'),'Profiles you viewed')}${statBox(mine('download'),'Resumes you downloaded')}${statBox(mine('contact'),'Candidates you contacted')}${statBox(db.apps.filter(a=>a.employerId===u.id&&a.status==='Hired').length,'Hired')}</div>
+  body=`<div class="stats">${statBox(A.filter(a=>a.type==='jobview'&&a.empId===u.id&&a.at>since).length,'Job views in 30 days')}${statBox(empApps(u.id).filter(a=>a.at>since).length,'Applications in 30 days')}${statBox(mine('view'),'Profiles you viewed')}${statBox(mine('download'),'Resumes you downloaded')}${statBox(mine('contact'),'Candidates you contacted')}${statBox(empApps(u.id).filter(a=>a.status==='Hired').length,'Hired')}</div>
   <div class="two"><div class="panel" style="margin:0"><h3 style="margin:0">Views by job</h3><p class="hint">Counted when a logged-in job seeker opens the job, once a day.</p><div class="hbars">${rows.slice(0,8).map(r=>hbar(r.j.title,r.views,maxV,'')).join('')||'<p class="hint">No views yet.</p>'}</div></div>
   <div class="panel" style="margin:0"><h3 style="margin:0">Applications by job</h3><p class="hint">All applications, including automatic ones.</p><div class="hbars">${rows.slice().sort((a,b)=>b.apps-a.apps).slice(0,8).map(r=>hbar(r.j.title,r.apps,maxA,'')).join('')||'<p class="hint">No applications yet.</p>'}</div></div></div>
   <div class="tbl" style="margin-top:16px"><table><thead><tr><th>Job</th><th>Status</th><th>Views</th><th>Applications</th><th>Shortlisted or later</th><th>Hired</th><th>Views to applications</th></tr></thead><tbody>${rows.map(r=>`<tr><td><a href="#/job/${r.j.id}">${esc(r.j.title)}</a></td><td>${statusChip(r.j.status)}</td><td>${r.views}</td><td>${r.apps}</td><td>${r.short}</td><td>${r.hired}</td><td>${r.views?Math.round(100*r.apps/r.views)+'%':'—'}</td></tr>`).join('')||'<tr><td colspan="7">No jobs yet.</td></tr>'}</tbody></table></div>`;
@@ -3156,7 +3201,7 @@ function empPremiumPage(u,q){
   const active=myOpen.filter(isBoosted).length,jv={};A.forEach(a=>{if(a.type==='jobview'&&a.empId===u.id)jv[a.jobId]=(jv[a.jobId]||0)+1});
   body=`<div class="banner good"><p><strong>Job visibility is on.</strong> While Premium is active, all your jobs show a ★ Featured badge, appear at the top of Recommended results and on the home page, and new jobs alert more job seekers (30% match or more instead of 40%).</p></div>
   <div class="panel"><h3 style="margin:0">Job boost</h3><p class="hint">A boost puts a job above every other job, including Featured ones, for 7 days. You can boost up to 5 jobs at a time (${active} in use).</p>
-  <div class="tbl" style="margin-top:12px"><table><thead><tr><th>Job</th><th>City</th><th>Views</th><th>Applications</th><th>Boost</th><th></th></tr></thead><tbody>${myOpen.map(j=>`<tr><td><a href="#/job/${j.id}">${esc(j.title)}</a></td><td>${esc(j.city)}</td><td>${jv[j.id]||0}</td><td>${db.apps.filter(a=>a.jobId===j.id).length}</td><td>${isBoosted(j)?`<span class="chip feat">🚀 Until ${fmtDate(j.boostUntil)}</span>`:'<span class="hint">Not boosted</span>'}</td><td><button class="btn ${isBoosted(j)?'ghost':'gold'} sm" onclick="boostJob('${j.id}')">${isBoosted(j)?'Add 7 days':'Boost for 7 days'}</button></td></tr>`).join('')||'<tr><td colspan="6">No open jobs to boost.</td></tr>'}</tbody></table></div></div>`;
+  <div class="tbl" style="margin-top:12px"><table><thead><tr><th>Job</th><th>City</th><th>Views</th><th>Applications</th><th>Boost</th><th></th></tr></thead><tbody>${myOpen.map(j=>`<tr><td><a href="#/job/${j.id}">${esc(j.title)}</a></td><td>${esc(j.city)}</td><td>${jv[j.id]||0}</td><td>${empApps(u.id).filter(a=>a.jobId===j.id).length}</td><td>${isBoosted(j)?`<span class="chip feat">🚀 Until ${fmtDate(j.boostUntil)}</span>`:'<span class="hint">Not boosted</span>'}</td><td><button class="btn ${isBoosted(j)?'ghost':'gold'} sm" onclick="boostJob('${j.id}')">${isBoosted(j)?'Add 7 days':'Boost for 7 days'}</button></td></tr>`).join('')||'<tr><td colspan="6">No open jobs to boost.</td></tr>'}</tbody></table></div></div>`;
  }else if(t==='support'){
   const mine=(db.support||[]).filter(x=>x.empId===u.id).sort((a,b)=>b.at-a.at);
   body=`<div class="panel"><h3 style="margin:0">Ask the JobSetu1 hiring team</h3><p class="hint">We usually reply within one working day. Replies arrive in your notifications.</p>
@@ -3168,7 +3213,7 @@ function empPremiumPage(u,q){
  }
  return premHead(u,EP_TABS,t)+body+'</section>'}
 function moveApps(ids,stage){const u=me();if(!hasPremium(u))return;ids=ids||[...document.querySelectorAll('.asel:checked')].map(x=>x.value);stage=stage||val('bulk-st');if(!ids.length)return toast('Select at least one applicant.');let n=0;
- ids.forEach(id=>{const a=db.apps.find(x=>x.id===id&&x.employerId===u.id);if(!a||a.status===stage)return;a.status=stage;n++;const j=db.jobs.find(x=>x.id===a.jobId);notify(a.candId,'Application update: '+(j?.title||'job'),`${j?.company||'The employer'} moved your application to ${stage}.`,'#/dashboard?tab=applied')});
+ ids.forEach(id=>{const a=empApps(u.id).find(x=>x.id===id);if(!a||a.status===stage)return;a.status=stage;n++;const j=db.jobs.find(x=>x.id===a.jobId);notify(a.candId,'Application update: '+(j?.title||'job'),`${j?.company||'The employer'} moved your application to ${stage}.`,'#/dashboard?tab=applied')});
  save();toast(n?`Moved ${n} applicant${n===1?'':'s'} to ${stage}.`:'Nothing to move.');route()}
 function appNote(id){const a=db.apps.find(x=>x.id===id);if(!a)return;openModal(`<h2>Note about ${esc(getUser(a.candId)?.name||'this applicant')}</h2><p class="hint">Only your team can see notes.</p><div class="fld" style="margin-top:12px"><label for="an-txt">Note</label><textarea id="an-txt">${esc(a.note||'')}</textarea></div><div class="row-btns"><button class="btn" onclick="saveAppNote('${id}')">Save note</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}
 function saveAppNote(id){const u=me(),a=db.apps.find(x=>x.id===id&&x.employerId===u?.id);if(!a)return;a.note=val('an-txt');save();closeModal();toast('Note saved.');route()}
@@ -3211,7 +3256,7 @@ const empRow=e=>({'Company':e.company?.name||e.name,'Type':e.company?.type||'—
 const candRowS=c=>({'Name':c.name,'Email':c.email,'Mobile':c.mobile||'—','City':c.profile?.city||'—','Skills':c.profile?.skills||'—','Plan':planActive(c)?c.plan.name+' until '+fmtDate(c.plan.expires):'—',_link:'#/candidate/'+c.id});
 function statData(k){
  const u=me(),A=db.activity||[],d30=now()-30*DAY,byDate=(a,b)=>(b.at||b.createdAt)-(a.at||a.createdAt);
- const myApps=()=>db.apps.filter(a=>a.employerId===u.id).sort(byDate);
+ const myApps=()=>empApps(u.id).sort(byDate);
  const mine=t=>A.filter(a=>a.type===t&&a.empId===u.id).sort(byDate).map(actRow).map(r=>{delete r['Company'];return r});
  switch(k){
   case 'c_applied':return ['Your applications',db.apps.filter(a=>a.candId===u.id).sort(byDate).map(appRow).map(r=>{delete r['Job seeker'];return r})];
@@ -3221,7 +3266,7 @@ function statData(k){
   case 'c_downloads':return ['Companies that downloaded your resume',A.filter(a=>a.type==='download'&&a.candId===u.id).sort(byDate).map(actRow).map(r=>{delete r['Job seeker'];return r})];
   case 'c_auto':return ['Jobs we applied to for you',db.apps.filter(a=>a.candId===u.id&&a.auto).sort(byDate).map(appRow).map(r=>{delete r['Job seeker'];return r})];
   case 'c_shared':return ['Employers your resume is shared with',resumeShares(u).map(r=>({'Company':cname(r.empId),'Industry':getUser(r.empId)?.company?.industry||'—','Matching jobs':r.jobs,'Best match':r.best+'%',_link:'#/company/'+r.empId}))];
-  case 'e_open':return ['Your open jobs',db.jobs.filter(j=>j.employerId===u.id&&j.status==='open').sort(byDate).map(j=>Object.assign(jobRow(j),{'Applications':db.apps.filter(a=>a.jobId===j.id).length}))];
+  case 'e_open':return ['Your open jobs',db.jobs.filter(j=>j.employerId===u.id&&j.status==='open').sort(byDate).map(j=>Object.assign(jobRow(j),{'Applications':(u.role==='employer'?empApps(u.id):db.apps).filter(a=>a.jobId===j.id).length}))];
   case 'e_apps':return ['All applications',myApps().map(appRow)];
   case 'e_week':return ['Applications in the last 7 days',myApps().filter(a=>a.at>now()-7*DAY).map(appRow)];
   case 'e_apps30':return ['Applications in the last 30 days',myApps().filter(a=>a.at>d30).map(appRow)];
@@ -3323,7 +3368,7 @@ function cbCompany(q){const ql=q.toLowerCase();if(ql.length<5)return null;const 
  if(!e)return null;const c=e.company||{};return `<strong>${esc(c.name)}</strong> is a ${esc((c.type||'company').toLowerCase())} in ${esc(c.industry||'—')} with ${jobCount(e.id)} open job${jobCount(e.id)===1?'':'s'}${c.verified?' (verified)':''}. ${cbLink('#/company/'+e.id,'View company page')}.`}
 function cbMyAccount(q){const u=me();if(!u||!/\b(my|mera|meri|mere)\b/i.test(q))return null;const ql=q.toLowerCase();
  if(u.role==='candidate'&&/(plan|premium|subscription|application|applied|status)/.test(ql)){const n=db.apps.filter(a=>a.candId===u.id).length;return `You have applied to <strong>${n}</strong> job${n===1?'':'s'}. ${hasPremium(u)?`Your Premium ${esc(u.plan.name)} plan is active until ${fmtDate(u.plan.expires)}.`:'You don\'t have Premium Service yet.'} ${cbLink('#/dashboard','Open my dashboard')}.`}
- if(u.role==='employer'&&/(plan|premium|subscription|job|application|free)/.test(ql)){const a=employerAccess(u);return `You have <strong>${db.jobs.filter(j=>j.employerId===u.id&&j.status==='open').length}</strong> open jobs and <strong>${db.apps.filter(x=>x.employerId===u.id).length}</strong> applications. ${a.plan?`Premium ${esc(u.plan.name)} is active until ${fmtDate(u.plan.expires)}.`:a.trial?'Job posting is free for you right now.':'Job posting needs a plan right now.'} ${cbLink('#/employer','Open dashboard')}.`}
+ if(u.role==='employer'&&/(plan|premium|subscription|job|application|free)/.test(ql)){const a=employerAccess(u);return `You have <strong>${db.jobs.filter(j=>j.employerId===u.id&&j.status==='open').length}</strong> open jobs and <strong>${empApps(u.id).length}</strong> applications. ${a.plan?`Premium ${esc(u.plan.name)} is active until ${fmtDate(u.plan.expires)}.`:a.trial?'Job posting is free for you right now.':'Job posting needs a plan right now.'} ${cbLink('#/employer','Open dashboard')}.`}
  return null}
 function cbScore(q){const ql=' '+q.toLowerCase().replace(/[?!.,]/g,' ').replace(/\s+/g,' ')+' ';let best=null,bs=0;
  CB_INTENTS.forEach(it=>{let s=0;it.k.forEach(k=>{if(ql.includes(' '+k+' ')||(k.length>5&&ql.includes(k)))s+=k.length>4?2+k.split(' ').length:1.5});if(it.short&&q.trim().split(/\s+/).length>4)s*=.3;if(s>bs){bs=s;best=it}});
