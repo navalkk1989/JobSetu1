@@ -1199,7 +1199,7 @@ let db=loadDb();
 function save(){_cache={};try{if(typeof savedOk==='function')setTimeout(savedOk,0)}catch(e){}try{const h=cfgHash();if(db.cfgHash===undefined)db.cfgHash=h;else if(h!==db.cfgHash){db.cfgHash=h;if(session&&session.kind==='staff'){db.cfgAt=Date.now();db.cfgMine=true}}}catch(e){}try{const out=Object.assign({},db,{jobs:db.jobs.filter(j=>!j.dummy||j.edited),users:db.users.filter(u=>!u.dummy||u.edited)});localStorage.setItem(DB_KEY,JSON.stringify(out))}catch(e){toast('Could not save: browser storage is full. Remove large uploads and try again.')}try{if(typeof gsQueue==='function')gsQueue()}catch(e){}}
 save();
 let session=null;try{session=JSON.parse(localStorage.getItem(SES_KEY))||JSON.parse(sessionStorage.getItem(SES_KEY))}catch(e){}
-function setSession(s,persist){session=s;try{localStorage.removeItem(SES_KEY);sessionStorage.removeItem(SES_KEY);if(s)(persist===false?sessionStorage:localStorage).setItem(SES_KEY,JSON.stringify(s))}catch(e){}}
+function setSession(s,persist){if(APP&&s)persist=true;session=s;try{localStorage.removeItem(SES_KEY);sessionStorage.removeItem(SES_KEY);if(s)(persist===false?sessionStorage:localStorage).setItem(SES_KEY,JSON.stringify(s))}catch(e){}}
 const REM_KEY='jobsetu_remember_v1';
 function remList(){try{const l=JSON.parse(localStorage.getItem(REM_KEY))||[];return l.filter(r=>r.until>now())}catch(e){return []}}
 function remSave(l){try{localStorage.setItem(REM_KEY,JSON.stringify(l))}catch(e){}}
@@ -2065,7 +2065,7 @@ function loginInner(as,next){
  <form class="form" style="grid-template-columns:1fr" onsubmit="doLogin(event,'${as}','${esc(next)}')">
   <div class="fld"><label for="l-id">${as==='staff'?'Login ID or email':'Email or mobile number'}</label><input id="l-id" name="username" autocomplete="username" value="${esc((()=>{try{return localStorage.getItem('jobsetu_lastid_'+as)||''}catch(e){return ''}})())}"></div>
   <div class="fld"><label for="l-pass">Password</label><input id="l-pass" name="password" type="password" autocomplete="current-password" oninput="this.classList.remove('shake')"><div id="pw-err" class="pwerr" hidden role="alert"></div></div>
-  <label class="check"><input type="checkbox" id="l-rem"> Remember me on this device for 30 days <span class="hint">(don't tick on a shared computer)</span></label>
+  ${APP?`<input type="checkbox" id="l-rem" checked hidden>`:`<label class="check"><input type="checkbox" id="l-rem"> Remember me on this device for 30 days <span class="hint">(don't tick on a shared computer)</span></label>`}
   <button class="btn">Log in</button>
   ${as==='staff'?`<p class="hint"><a href="javascript:void 0" onclick="staffForgot()">Forgot login ID or password?</a></p>`:''}
   ${as!=='staff'?`<p class="hint"><a href="javascript:void 0" onclick="forgotPw()">Forgot password?</a> · New here? <a href="#/register${as==='employer'?'/employer':'/candidate'}">Register free</a></p>`:''}
@@ -2419,7 +2419,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2494,7 +2494,7 @@ async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:
  html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
 
 /* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
-const SITECFG=/*SITECFG*/{"cfgAt":1792083376934,"visibility":{"cand":{"on":false,"pct":96},"emp":{"on":false,"pct":100}},"support":{"phone":"+91 8448103956","whatsapp":"+91 8448103956","email":"navalkk1989@gmail.com","hours":"Mon - Sat, 10 Am To 6 Pm"},"grievance":{"name":"Naval Kishor","email":"navalkk1989@gmail.com","address":"Gurgaon Sec 14, 122001"},"googleClientId":"977440539267-v44gjhgsbq5pr8hfvr3icn5ou29tf0bc.apps.googleusercontent.com","company":{"gstOn":false,"rzpKey":"","city":"Gurugram","legal":"JobSetu1","gstin":"","pan":"","state":"Haryana","sac":"","gstRate":18,"prefix":"JS1","address":"Gurgaon Sec 14, 122001","accName":"Naval Kishor","bank":"AU Bank","accNo":"2601255912120815","ifsc":"AUBL0002559","branch":"Green Park Delhi","upi":"","qr":""},"services":{"candidateReg":true,"employerReg":true,"jobPosting":true,"applications":true,"payments":true,"googleLogin":true,"matchAlerts":true,"freeEmployer":true,"freeCandidate":true},"plans":{"employer":[{"id":"e3","name":"Quarterly","price":0,"months":3},{"id":"e6","name":"Half-yearly","price":0,"months":6},{"id":"e12","name":"Yearly","price":0,"months":12}],"candidate":[{"id":"c3","name":"Quarterly","price":0,"months":3},{"id":"c6","name":"Half-yearly","price":0,"months":6},{"id":"c12","name":"Yearly","price":0,"months":12}]},"freeRights":{"employer":{"post":true,"find":true,"details":true,"download":true},"candidate":{"search":true,"apply":true,"contacts":true,"location":true}},"trialDays":180}/*END2*/;
+const SITECFG=/*SITECFG*/null/*END2*/;
 function cfgPick(){return {visibility:(db.settings||{}).visibility||null,support:(db.settings||{}).support||null,grievance:(db.settings||{}).grievance||null,googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
 function cfgHash(){return gsHash(cfgPick())}
 function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
@@ -3665,6 +3665,21 @@ async function appSaveUrl(url,name){try{const b=await (await fetch(url)).blob();
 if(APP&&window.AndroidApp&&AndroidApp.saveFile){const oc=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){if(this.hasAttribute('download')&&/^(blob:|data:)/.test(this.href)){appSaveUrl(this.href,this.getAttribute('download'));return}return oc.call(this)};
  document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[download]');if(a&&/^(blob:|data:)/.test(a.href)){e.preventDefault();appSaveUrl(a.href,a.getAttribute('download'))}},true)}
 if(APP){const _rA=route;route=function(){_rA.apply(this,arguments);appAfterRoute()}}
+
+/* ============ staff auto-logout after 10 minutes without activity ============ */
+const STAFF_IDLE_MS=10*60*1000,IDLE_KEY='jobsetu_staff_last_act';
+let _idleWarned=false;
+function idleGet(){try{return +localStorage.getItem(IDLE_KEY)||0}catch(e){return 0}}
+function idleMark(){if(!session||session.kind!=='staff')return;const t=Date.now();if(t-idleGet()<5000)return;try{localStorage.setItem(IDLE_KEY,String(t))}catch(e){}_idleWarned=false}
+function idleLogout(){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);closeModal&&closeModal();toast('You were logged out after 10 minutes without activity. Please log in again.',8000);go('#/office')}
+function idleCheck(){if(!session||session.kind!=='staff')return;const last=idleGet();if(!last){try{localStorage.setItem(IDLE_KEY,String(Date.now()))}catch(e){}return}
+ const idle=Date.now()-last;if(idle>=STAFF_IDLE_MS)return idleLogout();if(idle>=STAFF_IDLE_MS-60000&&!_idleWarned){_idleWarned=true;toast('No activity for 9 minutes. You will be logged out in 1 minute. Tap anywhere to stay logged in.',9000)}}
+['pointerdown','keydown','scroll','touchstart','mousemove','wheel'].forEach(ev=>document.addEventListener(ev,idleMark,{passive:true,capture:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)idleCheck()});
+setInterval(idleCheck,15000);
+{const _ss=setSession;setSession=function(s,p){_ss(s,p);if(s&&s.kind==='staff'){try{localStorage.setItem(IDLE_KEY,String(Date.now()))}catch(e){}_idleWarned=false}}}
+// on opening the site/app: an old staff login that has been idle too long is closed before anything shows
+if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
 cbInit();
