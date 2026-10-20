@@ -1224,6 +1224,13 @@ html.bgv footer.foot{margin-top:24px}
 .st-dots button{transition:width .35s ease,background .35s ease}
 @media (prefers-reduced-motion:reduce){.st-track.sm,.st-track.sm .st-slide{transition:none!important}}
 .stories .st-slide .st-in h3{font-size:30px!important;line-height:1.1!important;font-weight:800}.stories .st-btn{opacity:1!important;animation:none!important;background:#fff!important;color:#0A1A44!important;box-shadow:0 10px 20px -10px rgba(0,0,0,.5)}
+/* V64: employer Google sign-in */
+.panel.gemp{margin-bottom:14px}
+.gemp-ok{display:flex;align-items:center;gap:12px}
+.gemp-ok>div{flex:1;display:flex;flex-direction:column}.gemp-ok>div span{color:var(--muted);font-size:13.5px}
+.gemp-ic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#EEF3FF}
+.gemp-ic svg{width:22px;height:22px}
+input.g-locked{background:#F2F6EF!important;color:#245B2A}
 </style>
 </head>
 <body>
@@ -2329,7 +2336,7 @@ function loginInner(as,next){
  const want=as==='staff'?['admin','manager']:[as==='employer'?'employer':'candidate'],saved=remList().filter(r=>want.includes(r.role));
  return `<h2>${as==='staff'?'Office staff login':'Log in'}</h2>${as==='staff'?'':`<div class="row-btns" style="margin:0 0 16px">${tab('seeker','Job seeker')}${tab('employer','Employer')}</div>`}
  ${saved.length?`<div class="saved"><span class="hint">Remembered on this device. One tap to log in:</span>${saved.map(r=>`<div class="saved-row"><button type="button" class="btn ghost" onclick="quickLogin('${r.id}')">${avatar(getUser(r.id)||{name:r.name})}<span><strong>${esc(r.name)}</strong><br><span class="hint">${esc(r.email)}</span></span></button><button type="button" class="btn ghost sm" aria-label="Forget ${esc(r.name)}" title="Forget on this device" onclick="remForget('${r.id}')">✕</button></div>`).join('')}<div class="or">or log in with a different account</div></div>`:''}
- ${as==='seeker'&&gOn()?`<button class="btn ghost wide" type="button" onclick="googleLogin()">${G_ICON} Continue with Google</button><div class="or">or</div>`:''}
+ ${(as==='seeker'||as==='employer')&&gOn()?`<button class="btn ghost wide" type="button" onclick="googleLogin('${as}')">${G_ICON} Continue with Google</button><div class="or">or</div>`:''}
  <form class="form" style="grid-template-columns:1fr" onsubmit="doLogin(event,'${as}','${esc(next)}')">
   <div class="fld"><label for="l-id">${as==='staff'?'Login ID or email':'Email or mobile number'}</label><input id="l-id" name="js1-login-id" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc((()=>{try{return APP?'':localStorage.getItem('jobsetu_lastid_'+as)||''}catch(e){return ''}})())}"></div>
   <div class="fld"><label for="l-pass">Password</label> <input id="l-pass" name="js1-login-pw" type="password" autocomplete="off" oninput="this.classList.remove('shake')"><div id="pw-err" class="pwerr" hidden role="alert"></div></div>
@@ -3989,7 +3996,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='63';
+const WEB_BUILD='64';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -4848,6 +4855,50 @@ function stInit(){const t=$('#st-track');if(!t||!t.classList.contains('sm'))retu
  return true}
 function stAuto(){clearTimeout(ST.t);if(!$('#st-track'))return;if(!stInit())return;ST.t=setTimeout(()=>{if(!$('#st-track'))return;if(document.hidden||ST.drag)return stAuto();stStep(1)},4000)}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&$('#st-track'))stAuto()});
+
+/* ==================================================================
+   V64: employers can log in and register with "Continue with Google"
+   ================================================================== */
+let _gAs='seeker';
+function gAsSet(a){_gAs=a==='employer'?'employer':'seeker'}
+function gAsGet(){return _gAs}
+{const _gl64=googleLogin;googleLogin=function(as){gAsSet(as);return _gl64.apply(this,[])}}
+{const _gs64=googleSignIn;googleSignIn=function(name,email){if(gAsGet()==='employer')return empGoogle(name,email);return _gs64.apply(this,arguments)}}
+const GEMP_ERR={candidate_email:'This Gmail is registered as a job seeker. Use the Job seeker tab, or register your company with a different email.',suspended:'This account is suspended. Contact support.'};
+function empGoogle(name,email,skipCloud){
+ email=String(email||'').toLowerCase();gAsSet('seeker');
+ const u=db.users.find(x=>!isDemoUser(x)&&x.email===email);
+ if(!u&&!skipCloud&&cloudOn()&&window._gCred){const cred=window._gCred;window._gCred=null;toast('Signing in…');
+  gsPost({action:'gLogin',credential:cred,clientId:gClientId(),as:'employer'}).then(r=>{tokSet(r.id,r.token);cloudMerge(r.data);save();empGoogle(name,email,true)})
+  .catch(er=>{const c=cloudErr(er);if(GEMP_ERR[c])return toast(GEMP_ERR[c],7000);
+   if(c==='employer_email')return toast('Employer Google login needs the new Google Sheet code (version 12). Please log in with your password for now.',8000);
+   empGoogle(name,email,true)});return}
+ window._gCred=null;
+ if(u&&u.role!=='employer')return toast(GEMP_ERR.candidate_email,7000);
+ if(u&&u.status!=='active')return toast(GEMP_ERR.suspended);
+ if(u){closeModal();setSession({kind:'user',id:u.id},true);toast('Signed in with Google as '+u.email+'.');const nx=loginNext;loginNext='';return go(nx&&!/^#\/(login|register)/.test(nx)?nx:'#/employer')}
+ if(!db.services.employerReg)return toast('Employer registration is paused right now. Please try again later.');
+ window._gEmp={name:name||email.split('@')[0],email};closeModal();
+ toast('Signed in with Google. Now add your company details to finish.',6000);
+ if(/^#\/register\/employer/.test(location.hash))route();else go('#/register/employer')}
+function gEmpBox(){const g=window._gEmp;
+ if(g)return `<div class="gemp-ok"><span class="gemp-ic">${G_ICON}</span><div><b>Signed in with Google</b><span>${esc(g.email)} · verified</span></div><button type="button" class="btn ghost sm" onclick="window._gEmp=null;route()">Change</button></div>`;
+ return `<button class="btn ghost wide" type="button" onclick="googleLogin('employer')">${G_ICON} Continue with Google</button><p class="hint" style="text-align:center;margin:8px 0 0">Fastest way: your name and email fill in automatically. No OTP and no password needed.</p>`}
+function gEmpFill(){const g=window._gEmp;if(!g)return;const n=$('#e-name'),e=$('#e-email');if(!n||!e)return;
+ if(!n.value)n.value=g.name;e.value=g.email;e.readOnly=true;e.classList.add('g-locked');otps['e-email']={value:g.email,verified:true,google:true};
+ const st=$('#e-email-st');if(st){st.className='hint ok-t';st.textContent='✓ Verified with Google'}
+ const ob=e.parentElement&&e.parentElement.querySelectorAll('button');if(ob)ob.forEach(b=>b.hidden=true);
+ const p=$('#e-pass');if(p){p.placeholder='Optional';const h=p.parentElement.querySelector('.hint');if(h)h.textContent='Optional. You can always log in with "Continue with Google". Set a password only if you also want to log in with email + password.'}
+ const l=document.querySelector('label[for="e-pass"]');if(l)l.textContent='Password (optional)';
+ const one=document.querySelector('.otp-one');if(one)one.textContent='✓ Email verified with Google. Just enter your mobile number.'}
+{const _se64=submitEmp;submitEmp=async function(e){const g=window._gEmp,p=$('#e-pass');let auto=false;
+ if(g&&val('e-email').toLowerCase()===g.email){otps['e-email']={value:val('e-email'),verified:true,google:true};if(p&&!p.value){p.value=uid('g')+'#'+Math.random().toString(36).slice(2,10);auto=true}}
+ const r=await _se64.call(this,e);
+ if(g){const u=db.users.find(x=>x.email===g.email&&x.role==='employer');if(u){u.google=true;window._gEmp=null;save()}else if(auto&&p)p.value=''}
+ return r}}
+{const _pre64=pgRegEmp;pgRegEmp=function(){const h=_pre64.apply(this,arguments);if(!gOn()||!db.services.employerReg||!db.services.googleLogin)return h;
+ setTimeout(gEmpFill,0);
+ return h.replace('<div class="panel"><form class="form" onsubmit="submitEmp',`<div class="panel gemp">${gEmpBox()}</div>${window._gEmp?'':'<div class="or" style="margin:4px 0 14px">or register with mobile and email</div>'}<div class="panel"><form class="form" onsubmit="submitEmp`)}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
