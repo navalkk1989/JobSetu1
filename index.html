@@ -1241,6 +1241,29 @@ html:not(.app) #netbar{bottom:16px;max-width:520px;margin:0 auto}
 #updbar{position:fixed;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:9999;border:0;background:linear-gradient(135deg,#1846A8,#2F6BFF);color:#fff;border-radius:14px;padding:12px 14px;font:inherit;font-size:14px;box-shadow:0 14px 30px -12px rgba(10,26,68,.7);animation:nbIn .3s ease both}
 #updbar b{text-decoration:underline}
 @keyframes nbIn{from{opacity:0;transform:translateY(10px)}}
+/* V67: payments */
+.pay-tog{display:flex;align-items:center;gap:10px;margin:6px 0 10px;padding:10px 12px;border-radius:12px;background:#FFF1F0;border:1px solid #F5C2BE;cursor:pointer;font-size:13.5px}
+.pay-tog.on{background:#ECFDF3;border-color:#A6E3C0}
+.pay-tog input{position:absolute;opacity:0;width:1px;height:1px}
+.pay-tog .sw{width:42px;height:24px;border-radius:999px;background:#C9CED8;position:relative;flex:0 0 auto;transition:background .2s}
+.pay-tog .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.pay-tog.on .sw{background:#16A34A}.pay-tog.on .sw::after{transform:translateX(18px)}
+.pay-tog input:focus-visible+.sw{outline:3px solid #93B4FF;outline-offset:2px}
+#rzp-panel>.pay-tog{margin-top:-4px}
+.proof{margin-top:14px;padding:14px;border-radius:16px;border:1px dashed #9DB4E8;background:#F6F9FF}
+.proof h4{margin:0 0 10px;font-size:15px}
+.proof .fld{margin-bottom:10px}
+.proof-note{margin-top:10px;padding:10px 12px;border-radius:12px;background:#FFF7E6;border:1px solid #F7D58A;color:#7A4A00;font-size:14px}
+.shot-prev{display:flex;align-items:center;gap:10px;margin-top:8px}.shot-prev img{width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}.shot-prev span{font-size:12.5px;color:var(--muted);word-break:break-all}
+.upiid-box{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:16px;background:#F4F7FF;border:1px solid #D6E0F5}
+.upiid{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.upiid b{font-size:19px;color:#0A1A44;word-break:break-all}
+.upiid-box .upi-open{align-self:flex-start}
+.ck-tick.wait{background:#FFF1D6;color:#B45309}
+.proof-adm{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:12px 0 0;padding:12px;border-radius:12px;background:#F6F9FF;border:1px solid #D6E0F5}
+.proof-adm>b{width:100%}
+.proof-img{max-height:70vh;overflow:auto;border-radius:12px;border:1px solid var(--line);background:#F4F6FA;text-align:center}.proof-img img{max-width:100%;display:block;margin:0 auto}
+#apkbar{position:fixed;left:10px;right:10px;top:calc(8px + env(safe-area-inset-top));z-index:9997;display:flex;align-items:center;gap:8px;padding:8px 8px 8px 14px;border-radius:14px;background:#0A1A44;color:#fff;font-size:13.5px;font-weight:600;box-shadow:0 14px 30px -12px rgba(10,26,68,.7);animation:nbIn .3s ease both}
+#apkbar span{flex:1}#apkbar .apkx{border:0;background:transparent;color:#fff;font-size:16px;padding:6px 8px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -4004,7 +4027,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='66';
+const WEB_BUILD='67';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -4942,6 +4965,124 @@ if(APP){const _sr65=serverRefresh;serverRefresh=async function(){if(!(window.And
  try{route()}catch(e){}}}
 /* remember the Sheet connection in the phone/browser, so slow internet never leaves the app unconnected */
 try{if(!GSHEET.url&&!GS_FILE){const j=JSON.parse(localStorage.getItem('js1_gsfile')||'null');if(j&&/^https:\/\/script\.google/.test(String(j.url||''))&&String(j.key||'').length>=12)GS_FILE={url:String(j.url),key:String(j.key)}}}catch(e){}
+
+/* ==================================================================
+   V67: payment options on/off, UPI ID, payment proof + admin approval
+   ================================================================== */
+const DEF_UPI='navalk1989-2@okaxis';
+{const _co67=co;co=function(){const c=_co67.apply(this,arguments);if(!c.upi&&!c.upiCleared)c.upi=DEF_UPI;c.payOn=Object.assign({rzp:true,qr:true,upiId:true,bank:true},c.payOn||{});return c}}
+const PAY_LBL={bank:'Bank transfer',qr:'UPI QR code (scanner)',upiId:'UPI ID',rzp:'Razorpay online payments'};
+function setPayOn(k,on){if(!isAdminNow())return;db.settings=db.settings||{};const c=co();c.payOn=Object.assign({},c.payOn,{[k]:!!on});db.settings.company=c;save();
+ toast(PAY_LBL[k]+(on?' is ON. Customers will see it at checkout.':' is OFF. It is hidden at checkout.'));route()}
+function payTog(k){const on=co().payOn[k]!==false;return `<label class="pay-tog ${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="setPayOn('${k}',this.checked)"><span class="sw" aria-hidden="true"></span><span><b>${on?'ON':'OFF'}</b> · ${on?'shown to customers at checkout':'hidden at checkout'}</span></label>`}
+{const _cp67=companyPanel;companyPanel=function(){let h=_cp67.apply(this,arguments);const c=co();
+ h=h.replace('<h4 class="form-sec" style="margin-top:14px">Bank account (payments are received here)</h4>','<h4 class="form-sec" style="margin-top:14px">Bank account (payments are received here)</h4>'+payTog('bank'));
+ h=h.replace('<h4 class="form-sec" style="margin-top:14px">UPI QR code (scanner)</h4>',`<h4 class="form-sec" style="margin-top:14px">UPI ID (customers pay to this ID)</h4>${payTog('upiId')}<p class="hint">Current UPI ID: <b class="mono">${esc(c.upi||'—')}</b>. Change it in the "UPI ID" box above and click Save.</p><h4 class="form-sec" style="margin-top:14px">UPI QR code (scanner)</h4>`+payTog('qr'));
+ return h}}
+{const _rp67=rzpPanel;rzpPanel=function(){return _rp67.apply(this,arguments).replace('<h3>Razorpay online payments</h3>','<h3>Razorpay online payments</h3>'+payTog('rzp'))}}
+{const _sc67=saveCompany;saveCompany=async function(){const v=val('co-upi');const r=await _sc67.apply(this,arguments);try{if(db.settings&&db.settings.company){const c=db.settings.company;c.upiCleared=!v;if(!c.payOn)c.payOn=co().payOn;save()}}catch(e){}return r}}
+
+const PM_IC={rzp:'<path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/>',qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7h-7"/>',upi:'<path d="M7 3h10v18H7z"/><path d="M11 18h2"/>',bank:'<path d="M3 9.5 12 4l9 5.5M4.5 20h15M6 10.5V17M10 10.5V17M14 10.5V17M18 10.5V17"/>'};
+function payMethods(){const c=co(),o=c.payOn,L=[];
+ if(o.rzp!==false&&rzpOn())L.push(['Razorpay','Pay online (Razorpay)','UPI · Cards · Net banking · Wallets',PM_IC.rzp]);
+ if(o.qr!==false&&(c.upi||c.qr))L.push(['UPI QR','Scan UPI QR code','GPay · PhonePe · Paytm · BHIM',PM_IC.qr]);
+ if(o.upiId!==false&&c.upi)L.push(['UPI ID','Pay to UPI ID',c.upi,PM_IC.upi]);
+ if(o.bank!==false&&c.accNo)L.push(['Bank transfer','Bank transfer','NEFT · RTGS · IMPS',PM_IC.bank]);
+ return L}
+{const _bp67=buyPlan;buyPlan=function(pid){
+ if(me()&&db.services.payments&&!payMethods().length){closeModal();return openModal(`<h2>Payments are not available right now</h2><p class="lead">Please try again later, or contact our support team.</p><div class="row-btns"><a class="btn" href="#/contact" onclick="closeModal()">Contact support</a><button class="btn ghost" onclick="closeModal()">Close</button></div>`)}
+ const r=_bp67.apply(this,arguments);
+ try{document.querySelectorAll('#modal-card .hint').forEach(h=>{if(/invoice is created|tax invoice/.test(h.textContent))h.innerHTML=`${gstOn()?'Your GST tax invoice':'Your invoice'} can be downloaded after your payment is approved. <a href="#/refund" onclick="closeModal()">Refund policy</a>`})}catch(e){}
+ return r}}
+function proofBox(){return `<div class="proof"><h4>After paying, share your payment proof</h4>
+ <div class="fld"><label for="pay-utr">UTR / UPI transaction ID</label><input id="pay-utr" maxlength="22" autocomplete="off" placeholder="12-digit number from your UPI app or bank SMS"></div>
+ <div class="fld"><label for="pay-shot">Payment screenshot</label><input id="pay-shot" type="file" accept="image/*" onchange="shotPreview()"><div id="shot-prev" class="shot-prev"></div></div>
+ <small class="hint">Enter the UTR number, or attach the screenshot (both is best).</small>
+ <div class="proof-note">⏱ <b>Once payment is approved, your service will be activated within 1 hour.</b></div></div>`}
+function shotPreview(){const f=$('#pay-shot')?.files?.[0],b=$('#shot-prev');if(!b)return;if(!f){b.innerHTML='';return}if(!/^image\//.test(f.type)){b.innerHTML='<span class="err-t">Please choose a photo / screenshot.</span>';return}
+ const u=URL.createObjectURL(f);b.innerHTML=`<img src="${u}" alt="Payment screenshot preview"><span>${esc(f.name)}</span>`}
+function shrinkImg(f,max,q){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej('Could not read the screenshot.');fr.onload=()=>{const im=new Image();im.onerror=()=>rej('This file is not a picture. Please attach a screenshot (JPG or PNG).');im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};im.src=fr.result};fr.readAsDataURL(f)})}
+{const _pf67=payFields;payFields=function(){
+ const m=radio('pm'),f=$('#payf');if(!f||!_ck)return;const c=co(),tot=_ck.b.total,btn=$('#pay-btn');
+ if(!m){f.innerHTML='';return}
+ if(m==='Razorpay')return _pf67.apply(this,arguments);
+ if(btn)btn.textContent='Submit payment proof';
+ if(m==='UPI QR'){const link=c.upi?upiLink(tot,'JobSetu1 Premium'):'';
+  f.innerHTML=`<div class="upi-box"><div class="qrwrap" id="upi-qr">${c.upi?'<span class="hint">Loading QR…</span>':`<img src="${c.qr}" alt="UPI QR code to scan and pay">`}</div><div class="upi-info"><p><strong>Scan &amp; pay ${rupee2(tot)}</strong></p><p class="hint">Scan with any UPI app${c.upi?'. The amount is filled in for you':' and enter '+rupee2(tot)}. Paid to <strong>${esc(c.accName||c.legal)}</strong></p><div class="upi-apps">${['GPay','PhonePe','Paytm','BHIM'].map(a=>`<span>${a}</span>`).join('')}</div></div></div>${proofBox()}`;
+  if(c.upi)renderQR('upi-qr',link,c.qr);return}
+ if(m==='UPI ID'){const link=upiLink(tot,'JobSetu1 Premium');
+  f.innerHTML=`<div class="upiid-box"><span class="hint">Send ${rupee2(tot)} to this UPI ID</span><div class="upiid"><b class="mono">${esc(c.upi)}</b><button type="button" class="btn ghost sm" onclick="copyTxt('${esc(c.upi)}')">Copy</button></div><span class="hint">Name: <b>${esc(c.accName||c.legal)}</b> · Amount: <b>${rupee2(tot)}</b></span><a class="btn ghost sm upi-open" href="${esc(link)}">Open UPI app on this phone</a></div>${proofBox()}`;return}
+ if(!c.accNo){f.innerHTML='<p class="demo-note">Bank transfer isn\'t available right now. Please choose another method.</p>';return}
+ const row=(l,v)=>v?`<div class="bk-row"><span>${l}</span><b class="mono">${esc(v)}</b><button type="button" class="linkbtn" onclick="copyTxt('${esc(v)}')">Copy</button></div>`:'';
+ f.innerHTML=`<div class="bk">${row('Account name',c.accName||c.legal)}${row('Bank',c.bank)}${row('Account number',c.accNo)}${row('IFSC',c.ifsc)}${row('Branch',c.branch)}<div class="bk-row"><span>Amount</span><b>${rupee2(tot)}</b></div></div>${proofBox()}`}}
+
+/* a payment that waits for the admin: no plan and no invoice until it is approved */
+async function submitProof(pid,rz){const u=me();if(!u||!_ck)return;const p=db.plans[u.role].find(x=>x.id===pid);if(!p)return;
+ const pm=rz?'Razorpay':radio('pm'),c=co(),b=_ck.b;let utr=rz?rz.id:val('pay-utr').replace(/\s/g,'');const file=rz?null:$('#pay-shot')?.files?.[0];
+ if(!rz){if(!utr&&!file)return toast('Enter the UTR / transaction ID or attach the payment screenshot.');
+  if(utr&&!/^[A-Za-z0-9]{6,22}$/.test(utr))return toast('The UTR / transaction ID should be 6 to 22 letters or numbers.');
+  if(utr&&db.payments.some(x=>x.utr&&x.utr.toUpperCase()===utr.toUpperCase()))return toast('This transaction ID was already used for another payment.')}
+ const btn=$('#pay-btn');if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span> Submitting…'}
+ let img='';if(file){try{img=await shrinkImg(file,1100,.72)}catch(e){if(btn){btn.disabled=false;btn.textContent='Submit payment proof'}return toast(String(e))}}
+ const at=now(),gOn=b.gst>0,buyer={name:u.role==='employer'?(u.company?.name||u.name):u.name,contact:u.name,email:u.email,mobile:u.mobile,gstin:gOn&&u.role==='employer'?(u.company?.gst||''):'',state:buyerState(u),address:u.role==='employer'?(u.company?.address||''):(u.profile?.address||'')};
+ const rec={id:uid('p'),userId:u.id,role:u.role,planId:p.id,planName:p.name,months:p.months,amount:b.base,gst:b.gst,gstRate:b.rate,total:b.total,method:pm==='UPI QR'?'UPI (QR code)':pm==='UPI ID'?'UPI ID · '+c.upi:pm+(rz&&rz.mode==='test'?' · test mode':''),txn:rz?rz.id:'JS'+at.toString(36).toUpperCase(),utr:rz?'':utr,status:'Pending verification',awaitApproval:true,demo:false,gateway:rz||null,test:!!(rz&&rz.mode==='test'),at,
+  payee:{name:c.accName||c.legal,upi:c.upi,bank:c.bank,acc:c.accNo?'XXXX'+String(c.accNo).slice(-4):'',ifsc:c.ifsc},seller:Object.assign({},c,{qr:'',accNo:'',accName:'',bank:'',ifsc:'',branch:'',upi:'',payOn:undefined},gOn?{}:{gstin:'',sac:''}),gstOn:gOn,buyer,invoiceNo:'',proofImg:img,hasProof:!!img};
+ if(img&&cloudOn()){const data=img.slice(img.indexOf(',')+1);try{const r=await gsPost({action:'proofUp',id:u.id,pid:rec.id,data});rec.proofFid=r.fid}catch(e){
+  if(myTok()){try{const r=await gsPost({action:'fileUp',token:myTok(),id:u.id,kind:'payproof',name:'payment-'+rec.id+'.jpg',type:'image/jpeg',data});rec.proofFid=r.fid}catch(e2){}}}}
+ db.payments.push(rec);
+ notify(u.id,'Payment submitted ✓',`We got your payment details for Premium ${p.name} (${rupee2(b.total)}). Once payment is approved, your service will be activated within 1 hour.`,'#/invoices');
+ notifyStaff('💰 Payment to approve',`${buyer.name}: ${rupee2(b.total)} for Premium ${p.name} by ${rec.method}${utr?', UTR '+utr:''}${img?' (screenshot attached)':''}. Check the account and approve it in Revenue → Waiting for verification.`);
+ save();_ck=null;
+ openModal(`<div class="ck-ok"><div class="ck-tick wait" aria-hidden="true">⏱</div><h2>Payment proof submitted</h2><p class="lead"><b>Once payment is approved, your service will be activated within 1 hour.</b> We'll send you a notification.</p>
+ <dl class="ck-dl"><dt>Plan</dt><dd>Premium ${esc(p.name)}</dd><dt class="tot">Amount</dt><dd class="tot">${rupee2(b.total)}</dd>${utr?`<dt>UTR / reference</dt><dd class="mono">${esc(utr)}</dd>`:''}<dt>Screenshot</dt><dd>${img?'Attached ✓':'—'}</dd><dt>Status</dt><dd><span class="chip warn">Waiting for approval</span></dd></dl>
+ <p class="hint">Your invoice can be downloaded from "Payments &amp; invoices" after the payment is approved.</p>
+ <div class="row-btns"><a class="btn" href="#/invoices" onclick="closeModal()">My payments</a><button class="btn ghost" onclick="closeModal()">Close</button></div></div>`);
+ renderHeader()}
+{const _cf67=confirmPay;confirmPay=function(pid){const pm=radio('pm');
+ if(pm==='Razorpay'){const rz=window._rzpPaid;if(rz&&!rz.verified){window._rzpPaid=null;return submitProof(pid,rz)}return _cf67.apply(this,arguments)}
+ if(['UPI QR','UPI ID','Bank transfer'].includes(pm))return submitProof(pid);
+ return toast('Choose how you want to pay.')}}
+
+/* admin approves → plan starts now and the invoice is made */
+{const _vp67=verifyPay;verifyPay=function(id,ok){if(!staffCan('payments'))return;const x=db.payments.find(p=>p.id===id);if(!x)return;if(!x.awaitApproval)return _vp67.apply(this,arguments);const u=getUser(x.userId);
+ if(ok){const at=now(),months=+x.months||db.plans[x.role]?.find(p=>p.id===x.planId)?.months||1;
+  const start=u&&planActive(u)?Math.max(at,u.plan.expires||0):at,exp=addMonths(start,months);
+  if(u){x.prevPlan=u.plan?Object.assign({},u.plan):null;u.plan={id:x.planId,name:x.planName,expires:exp}}
+  x.validFrom=start;x.validTo=exp;x.status='Paid';x.awaitApproval=false;x.approved=true;x.verifiedBy=me().name;x.verifiedAt=at;if(!x.invoiceNo)x.invoiceNo=nextInvoiceNo(at);x.invoiceAt=at;
+  if(u){notify(u.id,'Premium Service activated ✓',`Your payment of ${rupee2(payTotal(x))} is approved. Premium ${x.planName} is active until ${fmtDate(exp)}.`,'#/premium');
+   notify(u.id,'Invoice '+x.invoiceNo+' is ready',`Download your ${x.gstOn?'GST tax ':''}invoice for Premium ${x.planName} anytime.`,'#/invoices')}
+  save();toast('Payment approved. The plan is active now and the invoice is ready.');return route()}
+ askConfirm('Reject this payment? The customer will be told the payment was not found.','Reject payment',()=>{x.status='Rejected';x.awaitApproval=false;x.verifiedBy=me().name;x.verifiedAt=now();
+  if(u)notify(u.id,'Payment not approved',`We couldn't find your payment for Premium ${x.planName} (ref ${x.utr||x.txn}). Contact support if money was deducted.`,'#/invoices');save();toast('Payment rejected.');route()})}}
+
+/* invoice only after approval */
+{const _di67=downloadInvoice;downloadInvoice=function(id){const x=(db.payments||[]).find(p=>p.id===id);if(x&&payStatus(x)!=='Paid')return toast(payStatus(x)==='Rejected'?'This payment was not approved, so there is no invoice.':'Your invoice will be ready once the payment is approved.',6000);return _di67.apply(this,arguments)}}
+function payChip(s){return `<span class="chip ${s==='Paid'?'good':s==='Rejected'?'bad':'warn'}">${s==='Pending verification'?'Waiting for approval':s==='Paid'?'Approved':esc(s)}</span>`}
+function pgInvoices(){const g=gate(['candidate','employer']);if(g.block)return g.block;const u=g.u;const L=(db.payments||[]).filter(p=>p.userId===u.id).sort((a,b)=>b.at-a.at);const gc=L.some(x=>payGst(x)>0);
+ const wait=L.filter(x=>payStatus(x)==='Pending verification').length;
+ return `<section class="wrap narrow"><div class="page-h"><h1>Payments &amp; invoices</h1><p class="lead">Every approved payment comes with ${gstOn()?'a GST tax invoice':'an invoice'}. Download it as a PDF anytime.</p></div>
+ ${wait?`<div class="proof-note" style="margin-bottom:14px">⏱ <b>${wait} payment${wait>1?'s are':' is'} waiting for approval.</b> Once payment is approved, your service will be activated within 1 hour.</div>`:''}
+ ${L.length?`<div class="tbl"><table><thead><tr><th>Invoice</th><th>Plan</th><th>Amount</th>${gc?'<th>GST</th>':''}<th>Total</th><th>Status</th><th></th></tr></thead><tbody>${L.map(x=>{const s=payStatus(x);return `<tr><td><strong>${esc(x.invoiceNo||'—')}</strong><br><span class="hint">${fmtDate(x.at)} · ${esc(x.method||'')}${x.utr?' · UTR '+esc(x.utr):''}</span></td><td>${esc(x.planName)}</td><td>${rupee2(x.amount)}</td>${gc?`<td>${payGst(x)?rupee2(payGst(x)):'—'}</td>`:''}<td><strong>${rupee2(payTotal(x))}</strong></td><td>${payChip(s)}</td><td>${s==='Paid'?`<button class="btn ghost sm" onclick="downloadInvoice('${x.id}')">⬇ PDF</button>`:s==='Rejected'?'<a class="linkbtn" href="#/contact">Contact support</a>':'<span class="hint">After approval</span>'}</td></tr>`}).join('')}</tbody></table></div>`:`<div class="empty">No payments yet. <a href="#/plans">See plans</a></div>`}
+ <div class="row-btns"><button class="btn" onclick="openPlanPicker()">Buy or extend a plan</button></div></section>`}
+
+/* admin: see the screenshot / UTR before approving */
+async function viewProof(id){const x=(db.payments||[]).find(p=>p.id===id);if(!x)return;let src=x.proofImg||'';
+ if(!src&&x.proofFid&&cloudOn()){toast('Getting the screenshot…');try{const r=await gsPost({action:'fileGet',token:myTok(),fid:x.proofFid});src='data:'+(r.type||'image/jpeg')+';base64,'+r.data}catch(e){return toast('Could not get the screenshot: '+cloudErr(e))}}
+ if(!src)return toast('No screenshot on this device.');
+ openModal(`<h2>Payment screenshot</h2><p class="hint">${esc(payName(x))} · ${rupee2(payTotal(x))}${x.utr?' · UTR <span class="mono">'+esc(x.utr)+'</span>':''}</p><div class="proof-img"><img src="${src}" alt="Payment screenshot"></div><div class="row-btns">${payStatus(x)==='Pending verification'&&staffCan('payments')?`<button class="btn" onclick="closeModal();verifyPay('${x.id}',true)">✓ Approve &amp; activate</button><button class="btn ghost" onclick="closeModal();verifyPay('${x.id}',false)">Reject</button>`:''}<button class="btn ghost" onclick="revPay('${x.id}')">Back</button></div>`);$('#modal-card').classList.add('wide')}
+{const _rv67=revPay;revPay=function(id){const r=_rv67.apply(this,arguments);try{const x=(db.payments||[]).find(p=>p.id===id);if(!x||x.sample)return r;const card=$('#modal-card');if(!card)return r;
+ card.querySelectorAll('button').forEach(b=>{if(/✓ Received/.test(b.textContent))b.innerHTML='✓ Approve &amp; activate service';if(/Invoice PDF/.test(b.textContent)&&payStatus(x)!=='Paid')b.remove()});
+ const rb=card.querySelector('.row-btns');if(rb&&(x.hasProof||x.proofFid||x.proofImg||x.utr)){const d=document.createElement('div');d.className='proof-adm';d.innerHTML=`<b>Payment proof</b>${x.utr?`<span>UTR / transaction ID: <b class="mono">${esc(x.utr)}</b> <button type="button" class="linkbtn" onclick="copyTxt('${esc(x.utr)}')">Copy</button></span>`:''}${x.hasProof||x.proofFid||x.proofImg?`<button type="button" class="btn ghost sm" onclick="viewProof('${x.id}')">🖼 View screenshot</button>`:'<span class="hint">No screenshot attached</span>'}${x.awaitApproval?'<span class="hint">Plan starts and the invoice is made when you approve.</span>':''}`;rb.parentNode.insertBefore(d,rb)}}catch(e){}return r}}
+/* the screenshot itself is not copied to the Sheet (too big for a cell); it is kept in Google Drive */
+{const _gc67=gsCollections;gsCollections=function(){const C=_gc67.apply(this,arguments);if(C.payments)C.payments=C.payments.map(p=>p.proofImg?gsStrip(p,['proofImg']):p);return C}}
+/* app: look for updates by itself (every few minutes and whenever the app is opened again) */
+if(APP){let _chk67=Date.now();const chk=()=>{try{if(window.AndroidApp&&AndroidApp.checkSite&&Date.now()-_chk67>3*60e3){_chk67=Date.now();AndroidApp.checkSite()}}catch(e){}};
+ setInterval(()=>{if(!document.hidden)chk()},5*60e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()});
+ const apkBar=()=>{let b=document.getElementById('apkbar');const v=appVer(),need=v&&verLess(v,APK_LATEST)&&!/^#\/?$/.test(location.hash||'#/');let off=false;try{off=sessionStorage.getItem('js1_apkbar')===APK_LATEST}catch(e){}
+  if(!need||off){if(b)b.remove();return}
+  if(!b){b=document.createElement('div');b.id='apkbar';document.body.appendChild(b)}
+  b.innerHTML=`<span>🎉 New app version ${APK_LATEST} is ready.</span><button type="button" class="btn sm gold" onclick="appUpdate()">Update</button><button type="button" class="apkx" aria-label="Later" onclick="try{sessionStorage.setItem('js1_apkbar',APK_LATEST)}catch(e){};this.parentNode.remove()">✕</button>`};
+ const _r67=route;route=function(){const r=_r67.apply(this,arguments);try{apkBar()}catch(e){}return r};setTimeout(()=>{try{apkBar()}catch(e){}},1500)}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
