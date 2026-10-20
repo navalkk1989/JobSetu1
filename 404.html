@@ -1284,6 +1284,9 @@ html:not(.app) #netbar{bottom:16px;max-width:520px;margin:0 auto}
 .addloc{margin-left:6px;border-color:#F5B97A!important;color:#B45309!important}
 .proof-sub{margin:-4px 0 12px;font-weight:700;color:#1846A8;font-size:14px}
 .proof-or{display:flex;align-items:center;gap:10px;margin:2px 0 10px;color:var(--muted);font-size:12.5px;font-weight:700;text-transform:uppercase}.proof-or::before,.proof-or::after{content:"";flex:1;height:1px;background:#C9D6F0}
+.ownbar{border-left:4px solid var(--brand);display:flex;flex-direction:column;gap:10px}
+.ownbar-h{display:flex;flex-direction:column;gap:2px}
+.ownbar-b{display:flex;flex-wrap:wrap;gap:8px}
 </style>
 </head>
 <body>
@@ -4047,7 +4050,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='68';
+const WEB_BUILD='69';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -5136,6 +5139,14 @@ function secretTap(){const t=Date.now();if(t-(window._sTapT||0)>2500)window._sTa
 /* live updates every 10 seconds while the page is open */
 setInterval(()=>{try{if(!document.hidden)liveCheck()}catch(e){}},10000);
 document.addEventListener('visibilitychange',()=>{try{if(!document.hidden)liveCheck()}catch(e){}});
+
+/* V69: the employer sees Edit / location / close buttons on their own job page */
+function ownerJobBar(j){const n=(db.apps||[]).filter(a=>a.jobId===j.id).length,wfh=j.jobType==='Work From Home',open=j.status==='open';
+ return `<div class="panel ownbar"><div class="ownbar-h"><b>Your job post</b><span class="hint">${n} application${n===1?'':'s'} · ${open?'Open — taking applications':'Closed'}</span></div>
+ <div class="ownbar-b"><a class="btn sm" href="#/post-job/${j.id}">✏️ Edit job</a>${wfh?'':`<a class="btn ghost sm" href="#/post-job/${j.id}" onclick="window._focusLoc=1">📍 ${j.geo?'Change':'Add'} location</a>`}<a class="btn ghost sm" href="#/employer">👥 View applications (${n})</a><button type="button" class="btn ghost sm" onclick="toggleMyJob('${j.id}')">${open?'⏸ Close job':'▶ Reopen job'}</button></div></div>`}
+{const _pj69=pgJob;pgJob=function(id){const h=_pj69.apply(this,arguments);try{const u=me(),j=db.jobs.find(x=>x.id===id);if(!u||!j)return h;
+ if(u.id===j.employerId)return h.replace('<div class="detail"><div>','<div class="detail"><div>'+ownerJobBar(j));
+ if(isStaffNow()&&typeof editJob==='function'&&staffCan('edit'))return h.replace('<div class="detail"><div>',`<div class="detail"><div><div class="panel ownbar"><div class="ownbar-h"><b>Office tools</b><span class="hint">${esc(j.company)}</span></div><div class="ownbar-b"><button type="button" class="btn sm" onclick="editJob('${j.id}')">✏️ Edit job</button></div></div>`)}catch(e){}return h}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
