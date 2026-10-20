@@ -1147,6 +1147,25 @@ html.app .s247{border-radius:22px}
 .regtoday{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-bottom:14px!important;text-decoration:none;color:var(--ink);border-left:4px solid #2F6BFF}.regtoday span{color:var(--muted);font-weight:700}.regtoday em{margin-left:auto;font-style:normal;font-weight:800;color:var(--brand)}
 .rr input[type=checkbox]{width:auto!important;min-height:0!important;margin:3px 0 0!important;flex:0 0 auto}.rr span{flex:1;text-align:left;align-items:flex-start}
 .rc-bar{background:transparent!important}.reg-chart{border-bottom:1px solid var(--line)}
+/* ===== V60 ===== */
+.ufb{display:grid;gap:10px;margin-bottom:12px!important}
+.ufb-row{display:flex;flex-wrap:wrap;gap:8px}
+.ufb-b{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800;text-decoration:none}
+.ufb-b b{min-width:26px;padding:2px 8px;border-radius:999px;background:var(--bg);text-align:center;font-size:13px}
+.ufb-b.on{background:var(--brand);color:#fff;border-color:var(--brand)}.ufb-b.on b{background:rgba(255,255,255,.2)}
+.ufb-b.free.on{background:#0F8A5F;border-color:#0F8A5F}.ufb-b.paid.on{background:linear-gradient(135deg,#E8B33A,#C98A12);border-color:#C98A12;color:#2A1A00}
+.ufb-row.plans{padding:10px;border-radius:12px;background:#FFF8E6;border:1px dashed #E8B33A}
+.ufb-p{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid #E8C77A;background:#fff;color:#5A3B00;font-weight:700;font-size:13.5px;text-decoration:none}
+.ufb-p small{color:#8a6a2a;font-weight:600}.ufb-p b{padding:1px 8px;border-radius:999px;background:#FCE9B8}.ufb-p.on{background:#C98A12;color:#fff;border-color:#C98A12}.ufb-p.on small{color:#FFF1CF}.ufb-p.on b{background:rgba(255,255,255,.25)}
+.ufb-date{flex-wrap:wrap;gap:8px;align-items:center;margin:0}.ufb-date input[type=date]{max-width:170px}
+.buy{display:block;white-space:nowrap;font-size:13px}.buy b{font-weight:800}
+.selbar{flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.svc-list{display:grid;gap:8px;margin-top:12px}
+.svc-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.svc-row div{display:flex;flex-direction:column}.svc-row small{color:var(--muted);font-size:12.5px}.svc-row select{max-width:210px}
+.svc-sec{margin-bottom:16px!important}.svc-sec.free{border-top:4px solid #0F8A5F}.svc-sec.paid{border-top:4px solid #E8B33A}
+@media (max-width:640px){.svc-row{flex-direction:column;align-items:stretch}.svc-row select{max-width:none}}
+.plan-row{grid-template-columns:2fr 1fr 1fr 130px!important;margin-bottom:10px!important;padding-bottom:10px;border-bottom:1px dashed var(--line)}.plan-row:last-child{border-bottom:0}.plan-row .fld:last-child{align-items:center}@media (max-width:640px){.plan-row{grid-template-columns:1fr 1fr!important}}
 </style>
 </head>
 <body>
@@ -1392,10 +1411,10 @@ function planActive(u){return !!(u&&u.plan&&u.plan.expires>now())}
 function svcOn(k){return !!db.services&&db.services[k]!==false}
 const FREE_RIGHTS={employer:[['post','Post jobs','Publish unlimited job posts'],['find','Search candidates','Use Find candidates to search job seeker profiles'],['details','See candidate details','Mobile, email, address and current salary of candidates'],['download','Download resumes','Download candidate resumes']],candidate:[['search','Search jobs','Use Find jobs and the job search box'],['apply','Apply to jobs','Apply to any open job'],['contacts','See company contact details','Phone, WhatsApp and email on each job'],['location','See exact job location','Full address, map pin and directions']]};
 function freeRight(role,k){return svcOn(role==='employer'?'freeEmployer':'freeCandidate')&&((db.freeRights||{})[role]||{})[k]!==false}
-function userCan(u,role,k){if(isStaffNow())return true;if(u&&u.role===role&&planActive(u))return true;return freeRight(role,k)}
-function candFree(u){return !!(u&&u.role==='candidate'&&!planActive(u)&&freeRight('candidate','contacts'))}
+function userCan(u,role,k){if(isStaffNow())return true;if(u&&u.role===role){const o=u.svc&&u.svc[k];if(o===false)return false;if(o===true)return true;if(planActive(u))return paidRight(role,k)}return freeRight(role,k)}
+function candFree(u){return !!(u&&u.role==='candidate'&&!planActive(u)&&userCan(u,'candidate','contacts'))}
 function candAccess(u){return userCan(u,'candidate','contacts')}
-function employerAccess(u){const plan=planActive(u),trial=!plan&&freeRight('employer','post');return {trial,plan,ok:trial||plan}}
+function employerAccess(u){const o=u&&u.svc?u.svc.post:undefined,okPlan=planActive(u)&&paidRight('employer','post'),trial=!planActive(u)&&freeRight('employer','post'),ok=o===false?false:o===true?true:(okPlan||trial);return {trial:ok&&!okPlan,plan:okPlan,ok}}
 function employerActive(id){const e=getUser(id);return e&&e.status==='active'}
 function tokens(s){return String(s||'').toLowerCase().split(/[,;\/|]+/).map(x=>x.trim()).filter(Boolean)}
 function matchScore(job,cand){
@@ -2621,7 +2640,7 @@ function pgPlans(){
 
 
 /* ============ Google Sheet sync ============ */
-const GSHEET=/*GSHEET*/{"url":"https://script.google.com/macros/s/AKfycbz7F1jgllA3nsszOcA1nATBwHIZJqkLgBaCp55wlU42ae7zlFRlxBgLiBKYrdeY6uk5Nw/exec","key":"JS1-mT2Xqt8ZJATgi7v9XDVjZ6hRYcTu"}/*END*/;
+const GSHEET=/*GSHEET*/{"url":"","key":""}/*END*/;
 const GS_KEY='jobsetu_gsync';
 function gsCfg(){const s=(db.settings||{}).gsheet||{};return {url:String(s.url||GSHEET.url||'').trim(),key:String(s.key||GSHEET.key||'').trim(),auto:s.auto!==false,pull:s.pull!==false,builtIn:!!GSHEET.url}}
 function gsOn(){const c=gsCfg();return !!(c.url&&c.key&&/^https:\/\/script\.google(usercontent)?\.com\//.test(c.url))}
@@ -2644,7 +2663,7 @@ function gsCollections(){
   staff:session&&session.kind==='staff'&&(db.staff||[]).find(x=>x.id===session.id&&x.role==='admin')?(db.staff||[]).map(x=>gsStrip(x,['password','pwh','salt','idh'])):[],
   notes:(db.notes||[]).slice(-3000),
   activity:(db.activity||[]).filter(a=>!/^d[ej]_/.test(a.empId||'')&&!/^d[cj]_/.test(a.candId||'')).slice(-3000),
-  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,visibility:(db.settings||{}).visibility||{},support:(db.settings||{}).support||supportInfo(),grievance:(db.settings||{}).grievance||grvInfo(),googleClientId:(db.settings||{}).googleClientId||'',gstOn:co().gstOn!==false,company:gsStrip(co(),['qr']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays,demo:(db.settings||{}).demo||{},roles:(db.settings||{}).roles||null,blocks:(db.settings||{}).blocks||null,brand:(db.settings||{}).brand||null,motp:(db.settings||{}).motp||null,mapsKey:(db.settings||{}).mapsKey||''}]:[]}}
+  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,visibility:(db.settings||{}).visibility||{},support:(db.settings||{}).support||supportInfo(),grievance:(db.settings||{}).grievance||grvInfo(),googleClientId:(db.settings||{}).googleClientId||'',gstOn:co().gstOn!==false,company:gsStrip(co(),['qr']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},paidRights:db.paidRights||{},trialDays:db.trialDays,demo:(db.settings||{}).demo||{},roles:(db.settings||{}).roles||null,blocks:(db.settings||{}).blocks||null,brand:(db.settings||{}).brand||null,motp:(db.settings||{}).motp||null,mapsKey:(db.settings||{}).mapsKey||''}]:[]}}
 const GS_LABEL={users:'Users',companies:'Companies',jobs:'Jobs',apps:'Applications',payments:'Payments',support:'Support',staff:'Office staff',notes:'Notifications',activity:'Activity',settings:'Settings'};
 let gsTimer=null,gsBusy=false;
 function gsQueue(){if(!gsOn()||!gsCfg().auto)return;clearTimeout(gsTimer);gsTimer=setTimeout(()=>{gsPush(false).catch(()=>{})},2500)}
@@ -2703,14 +2722,15 @@ async function gsDownloadSite(){if(!gsOn())return;const cfg=JSON.stringify({url:
  html=html.replace(re,'/*GSHEET'+'*/'+cfg+'/*END'+'*/');cfgEnsureStamp();const sc=JSON.stringify(Object.assign({cfgAt:db.cfgAt||now()},cfgPick())).replace(/\//g,'\\/');html=html.replace(/\/\*SITECFG\*\/[^\n]*?\/\*END2\*\//,()=>'/*SITECFG'+'*/'+sc+'/*END2'+'*/');saveBlob('index.html',new Blob([html],{type:'text/html'}),'Website file')}
 
 /* ============ site settings shared with every visitor (GST, bank, plans, services) ============ */
-const SITECFG=/*SITECFG*/{"cfgAt":1792423100790,"roles":null,"blocks":null,"brand":null,"motp":null,"mapsKey":"","demo":null,"visibility":{"cand":{"on":false,"pct":27},"emp":{"on":false,"pct":100}},"support":{"phone":"+91 8448103956","whatsapp":"+91 8448103956","email":"support@jobsetu1.com","hours":"Mon - Sat, 10 Am To 6 Pm"},"grievance":{"name":"Naval Kishor","email":"ntuvgrievance@gmail.com","address":"Gurgaon Sec 14, 122001"},"googleClientId":"977440539267-v44gjhgsbq5pr8hfvr3icn5ou29tf0bc.apps.googleusercontent.com","company":{"gstOn":false,"rzpKey":"rzp_live_TocTDfA5PH3LEs","city":"Gurugram","legal":"JobSetu1","address":"Sector 14, Gurugram 122001","state":"Haryana","gstin":"","pan":"","sac":"","gstRate":18,"prefix":"JS1","accName":"Naval Kishor","bank":"AU Bank","accNo":"2601255912120815","ifsc":"AUBL0002559","branch":"Green Park Delhi","upi":"navalk1989-2@okaxis","qr":""},"services":{"candidateReg":true,"employerReg":true,"jobPosting":true,"applications":true,"payments":true,"googleLogin":true,"matchAlerts":true,"freeEmployer":true,"freeCandidate":true},"plans":{"employer":[{"id":"e3","name":"Quarterly","price":0,"months":3},{"id":"e6","name":"Half-yearly","price":0,"months":6},{"id":"e12","name":"Yearly","price":0,"months":12}],"candidate":[{"id":"c3","name":"Quarterly","price":0,"months":3},{"id":"c6","name":"Half-yearly","price":0,"months":6},{"id":"c12","name":"Yearly","price":0,"months":12}]},"freeRights":{"employer":{"post":true,"find":true,"details":true,"download":true},"candidate":{"search":true,"apply":true,"contacts":true,"location":true}},"trialDays":180}/*END2*/;
-function cfgPick(){return {roles:(db.settings||{}).roles||null,blocks:(db.settings||{}).blocks||null,brand:(db.settings||{}).brand||null,motp:(db.settings||{}).motp||null,mapsKey:(db.settings||{}).mapsKey||'',demo:(db.settings||{}).demo||null,visibility:(db.settings||{}).visibility||null,support:(db.settings||{}).support||null,grievance:(db.settings||{}).grievance||null,googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},trialDays:db.trialDays}}
+const SITECFG=/*SITECFG*/null/*END2*/;
+function cfgPick(){return {roles:(db.settings||{}).roles||null,blocks:(db.settings||{}).blocks||null,brand:(db.settings||{}).brand||null,motp:(db.settings||{}).motp||null,mapsKey:(db.settings||{}).mapsKey||'',demo:(db.settings||{}).demo||null,visibility:(db.settings||{}).visibility||null,support:(db.settings||{}).support||null,grievance:(db.settings||{}).grievance||null,googleClientId:(db.settings||{}).googleClientId||'',company:Object.assign({},(db.settings||{}).company||{}),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},paidRights:db.paidRights||{},trialDays:db.trialDays}}
 function cfgHash(){return gsHash(cfgPick())}
 function cfgApply(x){if(!x||!(+x.cfgAt>(+db.cfgAt||0)))return false;db.settings=db.settings||{};const old=db.settings.company||{};
  if(x.company&&typeof x.company==='object'){const c=Object.assign({},x.company);if(!c.qr)c.qr=old.qr||'';['accNo','ifsc','gstin','pan','sac','upi','prefix','accName','bank','branch','legal','address','state'].forEach(k=>{if(c[k]!=null)c[k]=String(c[k])});if(typeof c.gstOn==='string')c.gstOn=c.gstOn!=='false';db.settings.company=c}
  if(x.services&&typeof x.services==='object'&&Object.keys(x.services).length)db.services=x.services;
  if(x.plans&&x.plans.employer&&x.plans.candidate)db.plans=x.plans;
  if(x.freeRights&&typeof x.freeRights==='object'&&Object.keys(x.freeRights).length)db.freeRights=x.freeRights;
+ if(x.paidRights&&typeof x.paidRights==='object')db.paidRights=x.paidRights;
  if(x.trialDays!=null&&x.trialDays!=='')db.trialDays=+x.trialDays;
  if(x.mapsKey!=null)db.settings.mapsKey=String(x.mapsKey||'');
  ['support','grievance','visibility','demo','roles','blocks','brand','motp'].forEach(k=>{let v=x[k];if(typeof v==='string'){try{v=JSON.parse(v)}catch(e){v=null}}if(v&&typeof v==='object')db.settings[k]=v});
@@ -2929,7 +2949,7 @@ function pgStaff(role,tab,q){q=q||new URLSearchParams();
  else{const keep=tabs.filter(t=>staffCan(t[0]));tabs.length=0;keep.forEach(t=>tabs.push(t));if(!tabs.some(t=>t[0]===tab))tab=tabs.length?tabs[0][0]:'none'}
  let body='';
  const cands=db.users.filter(u=>u.role==='candidate'),emps=db.users.filter(u=>u.role==='employer');
- const userActs=x=>`<div class="acts"><button class="btn ghost sm" onclick="viewUser('${x.id}')">View</button><button class="btn ghost sm" onclick="toggleUser('${x.id}')">${x.status==='active'?'Suspend':'Activate'}</button><button class="btn ${adminPriority(x)?'gold':'ghost'} sm" onclick="openPremium('${x.id}')">${adminPriority(x)?'★ Priority':'Top priority'}</button>${isAdmin||staffCan('edit')?`<button class="btn ghost sm" onclick="editUser('${x.id}')">Edit</button>`:''}${isAdmin||staffCan('delete')?`<button class="btn danger sm" onclick="delUser('${x.id}')">Delete</button>`:''}</div>`;
+ const userActs=x=>`<div class="acts"><button class="btn ghost sm" onclick="viewUser('${x.id}')">View</button>${isAdmin||staffCan('edit')?`<button class="btn ghost sm" onclick="svcModal(['${x.id}'])">⚙ Services</button>`:''}<button class="btn ghost sm" onclick="toggleUser('${x.id}')">${x.status==='active'?'Suspend':'Activate'}</button><button class="btn ${adminPriority(x)?'gold':'ghost'} sm" onclick="openPremium('${x.id}')">${adminPriority(x)?'★ Priority':'Top priority'}</button>${isAdmin||staffCan('edit')?`<button class="btn ghost sm" onclick="editUser('${x.id}')">Edit</button>`:''}${isAdmin||staffCan('delete')?`<button class="btn danger sm" onclick="delUser('${x.id}')">Delete</button>`:''}</div>`;
  const planCell=x=>planActive(x)?`${esc(x.plan.name)} till ${fmtDate(x.plan.expires)}`:'<span class="hint">None</span>';
  if(tab==='settings'&&isAdmin){
   const v=db.settings?.pwVideo;
@@ -2960,27 +2980,29 @@ function pgStaff(role,tab,q){q=q||new URLSearchParams();
   const S=(db.support||[]).slice().sort((a,b)=>(a.status==='Resolved')-(b.status==='Resolved')||b.at-a.at);
   body=`<p class="lead">Recruitment support requests from Premium employers, including resume shortlist requests.</p>${S.length?`<div class="clist">${S.map(x=>{const e=getUser(x.empId),j=x.jobId?db.jobs.find(y=>y.id===x.jobId):null;return `<div class="panel" style="margin:0"><div class="res-h"><div><strong>${esc(x.topic)}</strong> <span class="hint">· ${x.empId?esc(e?.company?.name||'Deleted company'):esc((x.name||'Visitor')+(x.phone?' · '+x.phone:'')+' (chat)')} · ${fmtDate(x.at)}${j?' · '+esc(j.title):''}</span></div><select aria-label="Request status" onchange="setSupportStatus('${x.id}',this.value)">${sel(['Open','In progress','Resolved'],x.status)}</select></div><p class="prose" style="margin:6px 0">${esc(x.msg)}</p>${x.reply?`<p class="hint"><strong>Reply sent:</strong> ${esc(x.reply)}</p>`:''}<div class="inline" style="margin-top:8px"><input id="sr-${x.id}" placeholder="Write a reply to the employer" aria-label="Reply"><button class="btn sm" onclick="replySupport('${x.id}')">Send reply</button></div></div>`}).join('')}</div>`:'<div class="empty">No support requests yet.</div>'}`;
  }else if(tab==='candidates'){
-  body=`<div class="tbl"><table><thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>City</th><th>Registered</th><th>Plan</th><th>Top priority</th><th>Status</th><th></th></tr></thead><tbody>${cands.map(x=>`<tr><td>${esc(x.name)}${x.google?' <span class="chip">Google</span>':''}</td><td>${esc(x.email)}</td><td>${esc(x.mobile||'—')}</td><td>${esc(x.profile?.city||'—')}</td><td>${fmtDate(x.createdAt)}</td><td>${planCell(x)}</td><td>${isPremium(x)?premBadge(x):'<span class="hint">No</span>'}</td><td>${statusChip(x.status)}</td><td>${userActs(x)}</td></tr>`).join('')||'<tr><td colspan="9">No job seekers yet.</td></tr>'}</tbody></table></div>`;
+  const canSel=isAdmin||staffCan('edit'),cq=(q.get('cq')||'').toLowerCase();let L2=ufltApply(cands,q);if(cq)L2=L2.filter(x=>(x.name+' '+x.email+' '+x.mobile).toLowerCase().includes(cq));L2.sort((x,y)=>y.createdAt-x.createdAt);lastUserIds=L2.map(x=>x.id);
+  const pg=Math.max(1,Math.min(Math.ceil(L2.length/50)||1,+q.get('cp')||1)),rows=L2.slice((pg-1)*50,pg*50),href=n=>{const p=new URLSearchParams(q);p.set('cp',n);return '#/'+role+'/candidates?'+p.toString()};
+  body=ufltBar(cands,role,'candidates',q)+`<form class="panel toolbar" onsubmit="event.preventDefault();const p=new URLSearchParams(location.hash.split('?')[1]||'');p.delete('cp');val('ac-q')?p.set('cq',val('ac-q')):p.delete('cq');go('#/${role}/candidates?'+p.toString())"><input id="ac-q" style="flex:1;min-width:200px" placeholder="Name, email or mobile" value="${esc(q.get('cq')||'')}" aria-label="Search job seekers"><button class="btn">Search</button></form>`+(canSel?selBar(L2.length,isAdmin):'')+`<p class="hint" style="margin-bottom:8px">${L2.length} job seekers · page ${pg} of ${Math.ceil(L2.length/50)||1}</p><div class="tbl"><table><thead><tr>${canSel?'<th><input type="checkbox" aria-label="Select all on this page" onchange="selUPage(this)"></th>':''}<th>Name</th><th>Email</th><th>Mobile</th><th>City</th><th>Registered</th><th>Plan</th><th>Plans bought</th><th>Top priority</th><th>Status</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr>${canSel?`<td><input type="checkbox" class="usel" value="${x.id}" ${selUsers.has(x.id)?'checked':''} aria-label="Select ${esc(x.name)}" onchange="selUToggle(this)"></td>`:''}<td>${esc(x.name)}${x.google?' <span class="chip">Google</span>':''}${svcChips(x)?'<br>'+svcChips(x):''}</td><td>${esc(x.email)}</td><td>${esc(x.mobile||'—')}</td><td>${esc(x.profile?.city||'—')}</td><td>${fmtDate(x.createdAt)}</td><td>${planCell(x)}</td><td>${buysCell(x)}</td><td>${isPremium(x)?premBadge(x):'<span class="hint">No</span>'}</td><td>${statusChip(x.status)}</td><td>${userActs(x)}</td></tr>`).join('')||'<tr><td colspan="11">No job seekers match.</td></tr>'}</tbody></table></div>${pager(L2.length,pg,50,href)}`;
  }else if(tab==='employers'){
   const eq=(q.get('eq')||'').toLowerCase(),ek=q.get('ek')||'',ei=q.get('ei')||'';
-  let list=emps.slice();
+  let list=ufltApply(emps,q);
   if(ek==='dummy')list=list.filter(x=>x.dummy);else if(ek==='real')list=list.filter(x=>!x.dummy);
   if(ei)list=list.filter(x=>x.company?.industry===ei);
   if(eq)list=list.filter(x=>((x.company?.name||'')+' '+x.email+' '+x.name).toLowerCase().includes(eq));
   list.sort((a,b)=>(a.dummy?1:0)-(b.dummy?1:0)||String(a.company?.name).localeCompare(String(b.company?.name)));lastUserIds=list.map(x=>x.id);
   const pgN=Math.max(1,Math.min(Math.ceil(list.length/50)||1,+q.get('ep')||1)),rows=list.slice((pgN-1)*50,pgN*50),base='#/'+role+'/employers';
   const dCos=emps.filter(x=>x.dummy).length,href=n=>{const p=new URLSearchParams(q);p.set('ep',n);return base+'?'+p.toString()};
-  body=`<div class="stats"><div class="stat"><b>${emps.length}</b><span>All employers</span></div><div class="stat"><b>${dCos}</b><span>Dummy companies</span></div><div class="stat"><b>${emps.length-dCos}</b><span>Real companies</span></div><div class="stat"><b>${db.dummyDel.users.length}</b><span>Dummy companies deleted</span></div></div>
-  <form class="panel toolbar" onsubmit="event.preventDefault();const p=new URLSearchParams();val('ae-q')&&p.set('eq',val('ae-q'));val('ae-k')&&p.set('ek',val('ae-k'));val('ae-i')&&p.set('ei',val('ae-i'));go('${base}?'+p.toString())">
+  body=ufltBar(emps,role,'employers',q)+`<div class="stats"><div class="stat"><b>${emps.length}</b><span>All employers</span></div><div class="stat"><b>${dCos}</b><span>Dummy companies</span></div><div class="stat"><b>${emps.length-dCos}</b><span>Real companies</span></div><div class="stat"><b>${db.dummyDel.users.length}</b><span>Dummy companies deleted</span></div></div>
+  <form class="panel toolbar" onsubmit="event.preventDefault();const p=new URLSearchParams(location.hash.split('?')[1]||'');['eq','ek','ei','ep'].forEach(k=>p.delete(k));val('ae-q')&&p.set('eq',val('ae-q'));val('ae-k')&&p.set('ek',val('ae-k'));val('ae-i')&&p.set('ei',val('ae-i'));go('${base}?'+p.toString())">
    <input id="ae-q" style="flex:2;min-width:160px" placeholder="Company, contact or email" value="${esc(q.get('eq')||'')}" aria-label="Search employers">
    <select id="ae-k" style="flex:1;min-width:150px" aria-label="Account kind">${['','dummy','real'].map(v=>`<option value="${v}"${v===ek?' selected':''}>${v===''?'All companies':v==='dummy'?'Dummy companies only':'Real companies only'}</option>`).join('')}</select>
    <select id="ae-i" style="flex:1;min-width:170px" aria-label="Industry">${sel(INDUSTRIES,ei,'All industries')}</select><button class="btn">Filter</button></form>
-  ${isAdmin?`<div class="toolbar"><strong id="selinfo-u">${selUsers.size} selected</strong>
+  ${isAdmin||staffCan('edit')?`<div class="toolbar"><strong id="selinfo-u">${selUsers.size} selected</strong>
    <button class="btn ghost sm" onclick="selUAll()">Select all ${list.length} shown by filter</button><button class="btn ghost sm" onclick="selUClear()">Clear selection</button>
-   <button class="btn danger sm" onclick="bulkDelUsers()">Delete selected accounts</button><span class="spacer"></span>
-   <button class="btn danger sm" onclick="delAllDummyCos()" ${dCos?'':'disabled'}>Delete all ${dCos} dummy companies</button>${db.dummyDel.users.length||db.dummyDel.jobs.length?'<button class="btn ghost sm" onclick="restoreDummy()">Restore deleted dummy data</button>':''}</div>`:''}
+   <button class="btn sm" onclick="svcModal()">⚙ Give / stop services for selected</button>${isAdmin?'<button class="btn danger sm" onclick="bulkDelUsers()">Delete selected accounts</button>':''}<span class="spacer"></span>
+   ${isAdmin?`<button class="btn danger sm" onclick="delAllDummyCos()" ${dCos?'':'disabled'}>Delete all ${dCos} dummy companies</button>`:''}${db.dummyDel.users.length||db.dummyDel.jobs.length?'<button class="btn ghost sm" onclick="restoreDummy()">Restore deleted dummy data</button>':''}</div>`:''}
   <p class="hint" style="margin-bottom:8px">${list.length} companies · page ${pgN} of ${Math.ceil(list.length/50)||1}. Deleting a company also deletes its jobs.</p>
-  <div class="tbl"><table><thead><tr>${isAdmin?'<th><input type="checkbox" aria-label="Select all on this page" onchange="selUPage(this)"></th>':''}<th>Company</th><th>Type / industry</th><th>Contact</th><th>Mobile</th><th>Open jobs</th><th>Plan</th><th>Documents</th><th>Status</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr>${isAdmin?`<td><input type="checkbox" class="usel" value="${x.id}" ${selUsers.has(x.id)?'checked':''} aria-label="Select ${esc(x.company?.name)}" onchange="selUToggle(this)"></td>`:''}<td><a href="#/company/${x.id}">${esc(x.company?.name)}</a> ${x.dummy?'<span class="chip warn">Dummy</span>':''}</td><td>${esc(x.company?.type||'—')}<br><span class="hint">${esc(x.company?.industry||'')}</span></td><td>${esc(x.name)}<br><span class="hint">${esc(x.email)}</span></td><td>${esc(x.mobile)}</td><td>${jobCount(x.id)}</td><td>${planCell(x)}</td><td>${x.company?.verified?'<span class="chip good">Verified</span>':'<span class="chip warn">Pending</span>'}${isAdmin||staffCan('verify')?` <button class="btn ghost sm" onclick="toggleVerify('${x.id}')">${x.company?.verified?'Unverify':'Verify'}</button>`:''}</td><td>${statusChip(x.status)}</td><td>${userActs(x)}</td></tr>`).join('')||'<tr><td colspan="10">No employers match.</td></tr>'}</tbody></table></div>${pager(list.length,pgN,50,href)}`;
+  <div class="tbl"><table><thead><tr>${isAdmin||staffCan('edit')?'<th><input type="checkbox" aria-label="Select all on this page" onchange="selUPage(this)"></th>':''}<th>Company</th><th>Type / industry</th><th>Contact</th><th>Mobile</th><th>Open jobs</th><th>Plan</th><th>Plans bought</th><th>Documents</th><th>Status</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr>${isAdmin||staffCan('edit')?`<td><input type="checkbox" class="usel" value="${x.id}" ${selUsers.has(x.id)?'checked':''} aria-label="Select ${esc(x.company?.name)}" onchange="selUToggle(this)"></td>`:''}<td><a href="#/company/${x.id}">${esc(x.company?.name)}</a> ${x.dummy?'<span class="chip warn">Dummy</span>':''}</td><td>${esc(x.company?.type||'—')}<br><span class="hint">${esc(x.company?.industry||'')}</span></td><td>${esc(x.name)}<br><span class="hint">${esc(x.email)}</span></td><td>${esc(x.mobile)}</td><td>${jobCount(x.id)}</td><td>${planCell(x)}</td><td>${buysCell(x)}</td><td>${x.company?.verified?'<span class="chip good">Verified</span>':'<span class="chip warn">Pending</span>'}${isAdmin||staffCan('verify')?` <button class="btn ghost sm" onclick="toggleVerify('${x.id}')">${x.company?.verified?'Unverify':'Verify'}</button>`:''}</td><td>${statusChip(x.status)}</td><td>${userActs(x)}</td></tr>`).join('')||'<tr><td colspan="11">No employers match.</td></tr>'}</tbody></table></div>${pager(list.length,pgN,50,href)}`;
  }else if(tab==='jobs'){
   const jq=(q.get('jq')||'').toLowerCase(),jk=q.get('jk')||'',ji=q.get('ji')||'';
   let list=db.jobs.slice();
@@ -3010,11 +3032,9 @@ function pgStaff(role,tab,q){q=q||new URLSearchParams();
  }else if(tab==='payments'){
   body=pgRevenue(q,isAdmin);
  }else if(tab==='services'){
-  body=`<div class="panel"><h3>Start or stop services</h3><p class="hint">Changes apply immediately for everyone on the site.</p>${SERVICES.map(([k,l,d])=>`<div class="svc"><div><p><strong>${esc(l)}</strong></p><p class="hint">${esc(d)}</p></div><button class="switch" role="switch" aria-checked="${svcOn(k)}" aria-label="${esc(l)}" onclick="toggleService('${k}')"></button></div>`).join('')}</div>`;
+  body=servicesBody();
  }else if(tab==='plans'&&isAdmin){
-  const rows=r=>db.plans[r].map(p=>`<div class="form" style="grid-template-columns:2fr 1fr 1fr;margin-bottom:10px"><div class="fld"><label for="pl-${p.id}-n">Name</label><input id="pl-${p.id}-n" value="${esc(p.name)}"></div><div class="fld"><label for="pl-${p.id}-p">Price (₹)</label><input id="pl-${p.id}-p" type="number" min="0" value="${p.price}"></div><div class="fld"><label for="pl-${p.id}-m">Months</label><input id="pl-${p.id}-m" type="number" min="1" value="${p.months}"></div></div>`).join('');
-  body=`<div class="panel"><h3>Employer plans</h3>${rows('employer')}<h3 style="margin-top:20px">Job seeker plans</h3>${rows('candidate')}
-  <div class="row-btns"><button class="btn" onclick="savePlans()">Save pricing</button></div></div>`;
+  body=plansAdmin();
  }else if(tab==='registrations'&&(isAdmin||staffCan('registrations'))){
   body=regReport(q,role);
  }else if(tab==='motp'&&isAdmin){
@@ -3039,7 +3059,7 @@ function viewUser(id){
   <dt>Email</dt><dd>${esc(x.email)}</dd><dt>Mobile</dt><dd>${esc(x.mobile||'—')}</dd><dt>Status</dt><dd>${esc(x.status)}</dd><dt>Plan</dt><dd>${planActive(x)?esc(x.plan.name)+' till '+fmtDate(x.plan.expires):'None'}</dd><dt>Marketing updates</dt><dd>${x.marketing?'Opted in':'Opted out'}</dd>
   ${x.role==='employer'?`<dt>Company</dt><dd>${esc(c.name)}</dd><dt>Company type</dt><dd>${esc(c.type||'—')}</dd><dt>Industry type</dt><dd>${esc(c.industry||'—')}</dd><dt>Employees</dt><dd>${esc(c.employees)}</dd><dt>City</dt><dd>${esc(c.city||'—')}</dd><dt>Website</dt><dd>${esc(c.website||'—')}</dd><dt>GST number</dt><dd>${esc(c.gst||'—')}</dd>${docRow('logo','Logo')}${docRow('gstReg','GST registration')}${docRow('pan','Company PAN')}${docRow('card','Visiting card')}${docRow('udyam','Udyam certificate')}`
   :`<dt>About</dt><dd>${esc(p.about||'—')}</dd><dt>Skills</dt><dd>${esc(p.skills||'—')}</dd><dt>Education</dt><dd>${esc(p.education||'—')}</dd><dt>Work status</dt><dd>${esc(p.workStatus||'—')}${p.designation?', '+esc(p.designation):''}</dd><dt>Experience</dt><dd>${esc(p.expYears||0)}y ${esc(p.expMonths||0)}m</dd><dt>Current salary</dt><dd>${p.salary?rupee(p.salary):'—'}</dd><dt>Location</dt><dd>${esc([p.address,p.city,p.state,p.pincode].filter(Boolean).join(', ')||'—')}</dd><dt>Currently working</dt><dd>${esc(p.working||'—')}${p.working==='Yes'?', notice '+esc(p.notice||0)+' days'+(p.serving?' (serving)':''):''}</dd><dt>Resume</dt><dd>${esc(p.resume?.name||'—')}${(p.resume?.data||p.resume?.fid)?'<div style="margin-top:6px">'+dlBtn(x.id,'ghost sm')+'</div>':''}</dd><dt>Premium Service</dt><dd>${hasPremium(x)?'Active until '+fmtDate(x.plan.expires):'No'}</dd><dt>Top priority</dt><dd>${isPremium(x)?'Yes':'No'}</dd>${pdocs}<dt>Remarks</dt><dd>${esc(p.remarks||'—')}</dd>`}
- </dl><div class="row-btns"><button class="btn" onclick="closeModal()">Close</button></div>`)}
+ </dl>${buysTable(x)}<div class="row-btns">${isAdminNow()||staffCan('edit')?`<button class="btn ghost" onclick="closeModal();svcModal(['${x.id}'])">⚙ Give / stop services</button>`:''}<button class="btn" onclick="closeModal()">Close</button></div>`)}
 function toggleUser(id){if(!isStaffNow())return;const x=getUser(id);touch(x);x.status=x.status==='active'?'suspended':'active';save();toast(x.name+(x.status==='active'?' is active again.':' is suspended and can\'t log in.'));route()}
 function toggleVerify(id){if(!staffCan('verify'))return;const x=getUser(id);touch(x);x.company.verified=!x.company.verified;if(x.company.verified)notify(x.id,'Company documents verified','Your company now shows a verified badge on job posts.','#/employer');save();route()}
 function editUser(id){
@@ -3911,7 +3931,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='59';
+const WEB_BUILD='60';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -4548,6 +4568,81 @@ function introDone(){try{localStorage.setItem(INTRO_KEY,'1')}catch(e){}const d=$
 if(APP)setTimeout(()=>introShow(),700);
 
 {const _pc=pgCandidate;pgCandidate=function(id,q){const h=_pc.apply(this,arguments);let box='';try{box=candStatusBox(id,q)}catch(e){}if(!box)return h;const i=h.indexOf('<div class="panel">');return i<0?h:h.slice(0,i)+box+h.slice(i)}}
+
+
+/* ==================================================================
+   V60: monthly plan + add/remove plans, free / paid user filters,
+   plan purchase counts, per-user services, free vs paid service switches
+   ================================================================== */
+/* ---------- plans ---------- */
+function plansSorted(role){return (db.plans[role]||[]).slice().sort((a,b)=>(+a.months||0)-(+b.months||0))}
+function plansAdmin(){const box=r=>`<div class="panel plan-adm"><div class="res-h"><h3 style="margin:0">${r==='employer'?'Employer plans':'Job seeker plans'}</h3><button class="btn ghost sm" onclick="addPlan('${r}')">+ Add plan</button></div>
+ <div class="plan-rows">${db.plans[r].map(p=>{const n=planBuyers(p.id).size;return `<div class="form plan-row" style="grid-template-columns:2fr 1fr 1fr auto"><div class="fld"><label for="pl-${p.id}-n">Plan name</label><input id="pl-${p.id}-n" value="${esc(p.name)}"></div><div class="fld"><label for="pl-${p.id}-p">Price (₹)</label><input id="pl-${p.id}-p" type="number" min="0" value="${p.price}"></div><div class="fld"><label for="pl-${p.id}-m">Months</label><input id="pl-${p.id}-m" type="number" min="1" max="60" value="${p.months}"></div><div class="fld" style="justify-content:flex-end"><button class="btn danger sm" onclick="delPlan('${r}','${p.id}')" ${db.plans[r].length>1?'':'disabled title="Keep at least one plan"'}>Remove</button><small class="hint">${n} user${n===1?'':'s'} bought</small></div></div>`}).join('')}</div></div>`;
+ return `<p class="lead">Change names, prices and months, add a new plan (for example a Monthly or a 2-year plan) or remove one. Old payments and invoices keep the plan they were bought with.</p>${box('employer')}<div style="height:14px"></div>${box('candidate')}
+ <div class="row-btns"><button class="btn" onclick="savePlans()">Save pricing</button></div>`}
+function readPlanInputs(){for(const r of['employer','candidate'])for(const p of db.plans[r]){const n=document.getElementById(`pl-${p.id}-n`);if(!n)continue;p.name=val(`pl-${p.id}-n`)||p.name;const pr=+val(`pl-${p.id}-p`),m=+val(`pl-${p.id}-m`);if(pr>=0)p.price=pr;if(m>=1)p.months=Math.round(m)}}
+function savePlans(){if(!isAdminNow())return;for(const r of['employer','candidate'])for(const p of db.plans[r]){if(!document.getElementById(`pl-${p.id}-n`))continue;const pr=+val(`pl-${p.id}-p`),m=+val(`pl-${p.id}-m`);if(!(pr>=0)||!(m>=1))return toast('Each plan needs a price and at least 1 month.');if(!val(`pl-${p.id}-n`))return toast('Each plan needs a name.')}
+ readPlanInputs();['employer','candidate'].forEach(r=>{db.plans[r]=plansSorted(r)});save();toast('Pricing saved. New prices show to everyone.');route()}
+function addPlan(role){if(!isAdminNow())return;readPlanInputs();const has=new Set(db.plans[role].map(p=>+p.months));const m=[1,2,6,24,36].find(x=>!has.has(x))||1;
+ db.plans[role].push({id:uid('p'),name:m===1?'Monthly':m===24?'2 years':m===36?'3 years':m+' months',price:m===1?99:m*80,months:m});db.plans[role]=plansSorted(role);save();route();toast('New plan added. Change its name, price or months, then click Save pricing.')}
+function delPlan(role,id){if(!isAdminNow())return;if(db.plans[role].length<2)return toast('Keep at least one plan.');const p=db.plans[role].find(x=>x.id===id);askConfirm('Remove the plan "'+(p?.name||'')+'"? People who already bought it keep it until it ends.','Remove plan',()=>{readPlanInputs();db.plans[role]=db.plans[role].filter(x=>x.id!==id);save();route()})}
+
+/* ---------- who bought what ---------- */
+function payOk(p){return p&&payStatus(p)!=='Rejected'&&!p.sample}
+function userBuys(u){return (db.payments||[]).filter(p=>p.userId===u.id&&payOk(p))}
+function planBuyers(pid,from,to){const s=new Set();(db.payments||[]).forEach(p=>{if(payOk(p)&&p.planId===pid&&(!from||p.at>=from)&&(!to||p.at<=to))s.add(p.userId)});return s}
+function buysOf(u){const m={};userBuys(u).forEach(p=>{const k=p.planId||p.planName;const o=m[k]=m[k]||{name:p.planName||k,n:0,sum:0,last:0,price:0,pend:0};o.n++;o.sum+=+p.amount||0;o.price=+p.amount||o.price;o.last=Math.max(o.last,p.at);if(payStatus(p)!=='Paid')o.pend++});return Object.values(m).sort((a,b)=>b.last-a.last)}
+function buysCell(u){const b=buysOf(u);if(!b.length)return '<span class="hint">—</span>';return b.map(x=>`<span class="buy"><b>${esc(x.name)}</b> ×${x.n} · ${rupee(x.sum)}${x.pend?' <span class="chip warn">'+x.pend+' pending</span>':''}</span>`).join('')}
+function buysTable(u){if(u.role!=='candidate'&&u.role!=='employer')return '';const b=buysOf(u),tot=b.reduce((s,x)=>s+x.sum,0);
+ return `<h3 style="margin-top:16px">Plans bought</h3>${b.length?`<div class="tbl"><table><thead><tr><th>Plan</th><th>Times bought</th><th>Price paid</th><th>Total</th><th>Last bought</th></tr></thead><tbody>${b.map(x=>`<tr><td>${esc(x.name)}</td><td><b>${x.n}</b></td><td>${rupee(x.price)}</td><td>${rupee(x.sum)}</td><td>${fmtDate(x.last)}${x.pend?' <span class="chip warn">'+x.pend+' pending</span>':''}</td></tr>`).join('')}</tbody><tfoot><tr><th>Total</th><th>${b.reduce((s,x)=>s+x.n,0)}</th><th></th><th>${rupee(tot)}</th><th></th></tr></tfoot></table></div>`:'<p class="hint">No plan bought yet.</p>'}${svcChips(u)?`<p style="margin-top:8px"><b>Services set for this user:</b> ${svcChips(u)}</p>`:''}`}
+
+/* ---------- free / paid filters on the Job seekers and Employers tabs ---------- */
+function uflt(q){const d=s=>s?new Date(s+'T00:00').getTime():0;return {k:q.get('uk')||'',p:q.get('up')||'',f:d(q.get('uf')),t:q.get('ut')?d(q.get('ut'))+DAY-1:0,a:q.get('ua')==='1',fs:q.get('uf')||'',ts:q.get('ut')||''}}
+function paidMatch(u,F,pid){const pp=pid===undefined?F.p:pid;if(F.a&&!planActive(u))return false;const b=userBuys(u).filter(p=>(!pp||p.planId===pp)&&(!F.f||p.at>=F.f)&&(!F.t||p.at<=F.t));if(b.length)return true;return !pp&&!F.f&&!F.t&&planActive(u)}
+function ufltApply(list,q){const F=uflt(q);if(F.k==='free')return list.filter(u=>!planActive(u));if(F.k==='paid')return list.filter(u=>paidMatch(u,F));return list}
+function ufltBar(all,role,tab,q){const F=uflt(q),base='#/'+role+'/'+tab;const mk=o=>{const p=new URLSearchParams(q);Object.entries(o).forEach(([k,v])=>v==null||v===''?p.delete(k):p.set(k,v));['ep','up2'].forEach(k=>p.delete(k));return base+'?'+p.toString()};
+ const nFree=all.filter(u=>!planActive(u)).length,nPaid=all.filter(u=>paidMatch(u,Object.assign({},F,{p:''}))).length,urole=tab==='employers'?'employer':'candidate';
+ const plans=plansSorted(urole);
+ return `<div class="panel ufb"><div class="ufb-row"><a class="ufb-b ${!F.k?'on':''}" href="${mk({uk:null,up:null})}">All users <b>${all.length}</b></a><a class="ufb-b free ${F.k==='free'?'on':''}" href="${mk({uk:'free',up:null})}">Free users <b>${nFree}</b></a><a class="ufb-b paid ${F.k==='paid'?'on':''}" href="${mk({uk:'paid'})}">${CROWN} Paid users <b>${nPaid}</b></a></div>
+ ${F.k==='paid'?`<div class="ufb-row plans"><a class="ufb-p ${!F.p?'on':''}" href="${mk({up:null})}">All plans <b>${nPaid}</b></a>${plans.map(p=>`<a class="ufb-p ${F.p===p.id?'on':''}" href="${mk({up:p.id})}">${esc(p.name)} <small>${rupee(p.price)}</small> <b>${all.filter(u=>paidMatch(u,F,p.id)).length}</b></a>`).join('')}</div>
+ <form class="toolbar ufb-date" onsubmit="event.preventDefault();ufDate('${base}')"><span class="hint">Plan bought between</span><input type="date" id="uf-f" value="${esc(F.fs)}" aria-label="From date"><span class="hint">and</span><input type="date" id="uf-t" value="${esc(F.ts)}" aria-label="To date"><label class="check"><input type="checkbox" id="uf-a" ${F.a?'checked':''}> Only plans active now</label><button class="btn sm">Apply</button>${F.fs||F.ts||F.a?`<a class="btn ghost sm" href="${mk({uf:null,ut:null,ua:null})}">Clear dates</a>`:''}</form>`:''}</div>`}
+
+/* ---------- select users and give / stop services ---------- */
+function svcKeys(role){return FREE_RIGHTS[role]||[]}
+function svcChips(u){const s=u&&u.svc;if(!s)return '';return svcKeys(u.role).filter(([k])=>s[k]!=null).map(([k,l])=>`<span class="chip ${s[k]?'good':'bad'}">${esc(l)}: ${s[k]?'given':'stopped'}</span>`).join(' ')}
+function selBar(listLen,canDel){return `<div class="toolbar selbar"><strong id="selinfo-u">${selUsers.size} selected</strong><button class="btn ghost sm" onclick="selUAll()">Select all ${listLen} shown</button><button class="btn ghost sm" onclick="selUClear()">Clear selection</button><button class="btn sm" onclick="svcModal()">⚙ Give / stop services for selected</button>${canDel?'<span class="spacer"></span><button class="btn danger sm" onclick="bulkDelUsers()">Delete selected accounts</button>':''}</div>`}
+let _svcIds=[];
+function svcModal(ids){if(!(isAdminNow()||staffCan('edit')))return toast('Your role cannot change services.');ids=ids||[...selUsers];ids=ids.filter(id=>getUser(id));if(!ids.length)return toast('Tick at least one user first.');
+ const us=ids.map(getUser),role=us[0].role;if(us.some(u=>u.role!==role))return toast('Select only job seekers or only employers.');_svcIds=ids;const one=us.length===1?us[0]:null,cur=k=>one&&one.svc&&one.svc[k]!=null?(one.svc[k]?'give':'stop'):'';
+ openModal(`<h2>⚙ Services for ${one?esc(role==='employer'?(one.company?.name||one.name):one.name):us.length+' '+(role==='employer'?'employers':'job seekers')}</h2><p class="hint">Give a service to just ${one?'this user':'these users'}, or stop it, whatever the site-wide setting is. "As per site setting" follows the Services tab.</p>
+ <div class="svc-list">${svcKeys(role).map(([k,l,d])=>`<div class="svc-row"><div><b>${esc(l)}</b><small>${esc(d)}</small></div><select id="sv-${k}"><option value="">As per site setting</option><option value="give" ${cur(k)==='give'?'selected':''}>✓ Give (allow)</option><option value="stop" ${cur(k)==='stop'?'selected':''}>✕ Stop (block)</option></select></div>`).join('')}</div>
+ <div class="form" style="grid-template-columns:1fr 1fr;margin-top:12px">
+ <div class="fld"><label for="sv-plan">Give a paid plan free</label><select id="sv-plan"><option value="">No change</option>${plansSorted(role).map(p=>`<option value="${p.id}">${esc(p.name)} (${p.months} month${p.months>1?'s':''})</option>`).join('')}<option value="__end">✕ End the current plan now</option></select></div>
+ <div class="fld"><label for="sv-prio">Top priority</label><select id="sv-prio"><option value="">No change</option><option value="7">Give for 7 days</option><option value="30">Give for 30 days</option><option value="90">Give for 90 days</option><option value="0">✕ Remove top priority</option></select></div>
+ <div class="fld"><label for="sv-acc">Account</label><select id="sv-acc"><option value="">No change</option><option value="active">Activate</option><option value="suspended">Suspend (can't log in)</option></select></div></div>
+ <div class="row-btns"><button class="btn" onclick="svcApply()">Apply to ${us.length} user${us.length>1?'s':''}</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}
+function svcApply(){if(!(isAdminNow()||staffCan('edit')))return;const us=_svcIds.map(getUser).filter(Boolean);if(!us.length)return closeModal();const role=us[0].role,t=now(),by=me()?.name||'Admin';let n=0;
+ us.forEach(u=>{touch(u);svcKeys(role).forEach(([k])=>{const v=val('sv-'+k);u.svc=u.svc||{};if(v==='give')u.svc[k]=true;else if(v==='stop')u.svc[k]=false;else delete u.svc[k]});if(u.svc&&!Object.keys(u.svc).length)delete u.svc;
+  const pl=val('sv-plan');if(pl==='__end'){if(u.plan){u.plan.expires=t-1;notify(u.id,'Plan ended','Your Premium plan was ended by JobSetu1.','#/plans')}}else if(pl){const p=db.plans[role].find(x=>x.id===pl);if(p){const start=Math.max(t,planActive(u)?u.plan.expires:0),exp=addMonths(start,p.months);u.plan={id:p.id,name:p.name,expires:exp};db.payments.push({id:uid('p'),userId:u.id,role,planId:p.id,planName:p.name,amount:0,method:'Given by admin',txn:'ADMIN'+Date.now().toString(36).toUpperCase(),status:'Paid',given:by,at:t});notify(u.id,'Premium '+p.name+' plan activated','JobSetu1 gave you the Premium '+p.name+' plan until '+fmtDate(exp)+'.','#/premium')}}
+  const pr=val('sv-prio');if(pr==='0')delete u.premium;else if(pr)u.premium={until:t+(+pr)*DAY,by,at:t};
+  const ac=val('sv-acc');if(ac)u.status=ac;n++});
+ save();closeModal();toast('Services updated for '+n+' user'+(n>1?'s':'')+'.');route()}
+
+/* ---------- paid users: services that can be stopped even with a plan ---------- */
+function paidRight(role,k){return ((db.paidRights||{})[role]||{})[k]!==false}
+function togglePaid(role,k){if(!staffCan('services'))return toast('Your role cannot change services.');db.paidRights=db.paidRights||{};db.paidRights[role]=db.paidRights[role]||{};const on=!paidRight(role,k);db.paidRights[role][k]=on;save();const l=FREE_RIGHTS[role].find(x=>x[0]===k)[1];toast(l+(on?' is on':' is stopped')+' for paid '+(role==='employer'?'employers':'job seekers')+'.');route()}
+function paidPanel(role){return `<div class="rights"><h4>${role==='employer'?'Employers':'Job seekers'} with a paid plan can:</h4>${FREE_RIGHTS[role].map(([k,l,d])=>`<div class="svc"><div><p><strong>${esc(l)}</strong></p><p class="hint">${esc(d)}</p></div><button class="switch" role="switch" aria-checked="${paidRight(role,k)}" aria-label="${esc(l)} for paid ${role==='employer'?'employers':'job seekers'}" onclick="togglePaid('${role}','${k}')"></button></div>`).join('')}</div>`}
+function servicesBody(){const fb=(k,l,role)=>`<div class="freebox"><div><strong>${l}</strong><p class="hint">${svcOn(k)?'<span class="chip good">On</span> Free for everyone without a paid plan.':'<span class="chip bad">Off</span> A paid plan is needed for everything below.'}</p></div><button class="btn ${svcOn(k)?'danger':'alt'}" onclick="toggleService('${k}')">${svcOn(k)?'Stop free service':'Start free service'}</button></div>${rightsPanel(role)}`;
+ const pc=r=>(db.users||[]).filter(u=>u.role===r&&planActive(u)).length,fc=r=>(db.users||[]).filter(u=>u.role===r&&!planActive(u)).length;
+ return `<div class="panel svc-sec free"><h3>🆓 Free users <span class="hint">(no paid plan)</span></h3><p class="hint">Stop any service for free users here. Paid users are not affected. ${fc('candidate')} free job seekers · ${fc('employer')} free employers.</p><div class="rights-grid"><div>${fb('freeCandidate','Free service for job seekers','candidate')}</div><div>${fb('freeEmployer','Free service for employers','employer')}</div></div></div>
+ <div class="panel svc-sec paid"><h3>${CROWN} Paid users <span class="hint">(any active plan)</span></h3><p class="hint">Normally everything is on for paid users. Stop a service here only if you need to. ${pc('candidate')} paid job seekers · ${pc('employer')} paid employers.</p><div class="rights-grid"><div>${paidPanel('candidate')}</div><div>${paidPanel('employer')}</div></div></div>
+ <div class="panel svc-sec"><h3>🌐 Whole website <span class="hint">(everyone)</span></h3><p class="hint">Changes apply immediately for everyone on the site.</p>${SERVICES.map(([k,l,d])=>`<div class="svc"><div><p><strong>${esc(l)}</strong></p><p class="hint">${esc(d)}</p></div><button class="switch" role="switch" aria-checked="${svcOn(k)}" aria-label="${esc(l)}" onclick="toggleService('${k}')"></button></div>`).join('')}</div>
+ <p class="hint">To give or stop a service for one person, open <b>Job seekers</b> or <b>Employers</b>, tick the user and click <b>⚙ Give / stop services</b>.</p>`}
+
+/* one-time: add a Monthly plan for job seekers and employers */
+if(!db.plansMonthlyV1){['employer','candidate'].forEach(r=>{db.plans[r]=db.plans[r]||[];if(!db.plans[r].some(p=>+p.months===1))db.plans[r].unshift({id:r[0]+'1',name:'Monthly',price:99,months:1})});db.plansMonthlyV1=true;save()}
+
+function ufDate(base){const p=new URLSearchParams(location.hash.split('?')[1]||'');['uf','ut','ua','ep','cp'].forEach(k=>p.delete(k));if(val('uf-f'))p.set('uf',val('uf-f'));if(val('uf-t'))p.set('ut',val('uf-t'));if(checked('uf-a'))p.set('ua','1');go(base+'?'+p.toString())}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
