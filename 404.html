@@ -1212,6 +1212,18 @@ html.bgv footer.foot{margin-top:24px}
 .vid-wide .hslides video{object-fit:fill!important}
 .vid-wide{margin:0!important}
 @media (max-width:640px){.bgv-hero::before{height:82%;background:linear-gradient(180deg,rgba(6,16,45,0),rgba(6,16,45,.62) 40%,rgba(6,16,45,.88))}}
+/* V63: smooth sliding app home slides */
+.stories.sm{margin:16px -14px 6px}
+.st-view{overflow:hidden;padding:4px 0 10px;touch-action:pan-y}
+.st-track.sm{display:flex;gap:12px;overflow:visible;padding:0;scroll-snap-type:none;will-change:transform;transform:translate3d(0,0,0)}
+.st-track.sm .st-slide{flex:0 0 min(78vw,340px);max-width:340px;transform:scale(.92);opacity:.72;transition:transform .75s cubic-bezier(.22,.8,.24,1),opacity .75s ease;user-select:none;-webkit-user-select:none}
+.st-track.sm .st-slide.cur{transform:scale(1);opacity:1}
+.st-track.sm .st-slide.cur .st-in{animation:stUp .7s .15s cubic-bezier(.2,.8,.2,1) both}
+.st-track.sm .st-poster img{pointer-events:none}
+@keyframes stUp{from{opacity:0;transform:translateY(14px)}}
+.st-dots button{transition:width .35s ease,background .35s ease}
+@media (prefers-reduced-motion:reduce){.st-track.sm,.st-track.sm .st-slide{transition:none!important}}
+.stories .st-slide .st-in h3{font-size:30px!important;line-height:1.1!important;font-weight:800}.stories .st-btn{opacity:1!important;animation:none!important;background:#fff!important;color:#0A1A44!important;box-shadow:0 10px 20px -10px rgba(0,0,0,.5)}
 </style>
 </head>
 <body>
@@ -1223,7 +1235,7 @@ html.bgv footer.foot{margin-top:24px}
     <div class="fbrand"><a class="logo" href="#/" id="flogo" aria-label="JobSetu1 home"></a><p>Connecting job seekers and employers across India. JobSetu1 never asks job seekers to pay an employer for a job.</p><div class="fcontact" id="fcontact"></div></div>
     <div><h4>Job seekers</h4><a href="#/jobs">Find jobs</a><a href="#/companies">Browse companies</a><a href="#/register/candidate">Create free profile</a><a href="#/plans">Job seeker plans</a></div>
     <div><h4>Employers</h4><a href="#/register/employer">Register free</a><a href="#/post-job">Post a job</a><a href="#/plans">Employer plans</a></div>
-    <div><h4>Company</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a><a href="JobSetu1.apk?v=2.2" download="JobSetu1.apk">📱 Android app</a></div>
+    <div><h4>Company</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a><a href="JobSetu1.apk?v=2.3" download="JobSetu1.apk">📱 Android app</a></div>
   </div>
   <div class="wrap fbottom"><span>© <span id="fyear">2026</span> JobSetu1. All rights reserved.<span id="fventure" class="fventure"></span></span><nav aria-label="Legal"><a href="#/privacy">Privacy policy</a><a href="#/terms">Terms &amp; conditions</a><a href="#/refund">Refund policy</a><a href="#/terms">Fraud alert</a></nav></div>
 </footer>
@@ -1546,10 +1558,10 @@ function renderHeader(cur){
  if(r==='manager')links+=`<a href="#/manager" data-k="manager">Manager panel</a>`;
  if(!u)links+=`<a href="#/register/employer" data-k="register">For employers</a>`;
  links+=`<a href="#/plans" data-k="plans">Plans</a>`;
- if(!u&&!APP)links+=`<a class="nav-app" href="JobSetu1.apk?v=2.2" download="JobSetu1.apk">📱 Download App</a>`;
+ if(!u&&!APP)links+=`<a class="nav-app" href="JobSetu1.apk?v=2.3" download="JobSetu1.apk">📱 Download App</a>`;
  const right=u?`${r==='employer'?`<a class="btn sm postjob-btn${cur==='post-job'?' on':''}" href="#/post-job" aria-label="Post a job"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Post a job</span></a>`:''}${(r==='candidate'||r==='employer')?goldBtn(u):''}${u?`<a class="btn ghost sm bell" href="#/notifications" aria-label="Notifications, ${unread} unread">${BELL}${unread?`<b>${unread}</b>`:''}</a>`:''}${userMenu(u)}`
   :`<a class="btn ghost sm" href="#/login">Log in</a><a class="btn sm" href="#/register">Register free</a>`;
- const dlApp=APP||u?'':`<a class="btn sm app-dl" href="JobSetu1.apk?v=2.2" download="JobSetu1.apk" title="Download the JobSetu1 Android app" aria-label="Download mobile app"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7.5v7M9 11.5l3 3 3-3M10.5 18.5h3"/></svg><span>Download App</span></a>`;
+ const dlApp=APP||u?'':`<a class="btn sm app-dl" href="JobSetu1.apk?v=2.3" download="JobSetu1.apk" title="Download the JobSetu1 Android app" aria-label="Download mobile app"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7.5v7M9 11.5l3 3 3-3M10.5 18.5h3"/></svg><span>Download App</span></a>`;
  $('#top').innerHTML=`<div class="wrap nav"><a class="logo" href="#/" aria-label="JobSetu1 home">${LOGO}</a><a class="ltf-badge" href="${u?'#/plans':'#/register'}" title="JobSetu1 is life time free to search, apply and post jobs" aria-label="Life time free"><img src="${LTF_IMG}" alt="Life Time Free"></a><nav class="links" aria-label="Main">${links}</nav><div class="spacer"></div><div class="right">${dlApp}${right}</div></div>`;
  document.querySelectorAll('.links a').forEach(a=>{if(a.dataset.k===cur)a.classList.add('on')});
  const pb=$('#planbar');
@@ -1761,7 +1773,7 @@ function userMenu(u){
  if(r==='candidate')items=`<a href="#/profile">Edit profile</a><button onclick="openResume()">Update resume</button>${u.profile?.resume?`<button onclick="downloadResume('${u.id}')">Download resume</button>`:''}<button onclick="openPhoto()">${u.photo?'Change profile photo':'Add profile photo'}</button><hr><a href="#/dashboard">My dashboard</a><a href="#/premium">${hasPremium(u)?'Premium tools':'Get Premium Service'}</a>${hasPremium(u)?'<a href="javascript:void 0" onclick="openUpgrade()">⬆ Upgrade Premium</a>':''}<a href="#/invoices">Payments &amp; invoices</a><a href="#/notifications">Notifications</a>`;
  else if(r==='employer')items=`<a href="#/employer">Dashboard</a><a href="#/company-profile">Edit profile</a><a href="#/post-job">Post a job</a><a href="#/premium">${hasPremium(u)?'Premium tools':'Get Premium Service'}</a>${hasPremium(u)?'<a href="javascript:void 0" onclick="openUpgrade()">⬆ Upgrade Premium</a>':''}<a href="#/invoices">Payments &amp; invoices</a><a href="#/notifications">Notifications</a>`;
  else items=`<a href="#/${r}">${r==='admin'?'Admin panel':'Manager panel'}</a><a href="#/notifications">Notifications</a>${r==='admin'?'<a href="#/admin/settings">⚙ Site settings (upload video)</a>':''}`;
- if(!APP)items+=`<a href="JobSetu1.apk?v=2.2" download="JobSetu1.apk">📱 Download Android app</a>`;
+ if(!APP)items+=`<a href="JobSetu1.apk?v=2.3" download="JobSetu1.apk">📱 Download Android app</a>`;
  const pic=r==='employer'&&u.company?.docs?.logo?.data?`<img class="avatar" src="${u.company.docs.logo.data}" alt="">`:avatar(u);
  return `<details class="umenu"><summary aria-label="Account menu">${pic}<span class="who">${esc(u.name)}</span></summary><div class="umenu-list">${items}<hr><button onclick="logout()">Log out</button></div></details>`}
 document.addEventListener('click',e=>{document.querySelectorAll('details.umenu[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('.umenu-list a,.umenu-list button'))d.removeAttribute('open')})});
@@ -3277,7 +3289,7 @@ function pgAbout(){return `<section class="wrap sec legal"><h1>About us</h1>
 <h2>For job seekers</h2><ul><li>Free registration, job search and applications.</li><li>Profiles matched to jobs that fit your skills, industry and location.</li><li>Job alerts and direct company contact details.</li><li>Optional Premium plans that put your resume at the top for employers.</li></ul>
 <h2>For employers</h2><ul><li>Post jobs and download resumes free of cost.</li><li>Verified company profiles that job seekers can trust.</li><li>Premium tools: refined resumes, applicant management, analytics and job boost.</li></ul>
 <h2>What we stand for</h2><ul><li><b>Safe hiring:</b> JobSetu1 never asks job seekers to pay an employer for a job. We review company documents to reduce fake job posts.</li><li><b>Privacy:</b> your personal data is protected and never sold.</li><li><b>Simple and fair:</b> clear prices, GST invoices and quick support.</li></ul>
-<div class="row-btns" style="margin-top:18px"><a class="btn" href="#/jobs">Find jobs</a><a class="btn ghost" href="#/register/employer">Hire with JobSetu1</a><a class="btn ghost" href="#/contact">Contact us</a>${APP?'':'<a class="btn ghost" href="JobSetu1.apk?v=2.2" download="JobSetu1.apk">📱 Get the Android app</a>'}</div></section>`}
+<div class="row-btns" style="margin-top:18px"><a class="btn" href="#/jobs">Find jobs</a><a class="btn ghost" href="#/register/employer">Hire with JobSetu1</a><a class="btn ghost" href="#/contact">Contact us</a>${APP?'':'<a class="btn ghost" href="JobSetu1.apk?v=2.3" download="JobSetu1.apk">📱 Get the Android app</a>'}</div></section>`}
 function pgContact(){const c=supportInfo(),g=grvInfo(),k=co(),wa=(c.whatsapp||c.phone).replace(/\D/g,''),waNum=wa.length===10?'91'+wa:wa;
  const addr=[k.address,[k.city,k.state].filter(Boolean).join(', ')].filter(Boolean).join(', ');
  return `<section class="wrap sec"><div class="page-h"><h1>Contact us</h1><p class="lead">We're here to help job seekers and employers. Reach us any way you like.</p></div>
@@ -3977,7 +3989,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='62';
+const WEB_BUILD='63';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -4145,7 +4157,7 @@ async function cloudPullNow(){toast('Getting data from all devices…');const n=
    V59: live sync, roles & rights, staff email/mobile, mobile OTP,
    app home + intro, details boxes, registrations report and more
    ================================================================== */
-const APK_LATEST='2.2',SITE_URL='https://jobsetu1.com/';
+const APK_LATEST='2.3',SITE_URL='https://jobsetu1.com/';
 function verLess(a,b){const x=String(a||'0').split('.').map(Number),y=String(b||'0').split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d<0}return false}
 function safeRerender(){const a=document.activeElement;return !(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&$('#modal').hidden&&!document.querySelector('.intro.on')}
 
@@ -4789,6 +4801,53 @@ async function appGoogleRedeem(c){if(!c)return go('#/login');let n=0;while(!clou
  try{const r=await gsPost({action:'gRedeem',code:c});history.replaceState(null,'','#/login');onGoogleCredential({credential:r.credential})}catch(e){toast(cloudErr(e)==='code_expired'?'That sign-in took too long. Please try again.':'Google sign-in failed: '+cloudErr(e),7000);go('#/login')}}
 {const _ogc=onGoogleCredential;onGoogleCredential=function(r){if(/^#\/gauth/.test(location.hash||'')&&r&&r.credential)return gauthDone(r.credential);return _ogc.apply(this,arguments)}}
 {const _gl62=googleLogin;googleLogin=function(){if(APP){if(!db.services.googleLogin)return toast('Google sign-in is turned off right now.');return appGoogle()}return _gl62.apply(this,arguments)}}
+
+/* ==================================================================
+   V63: phone's own Google account picker in the app + smooth home slides
+   ================================================================== */
+function appGoogleNative(){try{return APP&&window.AndroidApp&&typeof AndroidApp.googleSignIn==='function'}catch(e){return false}}
+let _gWait=null;
+{const _gl63=googleLogin;googleLogin=function(){
+ if(APP&&appGoogleNative()){
+  if(!db.services.googleLogin)return toast('Google sign-in is turned off right now.');
+  if(!gOn())return toast('Google sign-in isn\'t set up yet. Please register or log in with your email or mobile number.');
+  let ok=false;try{ok=AndroidApp.googleSignIn(gClientId())}catch(e){}
+  if(ok){clearTimeout(_gWait);_gWait=setTimeout(()=>{_gWait=null},60000);return}
+ }
+ return _gl63.apply(this,arguments)}}
+window.appGoogleResult=function(tok,err){clearTimeout(_gWait);_gWait=null;
+ if(tok){closeModal();return onGoogleCredential({credential:tok})}
+ if(!err||err==='cancel')return;
+ openModal(`<h2>${G_ICON} Continue with Google</h2><p class="lead">Google account list could not open on this phone.</p><p class="hint">You can sign in with Google in Chrome instead, or log in with your email or mobile number.</p><div class="row-btns" style="flex-direction:column"><button class="btn wide" onclick="closeModal();appGoogle()">Sign in with Google in Chrome</button><button class="btn ghost wide" onclick="closeModal()">Cancel</button></div><p class="hint" style="margin-top:10px;font-size:11.5px;opacity:.7">Code: ${esc(String(err))}</p>`)};
+
+/* ---------- smooth, endless sliding home slides in the app ---------- */
+function appStories(){const open=openJobs().length,u=me();const s=[];
+ if(POSTER)s.push(`<div class="st-slide st-poster"><img src="${POSTER}" alt="JobSetu1 – Build a brighter future. Search jobs, upload resume, top companies." draggable="false"></div>`);
+ s.push(`<div class="st-slide st-a"><div class="st-in"><span class="st-k">Jobs near you</span><h3>${open.toLocaleString('en-IN')}+ open jobs</h3><p>Turn on your location and see the closest jobs first. Apply in one tap.</p><a class="st-btn" href="#/jobs${myLL()?'?sort=nearest':''}">Find jobs →</a></div><div class="st-art" aria-hidden="true">📍</div></div>`);
+ s.push(`<div class="st-slide st-b"><div class="st-in"><span class="st-k">For employers</span><h3>Hire in hours, not weeks</h3><p>${freeRight('employer','post')?'Post unlimited jobs free of cost.':'Post jobs and reach the right people.'} Get matched candidates instantly.</p><a class="st-btn" href="${u&&u.role==='employer'?'#/post-job':'#/register/employer'}">${u&&u.role==='employer'?'Post a job →':'Start hiring →'}</a></div><div class="st-art" aria-hidden="true">🤝</div></div>`);
+ s.push(`<div class="st-slide st-c"><div class="st-in"><span class="st-k">Premium</span><h3>Get noticed first</h3><p>Resume on top, auto-apply and see who viewed your profile.</p><a class="st-btn" href="${u&&hasPremium(u)?'javascript:openUpgrade()':'#/premium'}">${u&&hasPremium(u)?'⬆ Upgrade Premium':'See Premium →'}</a></div><div class="st-art" aria-hidden="true">👑</div></div>`);
+ const n=s.length,all=n>1?[s[n-1],...s,s[0]]:s;
+ return `<div class="stories sm" aria-roledescription="carousel" aria-label="JobSetu1 highlights"><div class="st-view" id="st-view"><div class="st-track sm" id="st-track" data-n="${n}">${all.join('')}</div></div><div class="st-dots" id="st-dots">${s.map((_,i)=>`<button type="button" aria-label="Slide ${i+1}" class="${i?'':'on'}" onclick="stGo(${i})"></button>`).join('')}</div></div>`}
+const ST={i:1,n:0,t:null,drag:null,w:0,gap:12,el:null};
+function stGeom(){const v=$('#st-view'),t=$('#st-track');if(!v||!t||!t.firstElementChild)return false;ST.el=t;ST.n=+t.dataset.n||t.children.length;ST.w=t.firstElementChild.offsetWidth;ST.off=(v.clientWidth-ST.w)/2;return true}
+function stPaint(anim,dx){const t=ST.el;if(!t)return;t.style.transition=anim?'transform .75s cubic-bezier(.22,.8,.24,1)':'none';t.style.transform=`translate3d(${ST.off-ST.i*(ST.w+ST.gap)+(dx||0)}px,0,0)`;
+ [...t.children].forEach((c,k)=>c.classList.toggle('cur',k===ST.i));const real=(ST.i-1+ST.n)%ST.n;document.querySelectorAll('#st-dots button').forEach((b,k)=>b.classList.toggle('on',k===real))}
+function stGo(i){if(!stGeom())return;ST.i=i+1;stPaint(true);stAuto()}
+function stStep(d){if(!stGeom())return;if(ST.i<=0||ST.i>=ST.n+1){ST.i=ST.i<=0?ST.n:1;stPaint(false);void ST.el.offsetWidth}ST.i+=d;stPaint(true);stAuto()}
+function stScroll(){}
+function stFix(){if(!ST.el)return;if(ST.i>=ST.n+1){ST.i=1;stPaint(false)}else if(ST.i<=0){ST.i=ST.n;stPaint(false)}}
+function stInit(){const t=$('#st-track');if(!t||!t.classList.contains('sm'))return false;if(t._st)return true;t._st=1;ST.i=1;if(!stGeom())return false;stPaint(false);
+ t.addEventListener('transitionend',e=>{if(e.target===t)stFix()});
+ const v=$('#st-view');
+ v.addEventListener('touchstart',e=>{if(!stGeom())return;stFix();clearTimeout(ST.t);const p=e.touches[0];ST.drag={x:p.clientX,y:p.clientY,dx:0,on:null}},{passive:true});
+ v.addEventListener('touchmove',e=>{const d=ST.drag;if(!d)return;const p=e.touches[0],dx=p.clientX-d.x,dy=p.clientY-d.y;if(d.on===null)d.on=Math.abs(dx)>Math.abs(dy);if(!d.on)return;d.dx=dx;stPaint(false,dx);if(e.cancelable)e.preventDefault()},{passive:false});
+ const end=()=>{const d=ST.drag;ST.drag=null;if(!d)return;ST.moved=d.on&&Math.abs(d.dx)>8;if(ST.moved)setTimeout(()=>{ST.moved=false},350);if(d.on&&Math.abs(d.dx)>ST.w*.18){ST.i+=d.dx<0?1:-1}stPaint(true);stAuto()};
+ v.addEventListener('touchend',end);v.addEventListener('touchcancel',end);
+ v.addEventListener('click',e=>{if(ST.moved){e.preventDefault();e.stopPropagation()}},true);
+ if(!ST.rs){ST.rs=1;window.addEventListener('resize',()=>{if($('#st-track')&&stGeom())stPaint(false)})}
+ return true}
+function stAuto(){clearTimeout(ST.t);if(!$('#st-track'))return;if(!stInit())return;ST.t=setTimeout(()=>{if(!$('#st-track'))return;if(document.hidden||ST.drag)return stAuto();stStep(1)},4000)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&$('#st-track'))stAuto()});
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
