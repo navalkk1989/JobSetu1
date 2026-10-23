@@ -4086,7 +4086,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='70';
+const WEB_BUILD='71';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -5326,7 +5326,7 @@ function pgCancellation(){const e=supportInfo().email;return legalDoc({key:'cn',
 {const _nt70=notify;notify=function(uid_,t,b,l){if(l&&!/^#\//.test(String(l)))l='#/notifications';return _nt70.call(this,uid_,t,b,l)}}
 /* block dangerous links (javascript:, data:) that could come from someone's profile */
 document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;const h=String(a.getAttribute('href')||'').trim().toLowerCase().replace(/\s+/g,'');
- if((h.startsWith('javascript:')&&!/^javascript:(void0|voido|openupgrade\(\))$/.test(h))||h.startsWith('data:')||h.startsWith('vbscript:')){e.preventDefault();e.stopPropagation();toast('This link was blocked for your safety.')}},true);
+ if((h.startsWith('javascript:')&&!/^javascript:(void0|void\(0\)|history\.back\(\)|openupgrade\(\))$/.test(h))||h.startsWith('data:')||h.startsWith('vbscript:')){e.preventDefault();e.stopPropagation();toast('This link was blocked for your safety.')}},true);
 /* the real site cannot be shown inside another website's frame (clickjacking) */
 (function(){try{if(/(^|\.)jobsetu1\.com$/.test(location.hostname)&&window.top!==window.self){document.documentElement.style.display='none';window.top.location=window.self.location.href}}catch(e){document.documentElement.style.display='none'}})();
 
