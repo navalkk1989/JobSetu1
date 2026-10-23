@@ -6,6 +6,8 @@
 <title>JobSetu1 – Jobs and hiring across India</title>
 <meta name="description" content="JobSetu1 – free job search and hiring across India. Find jobs near you, apply in one tap, or post jobs and hire faster. Your Career, Our Priority.">
 <link rel="canonical" href="https://jobsetu1.com/">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self' https://api.razorpay.com https://checkout.razorpay.com; upgrade-insecure-requests">
 <meta name="theme-color" content="#0A1A44">
 <meta property="og:type" content="website"><meta property="og:url" content="https://jobsetu1.com/"><meta property="og:title" content="JobSetu1 – Jobs and hiring across India"><meta property="og:description" content="Find jobs near you and apply free, or post jobs and hire faster.">
 <link rel="icon" type="image/png" href="m/482b0bc31c5a.png">
@@ -1287,6 +1289,40 @@ html:not(.app) #netbar{bottom:16px;max-width:520px;margin:0 auto}
 .ownbar{border-left:4px solid var(--brand);display:flex;flex-direction:column;gap:10px}
 .ownbar-h{display:flex;flex-direction:column;gap:2px}
 .ownbar-b{display:flex;flex-wrap:wrap;gap:8px}
+/* V70: consent + legal pages */
+.cns-box{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:16px;background:#F5F8FF;border:1px solid #D6E0F5}
+.cns-box .check{align-items:flex-start;line-height:1.5;font-size:13.5px}
+.cns-box .check input{margin-top:3px;flex:0 0 auto}
+.cns-req{padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #C9D6F0}
+.cns-more{font-size:13px;color:var(--muted);padding:0 4px}.cns-more summary{cursor:pointer;font-weight:700;color:#1846A8}.cns-more ul{margin:8px 0 0;padding-left:18px}.cns-more li{margin:4px 0}
+.danger-p{border-left:4px solid #D93025}.btn.danger{background:#D93025;color:#fff;border-color:#D93025}
+.lgl{max-width:1180px}
+.lgl-head{position:relative;padding:28px 26px;border-radius:24px;background:linear-gradient(135deg,#0A1A44,#1846A8 60%,#2F6BFF);color:#fff;box-shadow:0 24px 50px -30px rgba(10,26,68,.8);margin-bottom:18px}
+.lgl-head h1{color:#fff;margin:8px 0 6px;font-size:clamp(28px,4vw,42px)}
+.lgl-head .venture-l{color:#C9D8FF;margin:0 0 10px}
+.lgl-k{display:inline-block;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.16);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.lgl-meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;color:#DCE6FF}
+.lgl-actions{margin-top:12px}.lgl-actions .btn{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.35)}
+.lgl-short{padding:16px 18px;border-radius:18px;background:#FFF8EC;border:1px solid #F5D9A8;margin-bottom:18px}.lgl-short b{font-size:15px}.lgl-short ul{margin:8px 0 0;padding-left:20px}.lgl-short li{margin:5px 0;line-height:1.5}
+.lgl-grid{display:grid;grid-template-columns:260px 1fr;gap:22px;align-items:start}
+.lgl-toc{position:sticky;top:90px;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line);font-size:13.5px}
+.lgl-toc ol{margin:8px 0 0;padding-left:20px}.lgl-toc li{margin:5px 0}
+.lgl-toc button{border:0;background:none;padding:0;color:#1846A8;font:inherit;text-align:left;cursor:pointer}.lgl-toc button:hover{text-decoration:underline}
+.lgl-body{min-width:0}
+.lgl-intro{font-size:15.5px;line-height:1.7;padding:16px 18px;border-radius:18px;background:#fff;border:1px solid var(--line);margin:0 0 14px}
+.lgl-sec{padding:18px 20px;border-radius:18px;background:#fff;border:1px solid var(--line);margin-bottom:12px;scroll-margin-top:90px}
+.lgl-sec h2{display:flex;align-items:center;gap:10px;font-size:19px;margin:0 0 10px}
+.lgl-sec h2 span{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#EEF3FF;color:#1846A8;font-size:14px}
+.lgl-sec p,.lgl-sec li{line-height:1.7}
+.lgl-tbl{overflow-x:auto}.lgl-tbl table{width:100%;border-collapse:collapse;font-size:13.5px}.lgl-tbl th,.lgl-tbl td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}.lgl-tbl th{background:#F4F7FF}
+.lgl-contact{padding:18px 20px;border-radius:18px;background:#F4F7FF;border:1px solid #D6E0F5;margin-top:6px}.lgl-contact h3{margin:0 0 8px}
+.lgl-dl{display:grid;grid-template-columns:160px 1fr;gap:6px 12px;margin:0}.lgl-dl dt{color:var(--muted)}.lgl-dl dd{margin:0;font-weight:600}
+.lgl-other{font-size:13.5px;color:var(--muted);margin-top:14px}
+@media (max-width:860px){.lgl-grid{grid-template-columns:1fr}.lgl-toc{position:static}.lgl-dl{grid-template-columns:1fr}.lgl-head{padding:22px 18px}}
+@media print{header.top,footer.foot,#bgv,.lgl-actions,.lgl-toc,#cb-btn,.cb-fab,#netbar,#updbar,#apkbar{display:none!important}.lgl-head{background:none;color:#000;box-shadow:none}.lgl-head h1,.lgl-meta{color:#000}.lgl-sec,.lgl-intro{break-inside:avoid;border-color:#ccc}}
+.lgl-tbl th,.lgl-tbl td{white-space:normal!important;word-break:normal}.lgl-tbl td:first-child{width:130px;font-weight:700}
+.lgl-toc button{display:inline;line-height:1.45}
+.lgl-tl{color:#1846A8;cursor:pointer}.lgl-tl:hover,.lgl-tl:focus{text-decoration:underline;outline:none}
 </style>
 </head>
 <body>
@@ -1298,7 +1334,7 @@ html:not(.app) #netbar{bottom:16px;max-width:520px;margin:0 auto}
     <div class="fbrand"><a class="logo" href="#/" id="flogo" aria-label="JobSetu1 home"></a><p>Connecting job seekers and employers across India. JobSetu1 never asks job seekers to pay an employer for a job.</p><div class="fcontact" id="fcontact"></div></div>
     <div><h4>Job seekers</h4><a href="#/jobs">Find jobs</a><a href="#/companies">Browse companies</a><a href="#/register/candidate">Create free profile</a><a href="#/plans">Job seeker plans</a></div>
     <div><h4>Employers</h4><a href="#/register/employer">Register free</a><a href="#/post-job">Post a job</a><a href="#/plans">Employer plans</a></div>
-    <div><h4>Company</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a><a href="JobSetu1.apk?v=2.6" download="JobSetu1.apk">📱 Android app</a></div>
+    <div><h4>Company</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a><a href="JobSetu1.apk?v=2.7" download="JobSetu1.apk">📱 Android app</a></div>
   </div>
   <div class="wrap fbottom"><span>© <span id="fyear">2026</span> JobSetu1. All rights reserved.<span id="fventure" class="fventure"></span></span><nav aria-label="Legal"><a href="#/privacy">Privacy policy</a><a href="#/terms">Terms &amp; conditions</a><a href="#/refund">Refund policy</a><a href="#/terms">Fraud alert</a></nav></div>
 </footer>
@@ -1621,10 +1657,10 @@ function renderHeader(cur){
  if(r==='manager')links+=`<a href="#/manager" data-k="manager">Manager panel</a>`;
  if(!u)links+=`<a href="#/register/employer" data-k="register">For employers</a>`;
  links+=`<a href="#/plans" data-k="plans">Plans</a>`;
- if(!u&&!APP)links+=`<a class="nav-app" href="JobSetu1.apk?v=2.6" download="JobSetu1.apk">📱 Download App</a>`;
+ if(!u&&!APP)links+=`<a class="nav-app" href="JobSetu1.apk?v=2.7" download="JobSetu1.apk">📱 Download App</a>`;
  const right=u?`${r==='employer'?`<a class="btn sm postjob-btn${cur==='post-job'?' on':''}" href="#/post-job" aria-label="Post a job"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Post a job</span></a>`:''}${(r==='candidate'||r==='employer')?goldBtn(u):''}${u?`<a class="btn ghost sm bell" href="#/notifications" aria-label="Notifications, ${unread} unread">${BELL}${unread?`<b>${unread}</b>`:''}</a>`:''}${userMenu(u)}`
   :`<a class="btn ghost sm" href="#/login">Log in</a><a class="btn sm" href="#/register">Register free</a>`;
- const dlApp=APP||u?'':`<a class="btn sm app-dl" href="JobSetu1.apk?v=2.6" download="JobSetu1.apk" title="Download the JobSetu1 Android app" aria-label="Download mobile app"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7.5v7M9 11.5l3 3 3-3M10.5 18.5h3"/></svg><span>Download App</span></a>`;
+ const dlApp=APP||u?'':`<a class="btn sm app-dl" href="JobSetu1.apk?v=2.7" download="JobSetu1.apk" title="Download the JobSetu1 Android app" aria-label="Download mobile app"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7.5v7M9 11.5l3 3 3-3M10.5 18.5h3"/></svg><span>Download App</span></a>`;
  $('#top').innerHTML=`<div class="wrap nav"><a class="logo" href="#/" aria-label="JobSetu1 home">${LOGO}</a><a class="ltf-badge" href="${u?'#/plans':'#/register'}" title="JobSetu1 is life time free to search, apply and post jobs" aria-label="Life time free"><img src="${LTF_IMG}" alt="Life Time Free"></a><nav class="links" aria-label="Main">${links}</nav><div class="spacer"></div><div class="right">${dlApp}${right}</div></div>`;
  document.querySelectorAll('.links a').forEach(a=>{if(a.dataset.k===cur)a.classList.add('on')});
  const pb=$('#planbar');
@@ -1834,7 +1870,7 @@ function userMenu(u){
  if(r==='candidate')items=`<a href="#/profile">Edit profile</a><button onclick="openResume()">Update resume</button>${u.profile?.resume?`<button onclick="downloadResume('${u.id}')">Download resume</button>`:''}<button onclick="openPhoto()">${u.photo?'Change profile photo':'Add profile photo'}</button><hr><a href="#/dashboard">My dashboard</a><a href="#/premium">${hasPremium(u)?'Premium tools':'Get Premium Service'}</a>${hasPremium(u)?'<a href="javascript:void 0" onclick="openUpgrade()">⬆ Upgrade Premium</a>':''}<a href="#/invoices">Payments &amp; invoices</a><a href="#/notifications">Notifications</a>`;
  else if(r==='employer')items=`<a href="#/employer">Dashboard</a><a href="#/company-profile">Edit profile</a><a href="#/post-job">Post a job</a><a href="#/premium">${hasPremium(u)?'Premium tools':'Get Premium Service'}</a>${hasPremium(u)?'<a href="javascript:void 0" onclick="openUpgrade()">⬆ Upgrade Premium</a>':''}<a href="#/invoices">Payments &amp; invoices</a><a href="#/notifications">Notifications</a>`;
  else items=`<a href="#/${r}">${r==='admin'?'Admin panel':'Manager panel'}</a><a href="#/notifications">Notifications</a>${r==='admin'?'<a href="#/admin/settings">⚙ Site settings (upload video)</a>':''}`;
- if(!APP)items+=`<a href="JobSetu1.apk?v=2.6" download="JobSetu1.apk">📱 Download Android app</a>`;
+ if(!APP)items+=`<a href="JobSetu1.apk?v=2.7" download="JobSetu1.apk">📱 Download Android app</a>`;
  const pic=r==='employer'&&u.company?.docs?.logo?.data?`<img class="avatar" src="${u.company.docs.logo.data}" alt="">`:avatar(u);
  return `<details class="umenu"><summary aria-label="Account menu">${pic}<span class="who">${esc(u.name)}</span></summary><div class="umenu-list">${items}<hr><button onclick="logout()">Log out</button></div></details>`}
 document.addEventListener('click',e=>{document.querySelectorAll('details.umenu[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('.umenu-list a,.umenu-list button'))d.removeAttribute('open')})});
@@ -2324,7 +2360,7 @@ function googleSignIn(name,email,dob0,skipCloud){
  if(!u&&!skipCloud&&cloudOn()&&window._gCred){const cred=window._gCred;window._gCred=null;toast('Signing in…');gsPost({action:'gLogin',credential:cred,clientId:gClientId()}).then(r=>{tokSet(r.id,r.token);cloudMerge(r.data);save();googleSignIn(name,email,dob0,true)}).catch(er=>{if(cloudErr(er)==='employer_email')return toast('This email belongs to an employer account. Log in with your password.');googleSignIn(name,email,dob0,true)});return}
  if(u&&u.role!=='candidate')return toast('This email belongs to an employer account. Log in with your password.');
  if(u&&u.status!=='active')return toast('This account is suspended. Contact support.');
- if(!u){if(!db.services.candidateReg)return toast('New registrations are paused right now.');const dob=arguments[2];if(dobError(dob)){window._gPend={name,email};return openModal(`<h2>One more step</h2><p class="lead">Hi ${esc(name)}, enter your date of birth to finish creating your JobSetu1 account.</p><div class="form" style="grid-template-columns:1fr">${dobField('g-dob','')}</div><div class="row-btns"><button class="btn" onclick="const e=dobError(val('g-dob'));if(e)return toast(e);const g=window._gPend,dv=val('g-dob');closeModal();googleSignIn(g.name,g.email,dv)">Create account</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}u={id:uid('u'),role:'candidate',name,mobile:'',email,password:'',google:true,createdAt:now(),status:'active',marketing:false,plan:null,profile:{dob}};db.users.push(u);notify(u.id,'Welcome to JobSetu1','Complete your profile so we can send you matching jobs.','#/profile');save()}
+ if(!u){if(!db.services.candidateReg)return toast('New registrations are paused right now.');const dob=arguments[2];if(dobError(dob)){window._gPend={name,email};return openModal(`<h2>One more step</h2><p class="lead">Hi ${esc(name)}, enter your date of birth to finish creating your JobSetu1 account.</p><div class="form" style="grid-template-columns:1fr">${dobField('g-dob','')}</div><div class="cns-box" style="margin-top:12px"><label class="check cns-req"><input type="checkbox" id="g-consent"> <span>${consentText('candidate')}</span></label><label class="check cns-req"><input type="checkbox" id="g-agree"> <span>I am 18 years or older and agree to the <a href="#/terms" target="_blank">Terms</a>, <a href="#/refund" target="_blank">Refund</a> and <a href="#/cancellation" target="_blank">Cancellation</a> policies.</span></label></div><div class="row-btns"><button class="btn" onclick="if(!checked('g-consent')||!checked('g-agree'))return toast('Please tick both boxes to continue.');window._consentNow=1;const e=dobError(val('g-dob'));if(e)return toast(e);const g=window._gPend,dv=val('g-dob');closeModal();googleSignIn(g.name,g.email,dv)">Create account</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}u={id:uid('u'),role:'candidate',name,mobile:'',email,password:'',google:true,createdAt:now(),status:'active',marketing:false,plan:null,profile:{dob}};db.users.push(u);notify(u.id,'Welcome to JobSetu1','Complete your profile so we can send you matching jobs.','#/profile');save()}
  setSession({kind:'user',id:u.id},true);toast('Signed in with Google as '+u.email+'.');const nx=loginNext;loginNext='';go(nx||(profileReady(u)?'#/dashboard':'#/profile'));
 }
 function pgRegEmp(){
@@ -2694,7 +2730,7 @@ function pgCandidates(q){
  const kw=(q.get('q')||'').toLowerCase(),city=(q.get('city')||'').toLowerCase(),need=tokens(q.get('sk')||'');
  const myJobs=db.jobs.filter(j=>j.employerId===u.id&&j.status==='open');
  const want=need.length?need:[...new Set(myJobs.flatMap(j=>tokens(j.skills)))];
- let list=db.users.filter(c=>c.role==='candidate'&&c.status==='active'&&profileReady(c));
+ let list=db.users.filter(c=>c.role==='candidate'&&c.status==='active'&&!c.hideProfile&&!c.deleteReq&&profileReady(c));
  if(kw)list=list.filter(c=>[c.profile.skills,c.profile.designation,c.profile.about,c.profile.tech].join(' ').toLowerCase().includes(kw));
  if(city)list=list.filter(c=>(c.profile.city+' '+c.profile.state).toLowerCase().includes(city));
  const best=c=>myJobs.length?Math.max(...myJobs.map(j=>matchScore(j,c))):null;
@@ -3350,7 +3386,7 @@ function pgAbout(){return `<section class="wrap sec legal"><h1>About us</h1>
 <h2>For job seekers</h2><ul><li>Free registration, job search and applications.</li><li>Profiles matched to jobs that fit your skills, industry and location.</li><li>Job alerts and direct company contact details.</li><li>Optional Premium plans that put your resume at the top for employers.</li></ul>
 <h2>For employers</h2><ul><li>Post jobs and download resumes free of cost.</li><li>Verified company profiles that job seekers can trust.</li><li>Premium tools: refined resumes, applicant management, analytics and job boost.</li></ul>
 <h2>What we stand for</h2><ul><li><b>Safe hiring:</b> JobSetu1 never asks job seekers to pay an employer for a job. We review company documents to reduce fake job posts.</li><li><b>Privacy:</b> your personal data is protected and never sold.</li><li><b>Simple and fair:</b> clear prices, GST invoices and quick support.</li></ul>
-<div class="row-btns" style="margin-top:18px"><a class="btn" href="#/jobs">Find jobs</a><a class="btn ghost" href="#/register/employer">Hire with JobSetu1</a><a class="btn ghost" href="#/contact">Contact us</a>${APP?'':'<a class="btn ghost" href="JobSetu1.apk?v=2.6" download="JobSetu1.apk">📱 Get the Android app</a>'}</div></section>`}
+<div class="row-btns" style="margin-top:18px"><a class="btn" href="#/jobs">Find jobs</a><a class="btn ghost" href="#/register/employer">Hire with JobSetu1</a><a class="btn ghost" href="#/contact">Contact us</a>${APP?'':'<a class="btn ghost" href="JobSetu1.apk?v=2.7" download="JobSetu1.apk">📱 Get the Android app</a>'}</div></section>`}
 function pgContact(){const c=supportInfo(),g=grvInfo(),k=co(),wa=(c.whatsapp||c.phone).replace(/\D/g,''),waNum=wa.length===10?'91'+wa:wa;
  const addr=[k.address,[k.city,k.state].filter(Boolean).join(', ')].filter(Boolean).join(', ');
  return `<section class="wrap sec"><div class="page-h"><h1>Contact us</h1><p class="lead">We're here to help job seekers and employers. Reach us any way you like.</p></div>
@@ -4050,7 +4086,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='69';
+const WEB_BUILD='70';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -4218,7 +4254,7 @@ async function cloudPullNow(){toast('Getting data from all devices…');const n=
    V59: live sync, roles & rights, staff email/mobile, mobile OTP,
    app home + intro, details boxes, registrations report and more
    ================================================================== */
-const APK_LATEST='2.6',SITE_URL='https://jobsetu1.com/';
+const APK_LATEST='2.7',SITE_URL='https://jobsetu1.com/';
 function verLess(a,b){const x=String(a||'0').split('.').map(Number),y=String(b||'0').split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d<0}return false}
 function safeRerender(){const a=document.activeElement;return !(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&$('#modal').hidden&&!document.querySelector('.intro.on')}
 
@@ -5147,6 +5183,181 @@ function ownerJobBar(j){const n=(db.apps||[]).filter(a=>a.jobId===j.id).length,w
 {const _pj69=pgJob;pgJob=function(id){const h=_pj69.apply(this,arguments);try{const u=me(),j=db.jobs.find(x=>x.id===id);if(!u||!j)return h;
  if(u.id===j.employerId)return h.replace('<div class="detail"><div>','<div class="detail"><div>'+ownerJobBar(j));
  if(isStaffNow()&&typeof editJob==='function'&&staffCan('edit'))return h.replace('<div class="detail"><div>',`<div class="detail"><div><div class="panel ownbar"><div class="ownbar-h"><b>Office tools</b><span class="hint">${esc(j.company)}</span></div><div class="ownbar-b"><button type="button" class="btn sm" onclick="editJob('${j.id}')">✏️ Edit job</button></div></div>`)}catch(e){}return h}}
+
+/* ==================================================================
+   V70: personal-data consent, legal pages, cancellation policy,
+        security hardening, daily app reminder
+   ================================================================== */
+const CONSENT_VER='2026-10-23',LEGAL_DATE='23 October 2026';
+function opName(){const c=co();return (c.legal&&c.legal!=='JobSetu1'?c.legal:'')||ventureTxt().replace(/^A venture of\s*/i,'')||'JobSetu1'}
+function brandWho(){const v=ventureTxt();return 'JobSetu1'+(v?' ('+esc(v.replace(/^A venture/i,'a venture'))+')':'')}
+
+/* ---------- consent before registration ---------- */
+function consentText(role){return role==='employer'
+ ?`I give my consent to ${brandWho()} to collect and use my personal data and my company's details (name, mobile number, email, address, GST/PAN details and documents) to create and verify my account, publish my jobs, show my contact details to job seekers and send me service messages, as explained in the <a href="#/privacy" target="_blank">Privacy policy</a>. I can withdraw this consent at any time.`
+ :`I give my consent to ${brandWho()} to collect and use my personal data in my profile and resume (name, mobile number, email, address, date of birth, education, work experience and salary details) to create my account, match me with jobs and share my profile with employers when I apply or when they search for candidates, as explained in the <a href="#/privacy" target="_blank">Privacy policy</a>. I can withdraw this consent at any time.`}
+function consentNotice(role){return `<details class="cns-more"><summary>What data we collect and why (short notice)</summary><ul>
+ <li><b>Data:</b> ${role==='employer'?'your name, mobile, email, company name, address, GST / PAN and the documents you upload':'your name, mobile, email, date of birth, address, education, skills, experience, salary and resume'}.</li>
+ <li><b>Why:</b> to create your account, ${role==='employer'?'verify your company, publish your jobs and connect you with job seekers':'match you with jobs and share your profile with employers'}, send OTPs and service alerts, process payments and keep the platform safe.</li>
+ <li><b>Who sees it:</b> ${role==='employer'?'job seekers see your company and job contact details':'employers see your profile; full contact details and resume only as described in the Privacy policy'}. We never sell your data.</li>
+ <li><b>Your rights:</b> see, correct or delete your data, withdraw consent and complain to our Grievance Officer — any time from <a href="#/my-data" target="_blank">My data &amp; privacy</a>.</li></ul></details>`}
+function consents(p){const role=p==='e'?'employer':'candidate';return `<div class="fld full cns-box">
+ <label class="check cns-req"><input type="checkbox" id="${p}-consent"> <span><b>Consent for my personal data (required).</b> ${consentText(role)}</span></label>
+ ${consentNotice(role)}
+ <label class="check cns-req"><input type="checkbox" id="${p}-agree"> <span>I am 18 years or older, and I have read and agree to the <a href="#/terms" target="_blank">Terms &amp; conditions</a>, <a href="#/refund" target="_blank">Refund policy</a> and <a href="#/cancellation" target="_blank">Cancellation policy</a> <b>(required)</b>.</span></label>
+ <label class="check"><input type="checkbox" id="${p}-mk"> <span>Send me job updates and offers by SMS, email and WhatsApp (optional — you can stop any time).</span></label></div>`}
+function consentRec(via){return {v:CONSENT_VER,at:now(),via:via||(APP?'app':'website'),data:true,terms:true}}
+function giveConsent(u,via){if(!u||u.consent)return;u.consent=consentRec(via);save()}
+{const _sc70=submitCand;submitCand=function(e){if(!checked('c-consent')){try{e&&e.preventDefault&&e.preventDefault()}catch(x){}return toast('Please give your consent for your personal data (first tick box) to create your account.',6000)}
+ const before=me();const r=_sc70.apply(this,arguments);const u=me();if(u&&u!==before)giveConsent(u,'registration');return r}}
+{const _se70=submitEmp;submitEmp=async function(e){if(!checked('e-consent')){try{e&&e.preventDefault&&e.preventDefault()}catch(x){}return toast('Please give your consent for your personal data (first tick box) to register.',6000)}
+ const before=me();const r=await _se70.apply(this,arguments);const u=me();if(u&&u!==before)giveConsent(u,'registration');return r}}
+/* everyone who is logged in must have given consent (Google sign-up and older accounts are asked once) */
+function consentGate(){const u=me();if(!u||!['candidate','employer'].includes(u.role)||u.consent)return;
+ if(window._consentNow){window._consentNow=0;return giveConsent(u,'google')}
+ if(/^#\/(privacy|terms|refund|cancellation|my-data|about|contact)/.test(location.hash))return;
+ if(!$('#modal').hidden&&$('#cns-gate'))return;
+ openModal(`<div id="cns-gate"><h2>Your consent is needed</h2><p class="lead">To keep using JobSetu1, please confirm that we may use your personal data. This is required by Indian data protection law.</p>
+ <div class="cns-box"><label class="check cns-req"><input type="checkbox" id="g2-consent"> <span>${consentText(u.role)}</span></label>${consentNotice(u.role)}
+ <label class="check cns-req"><input type="checkbox" id="g2-agree"> <span>I am 18 years or older and agree to the <a href="#/terms" target="_blank">Terms</a>, <a href="#/refund" target="_blank">Refund</a> and <a href="#/cancellation" target="_blank">Cancellation</a> policies.</span></label></div>
+ <div class="row-btns"><button class="btn" onclick="if(!checked('g2-consent')||!checked('g2-agree'))return toast('Please tick both boxes to continue.');giveConsent(me(),'asked');closeModal();toast('Thank you. Your consent is saved.')">I agree &amp; continue</button><button class="btn ghost" onclick="closeModal();logout()">Don't agree — log out</button></div></div>`)}
+
+/* ---------- My data & privacy (rights under the DPDP Act) ---------- */
+function pgMyData(){const u=me();if(!u||!['candidate','employer'].includes(u.role))return `<section class="wrap narrow sec"><div class="page-h"><h1>My data &amp; privacy</h1><p class="lead">Log in to see and manage your personal data.</p></div><div class="row-btns"><a class="btn" href="#/login?next=${encodeURIComponent('#/my-data')}">Log in</a><a class="btn ghost" href="#/privacy">Read the Privacy policy</a></div></section>`;
+ const c=u.consent,del=u.deleteReq;
+ return `<section class="wrap narrow sec"><div class="page-h"><h1>My data &amp; privacy</h1><p class="lead">See what we hold about you and use your rights under the Digital Personal Data Protection Act, 2023.</p></div>
+ <div class="panel"><h3>Your consent</h3>${c?`<p>✓ Consent given on <b>${fmtDate(c.at)}</b> (${esc(c.via||'')}) · version ${esc(c.v||'')}</p>`:'<p class="err-t">Consent not recorded yet.</p>'}
+ <label class="check"><input type="checkbox" ${u.marketing?'checked':''} onchange="me().marketing=this.checked;save();toast(this.checked?'You will get job updates and offers.':'Promotional messages are turned off. You will still get important account and payment messages.')"> Send me job updates and offers by SMS, email and WhatsApp</label></div>
+ <div class="panel"><h3>See or correct your data</h3><p class="hint">Your profile holds the data employers and our team see. You can correct or update it any time.</p><div class="row-btns"><a class="btn" href="#/${u.role==='employer'?'company-profile':'profile'}">Edit my ${u.role==='employer'?'company profile':'profile'}</a><button class="btn ghost" onclick="myDataDownload()">⬇ Download a copy of my data</button></div></div>
+ <div class="panel danger-p"><h3>Withdraw consent &amp; delete my account</h3>${del?`<p>⏳ Your request was received on <b>${fmtDate(del)}</b>. Your account and personal data will be deleted within 30 days, except records we must keep by law (such as payment invoices).</p>`:`<p class="hint">Your profile will be hidden from employers, and your account and personal data will be deleted within 30 days. Records that the law requires us to keep (such as invoices for tax) are kept only for that purpose.</p><div class="row-btns"><button class="btn danger" onclick="askDelete()">Withdraw consent &amp; delete my account</button></div>`}</div>
+ <div class="panel"><h3>Questions or complaints</h3><p>${(()=>{const g=grvInfo();return `Grievance Officer: <b>${esc(g.name||'—')}</b>${g.email?` · <a href="mailto:${esc(g.email)}">${esc(g.email)}</a>`:''}`})()}</p><p class="hint">We acknowledge complaints within 24 hours and resolve them within 15 days. If you are not satisfied, you may complain to the Data Protection Board of India.</p></div></section>`}
+function myDataDownload(){const u=me();if(!u)return;const strip=x=>gsStrip(x,['password','gpw']);
+ const d={exportedAt:new Date().toISOString(),account:strip(u),applications:(db.apps||[]).filter(a=>a.candId===u.id||a.employerId===u.id),jobs:db.jobs.filter(j=>j.employerId===u.id),payments:(db.payments||[]).filter(p=>p.userId===u.id).map(p=>gsStrip(p,['proofImg'])),notifications:(db.notes||[]).filter(n=>n.userId===u.id)};
+ saveBlob('JobSetu1-my-data.json',new Blob([JSON.stringify(d,null,1)],{type:'application/json'}),'My data')}
+function askDelete(){askConfirm('Withdraw your consent and delete your JobSetu1 account? Your profile will be hidden from employers at once and deleted within 30 days.','Yes, delete my account',()=>{const u=me();if(!u)return;
+ u.deleteReq=now();u.consent=Object.assign({},u.consent||{},{withdrawnAt:now()});u.hideProfile=true;
+ db.support=db.support||[];db.support.push({id:uid('s'),empId:u.role==='employer'?u.id:'',userId:u.id,from:'My data & privacy',name:u.name,phone:u.mobile||'',topic:'Account deletion (consent withdrawn)',jobId:'',msg:`${u.name} (${u.email||u.mobile}) withdrew consent and asked to delete the account. Please delete the account and personal data within 30 days.`,status:'Open',reply:'',at:now()});
+ notifyStaff('🗑 Account deletion request',`${u.name} (${u.role==='employer'?'employer':'job seeker'}) withdrew consent and asked to delete the account. Complete it within 30 days.`);
+ save();toast('Your request is received. Your account will be deleted within 30 days.',7000);setTimeout(()=>{try{logout()}catch(e){}},1200)})}
+
+/* ---------- legal pages ---------- */
+function lglGo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+function legalDoc(o){const secs=o.sections.map((s,i)=>Object.assign({n:i+1,id:o.key+'-'+(i+1)},s));
+ return `<section class="wrap sec lgl"><div class="lgl-head"><span class="lgl-k">${o.kicker||'Legal'}</span><h1>${o.title}</h1><div class="lgl-meta"><span>Last updated: <b>${LEGAL_DATE}</b></span><span>Applies to: <b>${o.applies||'All users of jobsetu1.com and the JobSetu1 app'}</b></span></div><div class="lgl-actions"><button type="button" class="btn ghost sm" onclick="window.print()">🖨 Print / save as PDF</button></div></div>
+ ${o.short?`<div class="lgl-short"><b>In short</b><ul>${o.short.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}
+ <div class="lgl-grid"><nav class="lgl-toc" aria-label="Contents"><b>Contents</b><ol>${secs.map(s=>`<li><span class="lgl-tl" role="link" tabindex="0" onclick="lglGo('${s.id}')" onkeydown="if(event.key==='Enter')lglGo('${s.id}')">${s.h}</span></li>`).join('')}</ol></nav>
+ <article class="lgl-body">${o.intro?`<p class="lgl-intro">${o.intro}</p>`:''}${secs.map(s=>`<section class="lgl-sec" id="${s.id}"><h2><span>${s.n}</span>${s.h}</h2>${s.b}</section>`).join('')}
+ <div class="lgl-contact">${legalContact()}</div><p class="lgl-other">Other policies: <a href="#/privacy">Privacy policy</a> · <a href="#/terms">Terms &amp; conditions</a> · <a href="#/refund">Refund policy</a> · <a href="#/cancellation">Cancellation policy</a> · <a href="#/my-data">My data &amp; privacy</a></p></article></div></section>`}
+function legalContact(){const g=grvInfo(),s=supportInfo();return `<h3>Grievance Officer &amp; contact</h3><dl class="lgl-dl"><dt>Grievance Officer</dt><dd>${esc(g.name||'—')}</dd><dt>Email</dt><dd>${g.email?`<a href="mailto:${esc(g.email)}">${esc(g.email)}</a>`:'—'}</dd><dt>Address</dt><dd>${esc(g.address||'—')}</dd>${s.phone?`<dt>Phone</dt><dd>${esc(s.phone)}</dd>`:''}<dt>Response time</dt><dd>Acknowledged within 24 hours, resolved within 15 days</dd></dl>`}
+function pgPrivacy(){const c=co();return legalDoc({key:'pp',kicker:'Privacy',title:'Privacy policy',
+ intro:`This Privacy policy explains how <b>${brandWho()}</b> ("JobSetu1", "we", "us") collects, uses, shares and protects your personal data when you use our website <b>jobsetu1.com</b> and the JobSetu1 Android app. It is written to meet the Digital Personal Data Protection Act, 2023 ("DPDP Act") and its Rules, the Information Technology Act, 2000 and the rules made under it. For the DPDP Act, JobSetu1 is the <b>Data Fiduciary</b> and you are the <b>Data Principal</b>.`,
+ short:['We collect only what is needed to run a job portal: your account, profile, resume, jobs and payment details.','We use your data only with your consent, for the purposes listed here. We <b>never sell</b> your data.','Employers see job seeker profiles; job seekers see company and job contact details — as explained below.','You can see, correct or delete your data and withdraw consent any time from <a href="#/my-data">My data &amp; privacy</a>.','Questions or complaints: our Grievance Officer replies within 24 hours.'],
+ sections:[
+ {h:'Who we are',b:`<p>JobSetu1 is an online job platform${ventureTxt()?' and '+esc(ventureTxt().replace(/^A venture/i,'a venture'))+',':''} operated from ${esc(c.city||'Gurugram')}, ${esc(c.state||'Haryana')}, India${c.legal&&c.legal!=='JobSetu1'?` by <b>${esc(c.legal)}</b>`:''}${c.address?`, ${esc(c.address)}`:''}. We connect people looking for work with businesses that are hiring. We act as an intermediary under the Information Technology Act, 2000.</p>`},
+ {h:'Personal data we collect',b:`<div class="lgl-tbl"><table><thead><tr><th>Who</th><th>Data</th><th>Source</th></tr></thead><tbody>
+ <tr><td>Job seekers</td><td>Name, mobile number, email, password (stored only as a secure hash), date of birth, gender (if given), address, city, state, pincode, location on map (if you allow), education, skills, languages, work experience, current and expected salary, notice period, photo and <b>resume</b>.</td><td>You</td></tr>
+ <tr><td>Employers</td><td>Contact person's name, mobile, email, password hash; company name, type, industry, size, address, location, website, GST number, PAN and documents (logo, GST certificate, PAN card, visiting card, Udyam certificate); jobs you post and the contact details you list.</td><td>You</td></tr>
+ <tr><td>Payments</td><td>Plan, amount, GST, invoice details, UTR / transaction ID, payment screenshot you upload, and Razorpay payment ID. We do <b>not</b> store card numbers, CVV, UPI PIN or net-banking passwords.</td><td>You, Razorpay</td></tr>
+ <tr><td>Activity</td><td>Applications, application status, profile views, resume downloads, notifications, support messages and chat with our assistant.</td><td>Your use of JobSetu1</td></tr>
+ <tr><td>Technical</td><td>Device and browser type, app version, approximate location (only if you allow), notification token, and basic logs needed for security.</td><td>Your device</td></tr>
+ <tr><td>Google sign-in</td><td>Your name and Gmail address from Google, if you choose "Continue with Google". We never see your Google password.</td><td>Google</td></tr></tbody></table></div>`},
+ {h:'Why we use your data (purposes)',b:`<p>We use your personal data only for these purposes, on the basis of the <b>consent</b> you give when you register (Section 6 of the DPDP Act), and for legitimate uses allowed by law (Section 7), such as following a legal duty:</p><ul>
+ <li>Creating and securing your account, and verifying your mobile number and email with OTPs.</li><li>Matching job seekers with suitable jobs (including jobs near you) and showing profiles to employers.</li><li>Letting employers post jobs, review applications and contact candidates; letting job seekers apply and contact employers.</li><li>Verifying employer documents to reduce fake jobs and fraud.</li><li>Processing plan payments, approving payment proofs, issuing GST invoices and keeping accounts as required by tax law.</li><li>Sending service messages — OTPs, application updates, payment and plan alerts, and app notifications.</li><li>Sending job updates and offers by SMS, email or WhatsApp <b>only if you opted in</b>.</li><li>Answering support requests, preventing misuse, and complying with law, court orders or government requests.</li></ul><p>We do not use your data for any other purpose without asking you again.</p>`},
+ {h:'Your consent and how to withdraw it',b:`<p>Before you create an account, we ask for your clear consent with a separate tick box. Your consent is recorded with the date and time. You can <b>withdraw your consent at any time</b>, as easily as you gave it, from <a href="#/my-data">My data &amp; privacy</a> → "Withdraw consent &amp; delete my account", or by writing to our Grievance Officer.</p><p>After you withdraw consent we stop processing your data within a reasonable time (and in any case within 30 days), hide your profile from employers and delete your account, except data we must keep by law. Withdrawal does not affect processing done before it. Without consent we cannot provide our services to you.</p>`},
+ {h:'Who can see or receive your data',b:`<ul><li><b>Employers</b> registered on JobSetu1 can see job seeker profiles. Full phone number, email, address and resume are shown to employers as described on our Plans page (for example during a free period or with an active plan), and always to the employer of a job you applied to.</li><li><b>Job seekers</b> can see company details and the contact details employers add to their jobs, as described on the Plans page.</li><li><b>Service providers</b> who process data for us under contract: Google (hosting, Google Sheets and Google Drive storage, sign-in), Razorpay (online payments), SMS / WhatsApp / email delivery providers, and maps providers. They may use your data only to provide services to us.</li><li><b>Authorities</b> when required by law, a court order or a lawful request from a government agency.</li></ul><p>We <b>do not sell or rent</b> your personal data to anyone.</p>`},
+ {h:'Resume and profile visibility',b:`<p>Your resume and profile exist so that employers can consider you for jobs. Please do not add sensitive information that is not needed for a job, such as Aadhaar number, bank details, religion, caste or health details. You can hide your profile at any time by withdrawing consent, and you can edit or remove your resume from your profile.</p><p>Employers must use candidate data only for recruitment for their own company and must not share or sell it (see our Terms &amp; conditions).</p>`},
+ {h:'How we protect your data',b:`<p>We use reasonable security practices as required by Section 43A of the IT Act and the DPDP Act, including: encrypted HTTPS connections; passwords stored only as salted hashes; one-time passwords; access to records only for the account owner and authorised office staff; separate roles and rights for staff with automatic logout; server-side checks so that only the owner of a record can change it; and payment screenshots kept in a private Google Drive folder.</p><p>No system is 100% secure. If a personal data breach happens, we will inform affected users and the Data Protection Board of India as required by law, and take steps to limit the harm.</p>`},
+ {h:'How long we keep your data',b:`<ul><li>Account and profile data: while your account is active. If your account is inactive for 3 years, we may delete it after notice.</li><li>After you delete your account or withdraw consent: deleted within 30 days.</li><li>Invoices and payment records: kept for the period required by tax and accounting laws (generally up to 8 years), and used only for that purpose.</li><li>Security logs: up to 180 days, or longer if required by law.</li></ul>`},
+ {h:'Your rights',b:`<p>Under the DPDP Act you have the right to:</p><ul><li><b>Access</b> — get a summary of your personal data and how it is used (download a copy from <a href="#/my-data">My data &amp; privacy</a>).</li><li><b>Correction and update</b> — correct, complete or update your data (edit your profile any time).</li><li><b>Erasure</b> — ask us to delete your data.</li><li><b>Withdraw consent</b> — at any time.</li><li><b>Grievance redressal</b> — complain to our Grievance Officer; if not satisfied, complain to the <b>Data Protection Board of India</b>.</li><li><b>Nominate</b> — nominate another person to use your rights in case of death or incapacity (write to the Grievance Officer).</li></ul><p>You also have duties: give true information, do not impersonate anyone, and do not file false complaints.</p>`},
+ {h:'Children',b:`<p>JobSetu1 is only for people aged <b>18 years or older</b>. We do not knowingly collect personal data of children. If you believe a child has registered, write to us and we will delete the account.</p>`},
+ {h:'Cookies, local storage and app permissions',b:`<p>We use browser local storage and similar technology to keep you logged in, remember your settings and keep the site fast. We do not use advertising cookies. The app may ask for <b>notifications</b> (to send alerts), <b>location</b> (only to show nearby jobs, if you allow) and <b>files</b> (to upload your resume or documents). You can turn these off in your phone settings.</p>`},
+ {h:'Where your data is stored',b:`<p>Your data is stored with our service providers, mainly Google. Some of it may be stored on servers outside India, which the DPDP Act allows except for countries restricted by the Government of India. The same protections in this policy apply wherever your data is stored.</p>`},
+ {h:'Changes to this policy',b:`<p>We may update this policy. The "Last updated" date at the top shows the latest version. For important changes we will tell you on the website or app, and ask for fresh consent where the law requires.</p>`}]})}
+function pgTerms(){const c=co(),e=db.plans.employer.map(p=>`${rupee(p.price)} for ${p.months} month${p.months>1?'s':''}`).join(', '),cd=db.plans.candidate.map(p=>`${rupee(p.price)} for ${p.months} month${p.months>1?'s':''}`).join(', ');
+ return legalDoc({key:'tc',kicker:'Terms',title:'Terms &amp; conditions',
+ intro:`These Terms &amp; conditions ("Terms") are an agreement between you and <b>${brandWho()}</b> for the use of jobsetu1.com and the JobSetu1 app. By registering or using JobSetu1 you accept these Terms, our <a href="#/privacy">Privacy policy</a>, <a href="#/refund">Refund policy</a> and <a href="#/cancellation">Cancellation policy</a>. If you do not agree, please do not use JobSetu1. This document is an electronic record under the Information Technology Act, 2000 and does not need a physical signature.`,
+ short:['You must be 18+ and give true information.','Registration is free. Paid plans give extra features; payments are not refundable except duplicate payments.','Employers must never ask job seekers for money.','We are a platform (intermediary) — we do not guarantee jobs or hires.','Courts at '+esc(c.city||'Gurugram')+' have jurisdiction.'],
+ sections:[
+ {h:'Eligibility and accounts',b:`<ul><li>You must be at least 18 years old and able to make a binding contract under Indian law.</li><li>Give true, current and complete information, and keep it updated.</li><li>Keep your password and OTPs secret. You are responsible for everything done through your account. Tell us at once if you suspect misuse.</li><li>One person or business may hold one account of each type. Do not create accounts for others without their permission.</li></ul>`},
+ {h:'Our role as a platform',b:`<p>JobSetu1 is an intermediary under Section 79 of the Information Technology Act, 2000. We provide a platform where job seekers and employers find each other. We are <b>not</b> a recruitment agency or employer, we are not a party to any job offer or employment contract, and we do not guarantee that a job seeker will be hired or that an employer will find a candidate. We review employer documents but cannot verify every detail — please use your own judgement before sharing documents or accepting an offer.</p>`},
+ {h:'Free services and paid plans',b:`<p>Registration, job search and job posting are free as shown on our <a href="#/plans">Plans</a> page. Paid plans give extra features. Current employer plans: ${e}. Current job seeker plans: ${cd}. Prices include or add GST as shown at checkout.</p><ul><li>Plans do <b>not</b> renew automatically.</li><li>When you pay by UPI or bank transfer, you must share the UTR / transaction ID or a screenshot. Our team checks the payment and activates the plan, usually within 1 hour. The invoice can be downloaded after approval.</li><li>Payments through Razorpay are activated as soon as Razorpay confirms them.</li><li>A plan is for the registered account only and cannot be transferred, shared or used for another company.</li><li>We may change prices; changes do not affect a plan you have already paid for.</li><li>Refunds and cancellations are governed by our <a href="#/refund">Refund policy</a> and <a href="#/cancellation">Cancellation policy</a>.</li></ul>`},
+ {h:'Employer obligations',b:`<ul><li>Post only real, current vacancies for your own company, with true salary, location and job details.</li><li><b>Never ask a candidate for any money</b> — for registration, interview, training, uniform, deposit or anything else.</li><li>Do not discriminate on grounds prohibited by law (religion, caste, gender, disability and others).</li><li>Use candidate data only to recruit for your own company, keep it confidential, and do not share, sell or misuse it. You are responsible for complying with data protection law for data you download.</li><li>Upload only genuine documents. False documents lead to immediate suspension and may be reported to authorities.</li></ul>`},
+ {h:'Job seeker obligations',b:`<ul><li>Keep your profile and resume truthful.</li><li>Use employer contact details only to ask about jobs.</li><li>Report any employer who asks you for money. <b>JobSetu1 never charges anyone for getting a job.</b></li></ul>`},
+ {h:'What is not allowed',b:`<p>As required by the IT (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, you must not host, upload or share content that: belongs to someone else without permission; is obscene, defamatory, harassing, hateful or discriminatory; is harmful to children; infringes any patent, trademark, copyright or other rights; deceives or misleads (including fake jobs); impersonates another person; threatens the unity, security or public order of India; contains viruses or harmful code; or breaks any law.</p><p>You must also not scrape or copy data, send spam, try to bypass plan limits or security, access other people's accounts, or overload the service. We may remove such content and suspend accounts, and report unlawful activity to authorities.</p>`},
+ {h:'Fraud alert',b:`<p>JobSetu1 and its staff will never ask for your password, OTP, UPI PIN or card details, and never ask job seekers to pay for a job. Our official payment details are shown only on the checkout page inside your account. If anyone asks you for money in the name of JobSetu1 or a job, do not pay and report it to us and to <b>cybercrime.gov.in</b> or helpline <b>1930</b>.</p>`},
+ {h:'Suspension and termination',b:`<p>We may suspend or close an account, remove content or stop a service, with or without notice, if these Terms are broken, if we suspect fraud or misuse, or if the law requires it. You may close your account at any time from <a href="#/my-data">My data &amp; privacy</a>. Fees already paid are not refunded on suspension for breach of these Terms.</p>`},
+ {h:'Intellectual property',b:`<p>The JobSetu1 name, logo, design and software belong to us. You keep ownership of content you upload but give us permission to host, display and share it as needed to provide the service.</p>`},
+ {h:'Limitation of liability and indemnity',b:`<p>To the extent permitted by law, JobSetu1 is not liable for indirect or consequential loss, or for the acts of employers or job seekers. Our total liability for any claim is limited to the amount you paid us in the three months before the claim. You agree to indemnify JobSetu1 for losses caused by your breach of these Terms or your misuse of the platform.</p>`},
+ ...(()=>{const v=visCfg();return v.cand.on||v.emp.on?[{h:'Free accounts and application visibility',b:`<p>Free accounts have limited visibility. ${v.cand.on?`For free job seekers, about ${v.cand.pct}% of job applications (the earliest ones) are shared with employers. `:''}${v.emp.on?`Free employers can see the details of about ${v.emp.pct}% of the applicants on each job (the earliest ones). `:''}Premium accounts get 100% visibility.</p>`}]:[]})(),
+ {h:'Changes to these Terms',b:`<p>We may update these Terms. The latest version is always on this page. Continuing to use JobSetu1 after a change means you accept it.</p>`},
+ {h:'Governing law and disputes',b:`<p>These Terms are governed by the laws of India. First contact our Grievance Officer — most issues are solved there. Any dispute is subject to the exclusive jurisdiction of the courts at ${esc(c.city||'Gurugram')}, ${esc(c.state||'Haryana')}, India. Nothing in these Terms limits rights you have under the Consumer Protection Act, 2019.</p>`}]})}
+function pgRefund(){const e=supportInfo().email;return legalDoc({key:'rf',kicker:'Payments',title:'Refund policy',applies:'All Premium plan payments',
+ intro:`This Refund policy explains when money paid to <b>${brandWho()}</b> for a Premium plan can be refunded. Please also read our <a href="#/cancellation">Cancellation policy</a>.`,
+ short:['Refund is given <b>only for a duplicate payment</b> — when the same plan was paid for twice.','No refund for change of mind, unused plans, or not getting a job / candidates.','Ask within 7 days with the transaction IDs. Refunds reach your account in 5–7 working days after approval.'],
+ sections:[
+ {h:'When a refund is given',b:`<p>We refund money in one case only: <b>a duplicate payment</b> — you were charged twice (or more) for the same plan, for example because the payment was submitted twice or your bank debited the amount twice. The extra amount is refunded in full; your plan continues on the first payment.</p>`},
+ {h:'When a refund is not given',b:`<ul><li>You changed your mind after paying, or did not use the plan.</li><li>You did not get a job, an interview, or the number of candidates you expected.</li><li>Part of the plan period is still left.</li><li>Your account or plan was suspended or closed because our Terms were broken.</li><li>A payment proof (UTR / screenshot) was found to be false.</li></ul>`},
+ {h:'Money debited but payment failed',b:`<p>If money was debited from your account but the payment failed or did not reach us, it is usually returned to you automatically by your bank or Razorpay within 5–7 working days. If it is not, contact us with the transaction ID and we will help you trace it.</p>`},
+ {h:'How to ask for a refund of a duplicate payment',b:`<ol><li>Write to us within <b>7 days</b> of the payment${e?` at <a href="mailto:${esc(e)}">${esc(e)}</a>`:''} or from the <a href="#/contact">Contact us</a> page.</li><li>Share your registered email or mobile number, the invoice numbers, and the UTR / transaction IDs (or bank statement) of both payments.</li><li>We check both payments in our company account and reply within 3 working days.</li></ol>`},
+ {h:'How and when the refund is paid',b:`<p>An approved refund is sent to the <b>same account or payment method</b> you paid from (or to a UPI ID / bank account in your name if the original method cannot receive it). Banks usually take 5–7 working days to show it. If GST was charged, a credit note is issued with the refund.</p>`},
+ {h:'Your rights',b:`<p>This policy does not take away any right you have under the Consumer Protection Act, 2019 or other applicable law.</p>`}]})}
+function pgCancellation(){const e=supportInfo().email;return legalDoc({key:'cn',kicker:'Payments',title:'Cancellation policy',applies:'All Premium plan purchases',
+ intro:`This Cancellation policy explains what happens if you want to cancel a Premium plan bought on JobSetu1 (${brandWho()}). Please read it before you pay.`,
+ short:['<b>A plan cannot be cancelled after payment is made.</b>','Money is returned <b>only for a duplicate payment</b> (paid twice for the same plan).','Plans do not renew automatically, so there is nothing to cancel later.'],
+ sections:[
+ {h:'Before you pay',b:`<p>You can cancel at any time <b>before completing the payment</b> — just close the checkout window. No money is taken.</p>`},
+ {h:'After you pay',b:`<p>Once a payment is made, the order <b>cannot be cancelled</b> and the amount is not returned, because the plan and its features are made available to you as soon as the payment is confirmed or approved. This also applies to UPI / bank transfer payments that are waiting for approval.</p>`},
+ {h:'Duplicate payments — the only exception',b:`<p>If you paid more than once for the same plan by mistake, the extra payment is cancelled and refunded in full as described in our <a href="#/refund">Refund policy</a>. Write to us within 7 days${e?` at <a href="mailto:${esc(e)}">${esc(e)}</a>`:''} with the transaction IDs of both payments.</p>`},
+ {h:'Payment proof rejected',b:`<p>If we cannot find your UPI / bank transfer payment in our account, the order is rejected and no plan is given. If money was actually debited, send us your bank statement and we will check again.</p>`},
+ {h:'No automatic renewal',b:`<p>Plans end on their expiry date and are not renewed automatically. To continue, you buy a new plan yourself.</p>`},
+ {h:'Cancellation by JobSetu1',b:`<p>We may cancel a plan if our <a href="#/terms">Terms &amp; conditions</a> are broken (for example fake jobs or asking candidates for money). No refund is given in that case. If we stop a service for our own reasons, we will refund the unused part of the plan.</p>`},
+ {h:'Your rights',b:`<p>This policy does not take away any right you have under the Consumer Protection Act, 2019 or other applicable law.</p>`}]})}
+
+/* ---------- security ---------- */
+/* every change sent to the Sheet carries the login key, so the Sheet can check who is changing what */
+{const _gp70=gsPost;gsPost=async function(body){
+ if(body&&(body.action==='upsert'||body.action==='delete')&&!body.token){try{const t=myTok();if(t)body=Object.assign({},body,{token:t})}catch(e){}}
+ const r=await _gp70.call(this,body);
+ try{if(r&&r.tokens)Object.entries(r.tokens).forEach(([id,t])=>{if(t)tokSet(id,t)});
+  if(r&&r.locked&&r.locked.length&&session&&session.kind==='user'&&!myTok()&&r.locked.includes(String(session.id))&&!window._relogAsked){window._relogAsked=1;setTimeout(()=>openModal(`<h2>Please log in again</h2><p class="lead">For your security, please log in once more so your changes are saved to your account on all devices.</p><div class="row-btns"><button class="btn" onclick="closeModal();logout();go('#/login')">Log in again</button><button class="btn ghost" onclick="closeModal()">Later</button></div>`),400)}}catch(e){}
+ return r}}
+/* links in notifications may only open pages inside JobSetu1 */
+{const _ca70=cloudApply;cloudApply=function(c,r){if(c==='notes'&&r&&r.link&&!/^#\//.test(String(r.link)))r=Object.assign({},r,{link:'#/notifications'});return _ca70.apply(this,arguments.length>1?[c,r]:arguments)}}
+{const _nt70=notify;notify=function(uid_,t,b,l){if(l&&!/^#\//.test(String(l)))l='#/notifications';return _nt70.call(this,uid_,t,b,l)}}
+/* block dangerous links (javascript:, data:) that could come from someone's profile */
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href]');if(!a)return;const h=String(a.getAttribute('href')||'').trim().toLowerCase().replace(/\s+/g,'');
+ if((h.startsWith('javascript:')&&!/^javascript:(void0|voido|openupgrade\(\))$/.test(h))||h.startsWith('data:')||h.startsWith('vbscript:')){e.preventDefault();e.stopPropagation();toast('This link was blocked for your safety.')}},true);
+/* the real site cannot be shown inside another website's frame (clickjacking) */
+(function(){try{if(/(^|\.)jobsetu1\.com$/.test(location.hostname)&&window.top!==window.self){document.documentElement.style.display='none';window.top.location=window.self.location.href}}catch(e){document.documentElement.style.display='none'}})();
+
+/* ---------- daily reminder in the app ---------- */
+function dailyMsgs(){const u=me(),open=openJobs(),day=864e5,t=now(),fresh=open.filter(j=>t-(j.createdAt||0)<day).length,week=open.filter(j=>t-(j.createdAt||0)<7*day).length,walk=open.filter(j=>isWalkin(j)).length;
+ const L=[];const city=u&&u.role==='candidate'?(u.profile?.city||u.profile?.prefCity||''):'';
+ if(!u||u.role==='candidate'){
+  const cityN=city?open.filter(j=>String(j.city).toLowerCase()===String(city).toLowerCase()).length:0;
+  L.push(['New jobs are waiting for you 💼',`${(fresh||week||open.length).toLocaleString('en-IN')}+ ${fresh?'new jobs today':week?'new jobs this week':'open jobs'} on JobSetu1. Open and apply in one tap.`,'#/jobs']);
+  if(cityN)L.push([`Jobs in ${city} 📍`,`${cityN.toLocaleString('en-IN')} open jobs in ${city}. See the closest ones first.`,'#/jobs?sort=nearest']);
+  if(walk)L.push(['Walk-in interviews near you 🏢',`${walk.toLocaleString('en-IN')} walk-in jobs — go straight to the interview, no waiting.`,'#/jobs?walkin=1']);
+  L.push(['Keep your profile fresh ✨','Updated profiles get more calls from employers. Take 1 minute to update yours.','#/profile']);
+  L.push(['Your next job could be today 🚀','Employers are hiring right now. Check the latest jobs on JobSetu1.','#/jobs'])}
+ else if(u.role==='employer'){const cands=db.users.filter(x=>x.role==='candidate'&&t-(x.createdAt||0)<7*day).length;
+  L.push(['New candidates are waiting 👥',`${cands?cands.toLocaleString('en-IN')+' new job seekers joined this week. ':''}Find your next hire on JobSetu1.`,'#/candidates']);
+  L.push(['Check your applications 📥','See new applicants and update their status in one tap.','#/employer']);
+  L.push(['Hire faster with a fresh job post 📢','Post a new job free and reach job seekers near you.','#/post-job'])}
+ return L}
+function dailySync(){try{if(APP&&window.AndroidApp&&AndroidApp.setDailyMsgs)AndroidApp.setDailyMsgs(JSON.stringify(dailyMsgs()))}catch(e){}}
+if(APP){setTimeout(dailySync,4000);document.addEventListener('visibilitychange',()=>{if(document.hidden)dailySync()})}
+if(typeof appAlertsPanel==='function'){const _ap70=appAlertsPanel;appAlertsPanel=function(){let h=_ap70.apply(this,arguments).replace('Checks every 90 seconds','Checks every 30 seconds');
+ if(!(window.AndroidApp&&AndroidApp.dailyOn))return h;let on=true;try{on=AndroidApp.dailyOn()}catch(e){}
+ const row=`<div class="al-row ${on?'ok':'no'}"><span class="al-dot">${on?'✓':'!'}</span><div><b>Daily job reminder</b><small>${on?'One alert a day with sound, around 10:30 am, about new jobs for you.':'Off. You will not get the daily reminder.'}</small></div><button class="btn sm ${on?'ghost':''}" onclick="AndroidApp.setDailyOn(${!on});setTimeout(route,200)">${on?'Turn off':'Turn on'}</button></div>`;
+ return h.replace('<div class="row-btns"><button class="btn ghost" onclick="AndroidApp.testNotify()',row+'<div class="row-btns"><button class="btn ghost" onclick="AndroidApp.testNotify()')}}
+
+/* ---------- routes and links ---------- */
+{const _r70=route;route=function(){const h=(location.hash||'').replace(/^#\/?/,'').split('?')[0];
+ if(h==='cancellation'||h==='my-data'){const app=$('#app');try{_r70.apply(this,arguments)}catch(e){}app.innerHTML=h==='my-data'?pgMyData():ventureIn(pgCancellation());try{window.scrollTo(0,0)}catch(e){}try{document.title=(h==='my-data'?'My data & privacy':'Cancellation policy')+' · JobSetu1'}catch(e){}return}
+ const r=_r70.apply(this,arguments);try{consentGate()}catch(e){}try{fixLegalLinks()}catch(e){}return r}}
+function fixLegalLinks(){document.querySelectorAll('nav[aria-label="Legal"],.app-foot nav').forEach(n=>{if(n.querySelector('a[href="#/cancellation"]'))return;const r=n.querySelector('a[href="#/refund"]');if(!r)return;const a=document.createElement('a');a.href='#/cancellation';a.textContent=r.textContent.includes('policy')?'Cancellation policy':'Cancellation';r.after(a);const m=document.createElement('a');m.href='#/my-data';m.textContent=r.textContent.includes('policy')?'My data & privacy':'My data';a.after(m)});
+ document.querySelectorAll('nav[aria-label="Legal"] a[href="#/terms"]').forEach(a=>{if(/Fraud/.test(a.textContent))a.href='#/terms'})}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
