@@ -1340,6 +1340,7 @@ html:not(.app) #netbar{bottom:16px;max-width:520px;margin:0 auto}
 #fcontact .faddr b{color:#fff}
 .app-foot .faddr{display:block;margin:6px 0;font-size:12.5px}
 .shrink-n{display:block;margin-top:4px;font-size:12.5px;color:#0F8A5F;font-weight:600}
+
 </style>
 </head>
 <body>
@@ -4104,7 +4105,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='75';
+const WEB_BUILD='76';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -5540,6 +5541,26 @@ function shrinkImg(f,max,q){return (async()=>{const src=await fileData(f);const 
 /* admin UPI QR upload: keep it sharp (PNG) but small, before the form reads it */
 document.addEventListener('change',async e=>{const i=e.target;if(!i||i.id!=='co-qr'||!i.files||!i.files[0]||i._shrunk)return;const f=i.files[0];
  try{const d=await shrinkPicture(await fileData(f),600,true);const b=await (await fetch(d)).blob();if(b.size<f.size&&typeof DataTransfer==='function'){const dt=new DataTransfer();dt.items.add(new File([b],f.name.replace(/\.[^.]+$/,'')+(b.type==='image/webp'?'.webp':'.png'),{type:b.type}));i._shrunk=1;i.files=dt.files;shrinkNote(i.files[0],f.size,b.size)}}catch(x){}},true);
+
+/* ==================================================================
+   V76: OTP limit per mobile number per day (1–100), and pages no longer
+        jump up and down when live updates arrive
+   ================================================================== */
+try{const t='This mobile number has reached today\'s OTP limit. Please try again tomorrow, or verify with your email.';SR_ERR.number_daily_limit=t;FP_ERR.number_daily_limit=t;EOTP_ERR.number_daily_limit=t}catch(e){}
+{const _mr76=motpRender;motpRender=function(){const r=_mr76.apply(this,arguments);try{const day=document.getElementById('mo-day');if(day&&!document.getElementById('mo-num')){const m=_motp||{},v=Math.max(1,Math.min(100,+m.perNum||10));
+ const f=document.createElement('div');f.className='fld';f.innerHTML=`<label for="mo-num">Most OTPs for one mobile number per day</label><select id="mo-num">${Array.from({length:100},(_,i)=>i+1).map(n=>`<option value="${n}" ${n===v?'selected':''}>${n}</option>`).join('')}</select><small class="hint">1 to 100. Stops anyone from wasting your SMS balance on one number. 5–10 is enough for real users.</small>`;
+ day.closest('.fld').after(f);const lab=day.closest('.fld').querySelector('label');if(lab)lab.textContent='Most OTPs per day (whole website)'}}catch(e){}return r}}
+{const _rd76=motpRead;motpRead=function(){const r=_rd76.apply(this,arguments);try{if($('#mo-num'))_motp.perNum=Math.max(1,Math.min(100,+val('mo-num')||10))}catch(e){}return r}}
+/* re-drawing the same page keeps your place: no jumping to the top or up and down */
+let _lastHash76=null;
+{const _r76=route;route=function(){const h=location.hash||'#/',same=h===_lastHash76,app=$('#app'),y=window.scrollY;let mh='';
+ if(same&&app){mh=app.style.minHeight;app.style.minHeight=app.offsetHeight+'px';route.keepScroll=true}
+ let r;try{r=_r76.apply(this,arguments)}finally{_lastHash76=location.hash||'#/';if(same){route.keepScroll=false;try{window.scrollTo(0,y)}catch(e){}if(app){clearTimeout(app._mh);app._mh=setTimeout(()=>{app.style.minHeight=mh},2500)}}}
+ return r}}
+/* pages where you type or change settings are not re-drawn by live updates (your work and place stay put) */
+{const _sr76=safeRerender;safeRerender=function(){if(/^#\/(admin|manager)\/(settings|motp|plans|staff|services|roles)|^#\/(post-job|profile|company-profile|register|my-data)/.test(location.hash||''))return false;return _sr76.apply(this,arguments)}}
+/* OTP page: when it is shown again, use the settings already loaded (no empty flash) */
+{const _ml76=motpLoad;motpLoad=async function(){if(_motp&&$('#motp-body')&&!$('#motp-body').querySelector('.motp-grid')){try{motpRender()}catch(e){}}return _ml76.apply(this,arguments)}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
