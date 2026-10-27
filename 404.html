@@ -1323,6 +1323,15 @@ html:not(.app) #netbar{bottom:16px;max-width:520px;margin:0 auto}
 .lgl-tbl th,.lgl-tbl td{white-space:normal!important;word-break:normal}.lgl-tbl td:first-child{width:130px;font-weight:700}
 .lgl-toc button{display:inline;line-height:1.45}
 .lgl-tl{color:#1846A8;cursor:pointer}.lgl-tl:hover,.lgl-tl:focus{text-decoration:underline;outline:none}
+/* V72 */
+.live-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-left:4px solid #16A34A;background:#F0FDF4!important}
+.live-bar.warn{border-left-color:#F28C28;background:#FFF8EF!important}
+.live-bar>div{display:flex;align-items:center;gap:10px;flex:1;min-width:220px}
+.live-dot{width:12px;height:12px;border-radius:50%;background:#F28C28;flex:0 0 auto}.live-dot.on{background:#16A34A;box-shadow:0 0 0 4px rgba(22,163,74,.2);animation:ldp 2s ease-in-out infinite}
+@keyframes ldp{50%{box-shadow:0 0 0 8px rgba(22,163,74,.05)}}
+.save-row{margin-top:14px;align-items:center;flex-wrap:wrap}.save-row .hint{margin:0}
+.reg-wall{text-align:center;padding:34px 22px!important}.rw-ic{font-size:40px}.reg-wall h1{font-size:clamp(22px,4vw,30px);margin:8px 0}
+.rw-pts{list-style:none;padding:0;margin:14px auto;display:inline-flex;flex-direction:column;gap:6px;text-align:left;font-weight:600}
 </style>
 </head>
 <body>
@@ -2149,6 +2158,7 @@ const SAL_MAX=100000,SAL_STEP=1000;
 function parseSal(v){const[a,b]=String(v||'').split('-');let lo=Math.max(0,+a||0),hi=b===undefined||b===''?SAL_MAX:Math.min(SAL_MAX,+b||SAL_MAX);if(lo>hi)lo=0;return[lo,hi]}
 function salText(lo,hi){if(lo===0&&hi>=SAL_MAX)return 'Any salary';if(hi>=SAL_MAX)return rupee(lo)+' and above';if(lo===0)return 'Up to '+rupee(hi);return rupee(lo)+' – '+rupee(hi)}
 function pgJobs(q){
+ if(!me()&&!userCan(null,'candidate','search'))return regWall();
  if(!userCan(me(),'candidate','search')&&me()?.role!=='employer')return planWall('Job search needs a plan right now','Buy a plan to search and filter all open jobs. Premium Service is included with every plan.','candidate');
  const kw=(q.get('q')||'').toLowerCase(),loc=(q.get('loc')||'').toLowerCase(),type=q.get('type')||'',ws=q.get('ws')||'',shift=q.get('shift')||'',st=q.get('state')||'';
  const[lo,hi]=parseSal(q.get('sal'));const salOn=!(lo===0&&hi>=SAL_MAX);
@@ -3106,7 +3116,7 @@ function pgStaff(role,tab,q){q=q||new URLSearchParams();
  const planCell=x=>planActive(x)?`${esc(x.plan.name)} till ${fmtDate(x.plan.expires)}`:'<span class="hint">None</span>';
  if(tab==='settings'&&isAdmin){
   const v=db.settings?.pwVideo;
-  body=companyPanel()+brandPanel()+blocksPanel()+visPanel()+demoPanel()+rzpPanel()+gsPanel()+googlePanel()+supportPanel()+`<div class="panel"><h3>Wrong-password video</h3><p class="lead">Shown in a small circle under the password box when someone enters a wrong password. Use a short video you own or have rights to (MP4 or WebM, up to 1.5 MB, 3–8 seconds works best). It plays muted and loops.</p>
+  body=liveBarHtml()+companyPanel()+brandPanel()+blocksPanel()+visPanel()+demoPanel()+rzpPanel()+gsPanel()+googlePanel()+supportPanel()+`<div class="panel"><h3>Wrong-password video</h3><p class="lead">Shown in a small circle under the password box when someone enters a wrong password. Use a short video you own or have rights to (MP4 or WebM, up to 1.5 MB, 3–8 seconds works best). It plays muted and loops.</p>
   <div class="pcard" style="margin-top:12px">${v?`<video class="pwvid" src="${v}" autoplay muted playsinline loop></video>`:`<div class="pwvid pwanim"><span>${LOCK_SVG}</span></div>`}<div class="info"><p><strong>${v?'Custom video in use':'Default animation in use'}</strong></p><p class="hint">${v?esc(db.settings.pwVideoName||'video'):'A spinning ring with a shaking lock.'}</p></div></div>
   <div class="fld" style="margin-top:14px"><label for="set-vid">Upload video</label><input id="set-vid" type="file" accept="video/mp4,video/webm"></div>
   <div class="row-btns"><button class="btn" onclick="savePwVideo()">Save video</button>${v?'<button class="btn danger" onclick="removePwVideo()">Use default animation</button>':''}</div></div>`;
@@ -4086,7 +4096,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='71';
+const WEB_BUILD='72';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -5358,6 +5368,64 @@ if(typeof appAlertsPanel==='function'){const _ap70=appAlertsPanel;appAlertsPanel
  const r=_r70.apply(this,arguments);try{consentGate()}catch(e){}try{fixLegalLinks()}catch(e){}return r}}
 function fixLegalLinks(){document.querySelectorAll('nav[aria-label="Legal"],.app-foot nav').forEach(n=>{if(n.querySelector('a[href="#/cancellation"]'))return;const r=n.querySelector('a[href="#/refund"]');if(!r)return;const a=document.createElement('a');a.href='#/cancellation';a.textContent=r.textContent.includes('policy')?'Cancellation policy':'Cancellation';r.after(a);const m=document.createElement('a');m.href='#/my-data';m.textContent=r.textContent.includes('policy')?'My data & privacy':'My data';a.after(m)});
  document.querySelectorAll('nav[aria-label="Legal"] a[href="#/terms"]').forEach(a=>{if(/Fraud/.test(a.textContent))a.href='#/terms'})}
+
+/* ==================================================================
+   V72: every Site settings panel has a Save button, and saved settings
+        reach the website and app on every device (also the QR photo
+        and the wrong-password video)
+   ================================================================== */
+let _pubSt={at:0,busy:false,err:''};
+function liveBarHtml(){const on=cloudOn()&&gsOn(),st=gsState();
+ const msg=!on?'<b>Google Sheet is not connected.</b> Changes are saved only on this device. Connect the Sheet below to show them everywhere.'
+  :_pubSt.busy?'<span class="spin"></span> Publishing your changes…'
+  :_pubSt.err?`<b class="err-t">Not published:</b> ${esc(_pubSt.err)}`
+  :`<b>✓ Live on the website and app.</b> ${(_pubSt.at||st.last)?'Last published '+ago(_pubSt.at||st.last)+'. ':''}Every visitor sees changes within about 10 seconds.`;
+ return `<div class="panel live-bar ${!on||_pubSt.err?'warn':''}" id="live-bar"><div><span class="live-dot ${on&&!_pubSt.err?'on':''}"></span><span id="live-msg">${msg}</span></div>${on?'<button class="btn sm" onclick="publishNow()">⇪ Publish all settings now</button>':''}</div>`}
+function liveBarPaint(){const b=document.getElementById('live-bar');if(b)b.outerHTML=liveBarHtml()}
+async function publishNow(what){if(!isAdminNow())return toast('Only the admin can change site settings.');
+ db.cfgAt=now();db.cfgMine=true;save();
+ if(!(cloudOn()&&gsOn())){toast((what?what+' saved. ':'Saved. ')+'Connect the Google Sheet to show it on every device.',6000);return liveBarPaint()}
+ _pubSt.busy=true;_pubSt.err='';liveBarPaint();
+ try{await gsPush(false);_pubSt.at=now();toast((what?what+' saved':'All settings saved')+' ✓ — live on the website and app in about 10 seconds.',5000)}
+ catch(e){_pubSt.err=cloudErr(e);toast('Saved on this device, but could not publish: '+_pubSt.err,8000)}
+ finally{_pubSt.busy=false;liveBarPaint()}}
+function saveRow(what){return `<div class="row-btns save-row"><button class="btn" onclick="publishNow('${what}')">💾 Save ${what.toLowerCase()}</button><span class="hint">Changes also save by themselves when you switch them.</span></div>`}
+function addSave(h,what){const i=h.lastIndexOf('</div>');return i<0?h:h.slice(0,i)+saveRow(what)+h.slice(i)}
+{const _v72=visPanel;visPanel=function(){return addSave(_v72.apply(this,arguments),'Visibility settings')}}
+{const _d72=demoPanel;demoPanel=function(){return addSave(_d72.apply(this,arguments),'Demo account settings')}}
+{const _b72=blocksPanel;blocksPanel=function(){return addSave(_b72.apply(this,arguments),'Home page boxes')}}
+/* after any save on the settings page, publish straight away and show it */
+{const _sv72=save;let t=null;save=function(){const before=db.cfgAt;const r=_sv72.apply(this,arguments);
+ try{if(session&&session.kind==='staff'&&db.cfgMine&&db.cfgAt!==before&&/^#\/admin\/settings/.test(location.hash)&&cloudOn()&&gsOn()){clearTimeout(t);t=setTimeout(()=>{if(!_pubSt.busy){_pubSt.busy=true;liveBarPaint();gsPush(false).then(()=>{_pubSt.at=now();_pubSt.err=''}).catch(e=>{_pubSt.err=cloudErr(e)}).finally(()=>{_pubSt.busy=false;liveBarPaint()})}},700)}}catch(e){}
+ return r}}
+
+/* ---------- pictures and videos set by the admin, shared through Google Drive ---------- */
+const _asset={};
+function assetCached(name,v){try{const j=JSON.parse(localStorage.getItem('js1_as_'+name)||'null');return j&&+j.v===+v?j.data:''}catch(e){return ''}}
+async function assetLoad(name,v,keep){if(!v||!cloudOn())return '';if(_asset[name]&&_asset[name].v===+v)return _asset[name].data;const c=keep?assetCached(name,v):'';if(c){_asset[name]={v:+v,data:c};return c}
+ if(_asset[name]&&_asset[name].p)return _asset[name].p;
+ const p=gsPost({action:'assetGet',name}).then(r=>{const data='data:'+(r.type||'application/octet-stream')+';base64,'+r.data;_asset[name]={v:+v,data};if(keep){try{localStorage.setItem('js1_as_'+name,JSON.stringify({v:+v,data}))}catch(e){}}return data}).catch(()=>{_asset[name]=null;return ''});
+ _asset[name]={v:+v,p};return p}
+async function assetSave(name,dataUrl,type){if(!(cloudOn()&&gsOn()&&myTok()))return 0;try{const r=await gsPost({action:'assetPut',token:myTok(),name,type:type||'',data:dataUrl?dataUrl.slice(dataUrl.indexOf(',')+1):''});return r.v||0}catch(e){toast('Saved on this device. To show it on every device, update the Google Sheet code to version 15. ('+cloudErr(e)+')',8000);return 0}}
+/* UPI QR photo */
+{const _co72=co;co=function(){const c=_co72.apply(this,arguments);if(!c.qr&&c.qrV){const d=_asset.qr&&_asset.qr.v===+c.qrV&&_asset.qr.data||assetCached('qr',c.qrV);if(d)c.qr=d;else assetLoad('qr',c.qrV,true).then(x=>{if(x&&$('#payf')&&typeof payFields==='function')payFields()})}return c}}
+{const _sc72=saveCompany;saveCompany=async function(){const f=$('#co-qr')?.files?.[0];const r=await _sc72.apply(this,arguments);
+ try{const c=db.settings&&db.settings.company;if(f&&c&&c.qr){const v=await assetSave('qr',c.qr,f.type);if(v){c.qrV=v;db.cfgAt=now();db.cfgMine=true;save();toast('QR code saved — it now shows at checkout on every device.')}}}catch(e){}return r}}
+{const _rq72=removeQr;removeQr=async function(){const r=_rq72.apply(this,arguments);try{const c=db.settings.company;if(c&&c.qrV){await assetSave('qr','','');c.qrV=0;db.cfgAt=now();db.cfgMine=true;save();route()}}catch(e){}return r}}
+/* wrong-password video */
+{const _pk72=cfgPick;cfgPick=function(){return Object.assign(_pk72.apply(this,arguments),{pwVideoV:(db.settings||{}).pwVideoV||0})}}
+{const _gc72=gsCollections;gsCollections=function(){const C=_gc72.apply(this,arguments);try{if(C.settings&&C.settings[0])C.settings[0]=Object.assign({},C.settings[0],{pwVideoV:(db.settings||{}).pwVideoV||0})}catch(e){}return C}}
+{const _ca72=cfgApply;cfgApply=function(x){const ok=_ca72.apply(this,arguments);try{if(ok&&x&&x.pwVideoV!=null){db.settings.pwVideoV=+x.pwVideoV||0;save()}}catch(e){}return ok}}
+{const _pv72=savePwVideo;savePwVideo=function(){const f=$('#set-vid')?.files?.[0];const before=(db.settings||{}).pwVideo;const r=_pv72.apply(this,arguments);
+ if(f){const wait=()=>{const v=(db.settings||{}).pwVideo;if(!v||v===before)return setTimeout(wait,200);assetSave('pwvideo',v,f.type).then(n=>{if(n){db.settings.pwVideoV=n;db.cfgAt=now();db.cfgMine=true;save();toast('Video saved — it now shows on every device.')}})};setTimeout(wait,200)}return r}}
+{const _se72=showPwError;showPwError=function(msg){const s=db.settings||{};if(!s.pwVideo&&s.pwVideoV&&_asset.pwvideo&&_asset.pwvideo.data){s.pwVideo=_asset.pwvideo.data;const r=_se72.apply(this,arguments);delete s.pwVideo;return r}return _se72.apply(this,arguments)}}
+/* fetch the video in the background when a login page is open, so it is ready for a wrong password */
+{const _r72=route;route=function(){const r=_r72.apply(this,arguments);try{const s=db.settings||{};if(!s.pwVideo&&s.pwVideoV&&/^#\/(login|office)/.test(location.hash||''))assetLoad('pwvideo',s.pwVideoV,false)}catch(e){}return r}}
+/* job search for visitors: ask them to register (free) instead of showing plans */
+function regWall(next){const n=encodeURIComponent(next||location.hash||'#/jobs');return `<section class="wrap narrow sec"><div class="panel reg-wall"><div class="rw-ic" aria-hidden="true">🔎</div><h1>Registration is required to search jobs</h1><p class="lead">Create your <b>free</b> JobSetu1 account to search, filter and apply to jobs across India. It takes less than a minute — no payment needed.</p>
+ <ul class="rw-pts"><li>✓ Search all open jobs by city, salary and skills</li><li>✓ Apply in one tap and track your status</li><li>✓ Get alerts for jobs that match you</li></ul>
+ <div class="row-btns" style="justify-content:center"><a class="btn gold" href="#/register/candidate">Register free</a><a class="btn ghost" href="#/login?next=${n}">Already registered? Log in</a></div>
+ <p class="hint" style="margin-top:10px">Hiring? <a href="#/register/employer">Register as an employer</a> — it's free too.</p></div></section>`}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
