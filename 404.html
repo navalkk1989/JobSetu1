@@ -1332,6 +1332,9 @@ html:not(.app) #netbar{bottom:16px;max-width:520px;margin:0 auto}
 .save-row{margin-top:14px;align-items:center;flex-wrap:wrap}.save-row .hint{margin:0}
 .reg-wall{text-align:center;padding:34px 22px!important}.rw-ic{font-size:40px}.reg-wall h1{font-size:clamp(22px,4vw,30px);margin:8px 0}
 .rw-pts{list-style:none;padding:0;margin:14px auto;display:inline-flex;flex-direction:column;gap:6px;text-align:left;font-weight:600}
+.fld-bad{border-color:#D93025!important;box-shadow:0 0 0 3px rgba(217,48,37,.15)!important}
+.fld-msg{display:block;margin-top:4px;font-size:12.5px}
+.co-save1{margin:12px 0 4px;align-items:center;flex-wrap:wrap}.co-save1 .hint{margin:0}
 </style>
 </head>
 <body>
@@ -2826,7 +2829,7 @@ function gsCollections(){
   staff:session&&session.kind==='staff'&&(db.staff||[]).find(x=>x.id===session.id&&x.role==='admin')?(db.staff||[]).map(x=>gsStrip(x,['password','pwh','salt','idh'])):[],
   notes:(db.notes||[]).slice(-3000),
   activity:(db.activity||[]).filter(a=>!/^d[ej]_/.test(a.empId||'')&&!/^d[cj]_/.test(a.candId||'')).slice(-3000),
-  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,visibility:(db.settings||{}).visibility||{},support:(db.settings||{}).support||supportInfo(),grievance:(db.settings||{}).grievance||grvInfo(),googleClientId:(db.settings||{}).googleClientId||'',gstOn:co().gstOn!==false,company:gsStrip(co(),['qr']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},paidRights:db.paidRights||{},trialDays:db.trialDays,demo:(db.settings||{}).demo||{},roles:(db.settings||{}).roles||null,blocks:(db.settings||{}).blocks||null,brand:(db.settings||{}).brand||null,motp:(db.settings||{}).motp||null,mapsKey:(db.settings||{}).mapsKey||''}]:[]}}
+  settings:db.cfgMine&&db.cfgAt?[{id:'site',cfgAt:db.cfgAt,visibility:(db.settings||{}).visibility||{},support:(db.settings||{}).support||supportInfo(),grievance:(db.settings||{}).grievance||grvInfo(),googleClientId:(db.settings||{}).googleClientId||'',gstOn:co().gstOn!==false,company:gsStrip(co(),['qr','pan']),services:db.services||{},plans:db.plans||{},freeRights:db.freeRights||{},paidRights:db.paidRights||{},trialDays:db.trialDays,demo:(db.settings||{}).demo||{},roles:(db.settings||{}).roles||null,blocks:(db.settings||{}).blocks||null,brand:(db.settings||{}).brand||null,motp:(db.settings||{}).motp||null,mapsKey:(db.settings||{}).mapsKey||''}]:[]}}
 const GS_LABEL={users:'Users',companies:'Companies',jobs:'Jobs',apps:'Applications',payments:'Payments',support:'Support',staff:'Office staff',notes:'Notifications',activity:'Activity',settings:'Settings'};
 let gsTimer=null,gsBusy=false;
 function gsQueue(){if(!gsOn()||!gsCfg().auto)return;clearTimeout(gsTimer);gsTimer=setTimeout(()=>{gsPush(false).catch(()=>{})},2500)}
@@ -3020,7 +3023,7 @@ function confirmPay(pid){
  u.plan={id:p.id,name:p.name,expires:exp};
  const txn=gwId||'JS'+Date.now().toString(36).toUpperCase(),at=now();
  const gOn=b.gst>0,buyer={name:u.role==='employer'?(u.company?.name||u.name):u.name,contact:u.name,email:u.email,mobile:u.mobile,gstin:gOn&&u.role==='employer'?(u.company?.gst||''):'',state:buyerState(u),address:u.role==='employer'?(u.company?.address||''):(u.profile?.address||'')};
- const rec={id:uid('p'),userId:u.id,role:u.role,planId:p.id,planName:p.name,months:p.months,amount:b.base,gst:b.gst,gstRate:b.rate,total:b.total,method:pm+(pm==='Net banking'?' · '+val('pay-bank'):pm==='Wallet'?' · '+val('pay-wallet'):'')+(rz&&rz.mode==='test'?' · test mode':''),txn,utr,status,demo,gateway:rz,test:!!(rz&&rz.mode==='test'),at,validFrom:start,validTo:exp,prevPlan,payee:{name:c.accName||c.legal,upi:c.upi,bank:c.bank,acc:c.accNo?'XXXX'+String(c.accNo).slice(-4):'',ifsc:c.ifsc},seller:Object.assign({},c,{qr:'',accNo:'',accName:'',bank:'',ifsc:'',branch:'',upi:''},gOn?{}:{gstin:'',sac:''}),gstOn:gOn,buyer};
+ const rec={id:uid('p'),userId:u.id,role:u.role,planId:p.id,planName:p.name,months:p.months,amount:b.base,gst:b.gst,gstRate:b.rate,total:b.total,method:pm+(pm==='Net banking'?' · '+val('pay-bank'):pm==='Wallet'?' · '+val('pay-wallet'):'')+(rz&&rz.mode==='test'?' · test mode':''),txn,utr,status,demo,gateway:rz,test:!!(rz&&rz.mode==='test'),at,validFrom:start,validTo:exp,prevPlan,payee:{name:c.accName||c.legal,upi:c.upi,bank:c.bank,acc:c.accNo?'XXXX'+String(c.accNo).slice(-4):'',ifsc:c.ifsc},seller:Object.assign({},c,{pan:'',qr:'',accNo:'',accName:'',bank:'',ifsc:'',branch:'',upi:''},gOn?{}:{gstin:'',sac:''}),gstOn:gOn,buyer};
  rec.invoiceNo=nextInvoiceNo(at);db.payments.push(rec);
  notify(u.id,'Premium Service activated',u.role==='candidate'?'Your resume is now listed first for employers, and every Premium tool is unlocked.':'Refined resumes, applicant management, analytics, job boost and every Premium tool are unlocked.','#/premium');
  notify(u.id,'Invoice '+rec.invoiceNo,`${rupee2(b.total)}${b.gst?` (${rupee2(b.base)} + GST ${rupee2(b.gst)})`:''} for Premium ${p.name}. ${status==='Paid'?'Payment received':'Payment received, being confirmed'} · ref ${utr||txn}. Download your invoice anytime.`,'#/invoices');
@@ -3057,7 +3060,7 @@ async function downloadInvoice(id){const x=(db.payments||[]).find(p=>p.id===id);
  font(22,'bold',[255,255,255]);T(d.s.legal||'JobSetu1',M,15);font(9,'normal',[214,224,250]);T('Your Career | Our Priority'+(ventureTxt()?'   ·   '+ventureTxt():''),M,22);
  font(17,'bold',[255,255,255]);T(d.gst?'TAX INVOICE':'INVOICE',W-M,15,{align:'right'});font(9,'normal',[214,224,250]);T(payStatus(x)==='Rejected'?'CANCELLED':payStatus(x)==='Paid'?'PAID':'PAYMENT UNDER VERIFICATION',W-M,22,{align:'right'});
  y=40;font(10,'bold');T('From',M,y);T('Invoice details',W/2+4,y);y+=5;font(9);
- const sl=[d.s.legal||'JobSetu1',...doc.splitTextToSize([d.s.address,d.s.city].filter(Boolean).join(', '),80),d.s.state?'State: '+d.s.state:'',d.gst?(d.s.gstin?'GSTIN: '+d.s.gstin:''):'',d.s.pan?'PAN: '+d.s.pan:''].filter(Boolean);
+ const sl=[d.s.legal||'JobSetu1',...doc.splitTextToSize([d.s.address,d.s.city].filter(Boolean).join(', '),80),d.s.state?'State: '+d.s.state:'',d.gst?(d.s.gstin?'GSTIN: '+d.s.gstin:''):'',''].filter(Boolean);
  const il=[['Invoice no.',x.invoiceNo],['Invoice date',fmtDate(x.at)],['Payment ref.',x.utr||x.txn],['Payment method',x.method||''],['Place of supply',d.b.state||'—']];
  sl.forEach((l,i)=>T(l,M,y+i*4.6));il.forEach(([k,v],i)=>{font(9,'normal',[88,97,120]);T(k,W/2+4,y+i*4.6);font(9,'bold');T(v,W-M,y+i*4.6,{align:'right'})});font(9);
  y+=Math.max(sl.length,il.length)*4.6+5;
@@ -4096,7 +4099,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='72';
+const WEB_BUILD='73';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -5095,7 +5098,7 @@ async function submitProof(pid,rz){const u=me();if(!u||!_ck)return;const p=db.pl
  let img='';if(file){try{img=await shrinkImg(file,1100,.72)}catch(e){if(btn){btn.disabled=false;btn.textContent='Submit payment proof'}return toast(String(e))}}
  const at=now(),gOn=b.gst>0,buyer={name:u.role==='employer'?(u.company?.name||u.name):u.name,contact:u.name,email:u.email,mobile:u.mobile,gstin:gOn&&u.role==='employer'?(u.company?.gst||''):'',state:buyerState(u),address:u.role==='employer'?(u.company?.address||''):(u.profile?.address||'')};
  const rec={id:uid('p'),userId:u.id,role:u.role,planId:p.id,planName:p.name,months:p.months,amount:b.base,gst:b.gst,gstRate:b.rate,total:b.total,method:pm==='UPI QR'?'UPI (QR code)':pm==='UPI ID'?'UPI ID · '+c.upi:pm+(rz&&rz.mode==='test'?' · test mode':''),txn:rz?rz.id:'JS'+at.toString(36).toUpperCase(),utr:rz?'':utr,status:'Pending verification',awaitApproval:true,demo:false,gateway:rz||null,test:!!(rz&&rz.mode==='test'),at,
-  payee:{name:c.accName||c.legal,upi:c.upi,bank:c.bank,acc:c.accNo?'XXXX'+String(c.accNo).slice(-4):'',ifsc:c.ifsc},seller:Object.assign({},c,{qr:'',accNo:'',accName:'',bank:'',ifsc:'',branch:'',upi:'',payOn:undefined},gOn?{}:{gstin:'',sac:''}),gstOn:gOn,buyer,invoiceNo:'',proofImg:img,hasProof:!!img};
+  payee:{name:c.accName||c.legal,upi:c.upi,bank:c.bank,acc:c.accNo?'XXXX'+String(c.accNo).slice(-4):'',ifsc:c.ifsc},seller:Object.assign({},c,{pan:'',qr:'',accNo:'',accName:'',bank:'',ifsc:'',branch:'',upi:'',payOn:undefined},gOn?{}:{gstin:'',sac:''}),gstOn:gOn,buyer,invoiceNo:'',proofImg:img,hasProof:!!img};
  if(img&&cloudOn()){const data=img.slice(img.indexOf(',')+1);try{const r=await gsPost({action:'proofUp',id:u.id,pid:rec.id,data});rec.proofFid=r.fid}catch(e){
   if(myTok()){try{const r=await gsPost({action:'fileUp',token:myTok(),id:u.id,kind:'payproof',name:'payment-'+rec.id+'.jpg',type:'image/jpeg',data});rec.proofFid=r.fid}catch(e2){}}}}
  db.payments.push(rec);
@@ -5426,6 +5429,28 @@ function regWall(next){const n=encodeURIComponent(next||location.hash||'#/jobs')
  <ul class="rw-pts"><li>✓ Search all open jobs by city, salary and skills</li><li>✓ Apply in one tap and track your status</li><li>✓ Get alerts for jobs that match you</li></ul>
  <div class="row-btns" style="justify-content:center"><a class="btn gold" href="#/register/candidate">Register free</a><a class="btn ghost" href="#/login?next=${n}">Already registered? Log in</a></div>
  <p class="hint" style="margin-top:10px">Hiring? <a href="#/register/employer">Register as an employer</a> — it's free too.</p></div></section>`}
+
+/* V73: company details — Save button right under them, clear error on the wrong box, PAN kept private */
+function coFieldErr(id,msg){const el=document.getElementById(id);if(!el)return toast(msg);el.classList.add('fld-bad');let m=el.parentElement.querySelector('.fld-msg');if(!m){m=document.createElement('small');m.className='fld-msg err-t';el.parentElement.appendChild(m)}m.textContent=msg;
+ try{el.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}try{el.focus()}catch(e){}el.addEventListener('input',()=>{el.classList.remove('fld-bad');m.remove()},{once:true});toast(msg,6000);return true}
+function coCheck(){const g=id=>String(val(id)||'').trim(),up=id=>g(id).toUpperCase(),gst=checked('co-gston');
+ document.querySelectorAll('#app .fld-bad').forEach(e=>e.classList.remove('fld-bad'));document.querySelectorAll('#app .fld-msg').forEach(e=>e.remove());
+ if(!g('co-legal'))return coFieldErr('co-legal','Enter the company legal name.');
+ if(gst&&up('co-gstin')&&!/^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(up('co-gstin')))return coFieldErr('co-gstin','GSTIN should be 15 characters, like 22AAAAA0000A1Z5.');
+ if(up('co-pan')&&!/^[A-Z]{5}\d{4}[A-Z]$/.test(up('co-pan')))return coFieldErr('co-pan','PAN should be like AAAAA0000A (or leave it empty).');
+ const r=g('co-rate');if(gst&&r!==''&&!(+r>=0&&+r<=28))return coFieldErr('co-rate','GST rate should be between 0 and 28.');
+ const acc=g('co-accno').replace(/\s/g,'');if(acc&&!/^\d{9,18}$/.test(acc))return coFieldErr('co-accno','Account number should be 9 to 18 digits.');
+ if(up('co-ifsc')&&!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(up('co-ifsc')))return coFieldErr('co-ifsc','IFSC should be 11 characters, like HDFC0001234.');
+ if(g('co-upi')&&!/^[\w.\-]{2,}@[a-zA-Z]{2,}$/.test(g('co-upi')))return coFieldErr('co-upi','Enter a valid UPI ID, like company@okhdfcbank.');
+ if(acc&&!g('co-bank'))return coFieldErr('co-bank','Add the bank name (needed with the account number).');
+ if(acc&&!up('co-ifsc'))return coFieldErr('co-ifsc','Add the IFSC code (needed with the account number).');
+ return false}
+{const _sc73=saveCompany;saveCompany=async function(){if(!isAdminNow())return toast('Only the admin can change company details.');if(coCheck())return;const r=await _sc73.apply(this,arguments);
+ try{if(cloudOn()&&gsOn()&&typeof publishNow==='function')publishNow('Company & bank details')}catch(e){}return r}}
+{const _cp73=companyPanel;companyPanel=function(){let h=_cp73.apply(this,arguments);
+ h=h.replace(/(<textarea id="co-addr"[^>]*>[\s\S]*?<\/textarea><\/div>)/,`$1<div class="row-btns co-save1"><button class="btn" onclick="saveCompany()">💾 Save company details</button><span class="hint">Shown on invoices, the Contact page and the legal pages.</span></div>`);
+ h=h.replace(/(<label for="co-pan">PAN<\/label><input[^>]*>)/,'$1<small class="hint">🔒 Private — kept only in the admin panel. Not shown on the website, app or invoices.</small>');
+ return h}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
