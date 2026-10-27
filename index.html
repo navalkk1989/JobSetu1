@@ -1335,6 +1335,10 @@ html:not(.app) #netbar{bottom:16px;max-width:520px;margin:0 auto}
 .fld-bad{border-color:#D93025!important;box-shadow:0 0 0 3px rgba(217,48,37,.15)!important}
 .fld-msg{display:block;margin-top:4px;font-size:12.5px}
 .co-save1{margin:12px 0 4px;align-items:center;flex-wrap:wrap}.co-save1 .hint{margin:0}
+.faddr{display:block;font-size:13.5px;line-height:1.55;color:inherit}
+#fcontact .faddr{flex-basis:100%;width:100%;margin-top:6px;color:#DCE6FF}
+#fcontact .faddr b{color:#fff}
+.app-foot .faddr{display:block;margin:6px 0;font-size:12.5px}
 </style>
 </head>
 <body>
@@ -4099,7 +4103,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='73';
+const WEB_BUILD='74';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -5451,6 +5455,23 @@ function coCheck(){const g=id=>String(val(id)||'').trim(),up=id=>g(id).toUpperCa
  h=h.replace(/(<textarea id="co-addr"[^>]*>[\s\S]*?<\/textarea><\/div>)/,`$1<div class="row-btns co-save1"><button class="btn" onclick="saveCompany()">💾 Save company details</button><span class="hint">Shown on invoices, the Contact page and the legal pages.</span></div>`);
  h=h.replace(/(<label for="co-pan">PAN<\/label><input[^>]*>)/,'$1<small class="hint">🔒 Private — kept only in the admin panel. Not shown on the website, app or invoices.</small>');
  return h}}
+
+/* V74: company address in the footer / Contact / Grievance, with a "show address" switch */
+function coAddr(){const c=co(),a=String(c.address||'').trim(),cs=[c.city,c.state].filter(Boolean).filter(x=>!a.toLowerCase().includes(String(x).toLowerCase()));return [a,cs.join(', ')].filter(Boolean).join(', ')}
+function addrOn(){return co().showAddr!==false}
+function setShowAddr(on){if(!isAdminNow())return;db.settings=db.settings||{};db.settings.company=Object.assign({},co(),{showAddr:!!on});save();toast(on?'Address is now shown on the website and app.':'Address is now hidden from the footer and Contact page.');route()}
+{const _fc74=footContact;footContact=function(){let h=_fc74.apply(this,arguments);const a=coAddr();if(addrOn()&&a)h+=`<span class="faddr">📍 <b>${esc(co().legal||'JobSetu1')}</b>, ${esc(a)}</span>`;return h}}
+{const _pc74=pgContact;pgContact=function(){let h=_pc74.apply(this,arguments);h=addrOn()&&coAddr()?h.replace(/<dt>Office<\/dt><dd>[\s\S]*?<\/dd>/,`<dt>Office</dt><dd>${esc(co().legal||'JobSetu1')}<br>${esc(coAddr())}</dd>`):h.replace(/<dt>Office<\/dt><dd>[\s\S]*?<\/dd>/,'');return h}}
+/* the grievance officer uses the company address unless the admin types a different one */
+{const _gi74=grvInfo;grvInfo=function(){const g=_gi74.apply(this,arguments),s=(db.settings||{}).grievance||{};if(s.useCo!==false&&coAddr())g.address=coAddr();return g}}
+{const _sp74=supportPanel;supportPanel=function(){let h=_sp74.apply(this,arguments);const use=((db.settings||{}).grievance||{}).useCo!==false;
+ h=h.replace(/<input id="grv-addr" value="[^"]*"/,`<input id="grv-addr" value="${esc(use?coAddr():(((db.settings||{}).grievance||{}).address||''))}" ${use?'disabled':''}`);
+ h=h.replace('<label for="grv-addr">Address</label>',`<label for="grv-addr">Address</label><label class="check" style="margin:2px 0 6px"><input type="checkbox" id="grv-useco" ${use?'checked':''} onchange="const i=document.getElementById('grv-addr');i.disabled=this.checked;if(this.checked)i.value=coAddr()"> Same as the company registered address (Company &amp; bank details)</label>`);return h}}
+{const _ss74=saveSupportInfo;saveSupportInfo=function(){const use=checked('grv-useco'),addr=val('grv-addr');const i=$('#grv-addr');if(i)i.disabled=false;const r=_ss74.apply(this,arguments);
+ try{db.settings.grievance=Object.assign({},db.settings.grievance||{},{useCo:use,address:use?((db.settings.grievance||{}).address||''):addr});save();if(typeof publishNow==='function'&&cloudOn()&&gsOn())publishNow('Contact & grievance details')}catch(e){}return r}}
+{const _cp74=companyPanel;companyPanel=function(){const on=addrOn();return _cp74.apply(this,arguments).replace('<div class="row-btns co-save1">',`<label class="pay-tog ${on?'on':''}" style="margin-top:10px"><input type="checkbox" ${on?'checked':''} onchange="setShowAddr(this.checked)"><span class="sw" aria-hidden="true"></span><span><b>Show address on website: ${on?'ON':'OFF'}</b> · ${on?'shown in the footer of every page and on the Contact page':'hidden from the footer and the Contact page'}</span></label><div class="row-btns co-save1">`)}}
+/* app menu footer */
+{const _r74=route;route=function(){const r=_r74.apply(this,arguments);try{document.querySelectorAll('.app-foot').forEach(f=>{let p=f.querySelector('.faddr');const a=coAddr();if(addrOn()&&a){if(!p){p=document.createElement('p');p.className='faddr';const n=f.querySelector('nav');n?n.after(p):f.prepend(p)}p.textContent='📍 '+(co().legal||'JobSetu1')+', '+a}else if(p)p.remove()})}catch(e){}return r}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
