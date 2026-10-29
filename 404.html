@@ -1348,6 +1348,23 @@ html.bgv #app>section.band.goldband{background:linear-gradient(135deg,#0A1A44 0%
 /* V78: notification sound switch */
 .snd-row{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;border-radius:12px;background:#F4F7FF}
 .snd-row>div{flex:1;display:flex;flex-direction:column}.snd-row small{color:var(--muted);font-size:12.5px}
+/* V79: payments list + refunds */
+.pl-filters .rv-form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.pl-filters .fld{min-width:140px;flex:1}
+.pl-filters .fld.wide{flex:2;min-width:200px}
+.pl-cust{display:flex;flex-direction:column;gap:2px;min-width:180px}
+.pl-cust small{color:var(--muted);font-size:12.5px;line-height:1.35}
+.pl-ref{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;word-break:break-all;max-width:170px}
+.chip.refd{background:#EEF2FF;color:#3730A3}
+.chip.dup{background:#FFF4E5;color:#9A3412;font-size:11.5px}
+.pl-acts{display:flex;flex-wrap:wrap;gap:6px}
+.rf-box{border:1px solid #E5E7EB;border-radius:12px;padding:12px 14px;margin:10px 0;background:#FAFBFF}
+.rf-box dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:14px}.rf-box dt{color:var(--muted)}.rf-box dd{margin:0;font-weight:600}
+.rf-opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #E5E7EB;border-radius:12px;margin-top:8px;cursor:pointer}
+.rf-opt input{margin-top:4px;width:auto!important;flex:none;min-height:0}.rf-opt>span{flex:1;font-weight:400}.rf-opt small{display:block;color:var(--muted)}
+.rf-warn{background:#FFF7ED;border:1px solid #FED7AA;color:#9A3412;border-radius:12px;padding:10px 12px;font-size:13.5px;margin:10px 0}
+.pl-tbl td{vertical-align:top}.pl-tbl .pl-acts .btn{white-space:nowrap}
+.pl-filters .rv-form .fld label{min-height:20px}
 </style>
 </head>
 <body>
@@ -3123,7 +3140,7 @@ let selJobs=new Set(),lastJobIds=[],selUsers=new Set(),lastUserIds=[];
 function pgStaff(role,tab,q){q=q||new URLSearchParams();
  const g=gate([role]);if(g.block)return g.block;const isAdmin=role==='admin';tab=tab||'overview';
  const openSup=(db.support||[]).filter(x=>x.status!=='Resolved').length;
- const tabs=[['overview','Overview'],['registrations','Daily registrations'],['candidates','Job seekers'],['employers','Employers'],['priority','Top priority'],['activity','Employer activity'],['support','Support requests'+(openSup?' ('+openSup+')':'')],['jobs','Jobs'],['applications','Applications'],['payments','Revenue dashboard'],['services','Services']];
+ const tabs=[['overview','Overview'],['registrations','Daily registrations'],['candidates','Job seekers'],['employers','Employers'],['priority','Top priority'],['activity','Employer activity'],['support','Support requests'+(openSup?' ('+openSup+')':'')],['jobs','Jobs'],['applications','Applications'],['payments','Revenue dashboard'],['paylist','💳 Payments'],['services','Services']];
  if(isAdmin){tabs.splice(1,0,['settings','⚙ Site settings'],['motp','📱 Mobile OTP']);tabs.push(['plans','Plans & pricing'],['staff','Office staff & roles'])}
  else{const keep=tabs.filter(t=>staffCan(t[0]));tabs.length=0;keep.forEach(t=>tabs.push(t));if(!tabs.some(t=>t[0]===tab))tab=tabs.length?tabs[0][0]:'none'}
  let body='';
@@ -3208,6 +3225,8 @@ function pgStaff(role,tab,q){q=q||new URLSearchParams();
    <td><div class="acts"><button class="btn ghost sm" onclick="toggleJob('${j.id}')">${j.status==='stopped'?'Resume':'Stop'}</button>${isAdmin||staffCan('edit')?`<button class="btn ghost sm" onclick="editJob('${j.id}')">Edit</button>`:''}${isAdmin||staffCan('delete')?`<button class="btn danger sm" onclick="delJob('${j.id}')">Delete</button>`:''}</div></td></tr>`).join('')||'<tr><td colspan="10">No jobs match.</td></tr>'}</tbody></table></div>${pager(list.length,pgN,50,href)}`;
  }else if(tab==='applications'){
   body=`<div class="tbl"><table><thead><tr><th>Candidate</th><th>Job</th><th>Company</th><th>Match</th><th>Applied</th><th>Status</th><th>Employer sees</th>${isAdmin||staffCan('delete')?'<th></th>':''}</tr></thead><tbody>${[...db.apps].sort((a,b)=>b.at-a.at).map(a=>{const c=getUser(a.candId),j=db.jobs.find(x=>x.id===a.jobId);return `<tr><td>${c?`<a href="#/candidate/${c.id}?job=${a.jobId}">${esc(c.name)}</a>`:'Deleted'}</td><td>${esc(j?.title||a.jobTitle||'Removed')}</td><td>${esc(j?.company||a.company||'—')}</td><td>${a.score}%</td><td>${fmtDate(a.at)}</td><td>${statusChip(a.status)}</td><td>${appVisible(a)?'<span class="chip good">Yes</span>':'<span class="chip warn">Hidden (free limit)</span>'}</td>${isAdmin||staffCan('delete')?`<td><button class="btn danger sm" onclick="delApp('${a.id}')">Delete</button></td>`:''}</tr>`}).join('')||'<tr><td colspan="8">No applications yet.</td></tr>'}</tbody></table></div>`;
+ }else if(tab==='paylist'&&staffCan('payments')){
+  body=payList(q);
  }else if(tab==='payments'){
   body=pgRevenue(q,isAdmin);
  }else if(tab==='services'){
@@ -4053,7 +4072,7 @@ if(!db.staffSecV1){(db.staff||[]).forEach(x=>{const OLD=['240be518fabd2724ddb6f0
 /* ============ mobile app mode (Android app) ============ */
 const AIC={home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',building:'<path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h3a1 1 0 0 1 1 1v11M3 21h18M8 7h4M8 11h4M8 15h4"/>',star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',brief:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',bell:'<path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5 6.5-5s5.5 1.5 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.3 0 4 1.2 4.6 3.5"/>',plus:'<path d="M12 5v14M5 12h14"/>',grid:'<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',rupee:'<path d="M7 4h11M7 8.5h11M9 4c4 0 6 1.8 6 4.5S13 13 9 13H7l8 7"/>',menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',chat:'<path d="M4 5h16v11H8l-4 4z"/>',chev:'<path d="m9 6 6 6-6 6"/>',out:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',refresh:'<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>',cog:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',doc:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',crown:'<path d="M3 17.5h18l-1.7-9.6-4.7 4L12 4.5 9.4 11.9l-4.7-4z"/>'};
 const aic=(k,sz)=>`<svg viewBox="0 0 24 24" width="${sz||22}" height="${sz||22}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${AIC[k]||''}</svg>`;
-function staffTabList(){const u=me(),r=u?.role,isA=r==='admin';const t=[['overview','Overview','grid'],['registrations','Daily registrations','doc'],['candidates','Job seekers','users'],['employers','Employers','building'],['priority','Top priority','star'],['activity','Employer activity','brief'],['support','Support requests','chat'],['jobs','Jobs','brief'],['applications','Applications','doc'],['payments','Revenue dashboard','rupee'],['services','Services','cog']];
+function staffTabList(){const u=me(),r=u?.role,isA=r==='admin';const t=[['overview','Overview','grid'],['registrations','Daily registrations','doc'],['candidates','Job seekers','users'],['employers','Employers','building'],['priority','Top priority','star'],['activity','Employer activity','brief'],['support','Support requests','chat'],['jobs','Jobs','brief'],['applications','Applications','doc'],['payments','Revenue dashboard','rupee'],['paylist','Payments','rupee'],['services','Services','cog']];
  if(isA){t.splice(1,0,['settings','Site settings','cog'],['motp','Mobile OTP','chat']);t.push(['plans','Plans & pricing','star'],['staff','Office staff & roles','users'])}
  return isA?t:t.filter(x=>staffCan(x[0]))}
 function appTabs(){const u=me(),r=u?.role;
@@ -4112,7 +4131,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='78';
+const WEB_BUILD='79';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -5620,6 +5639,95 @@ if(typeof appAlertsPanel==='function'){const _ap78=appAlertsPanel;appAlertsPanel
  else if(u.role==='employer'){const mine=(db.jobs||[]).filter(j=>j.employerId===u.id).map(j=>j.id);const ap=(db.apps||[]).filter(a=>mine.includes(a.jobId)&&t-(+a.at||0)<3*day).length;
   if(ap)L.unshift([`${ap} new application${ap>1?'s':''} 📥`,'New job seekers applied to your jobs. Review them before they join elsewhere.','#/employer']);
   L.push(['Job seekers near you 📍','See fresh profiles in your city and call them directly.','#/candidates'])}}catch(e){}return L}}
+
+/* ==================================================================
+   V79: Payments tab (date range, customer details, download)
+        + refunds that only the Admin can make
+   ================================================================== */
+{const _sc79=staffCan;staffCan=function(k){return _sc79(k==='paylist'?'payments':k)}}
+const PL_ST=['Paid','Pending verification','Rejected','Refunded'];
+function plState(q){const t=new Date();t.setHours(0,0,0,0);const T=t.getTime();let from=revDay(q.get('from'))??(T-29*DAY),to=revDay(q.get('to'))??T;if(from>to)[from,to]=[to,from];
+ return {from,to,status:PL_ST.includes(q.get('st'))?q.get('st'):(q.get('st')==='dup'?'dup':'all'),who:['employer','candidate'].includes(q.get('who'))?q.get('who'):'all',s:String(q.get('s')||'').trim(),lim:Math.max(100,+q.get('lim')||100)}}
+function plHref(st,ch){const o=Object.assign({},st,ch),p=new URLSearchParams({from:isoDay(o.from),to:isoDay(o.to)});if(o.status!=='all')p.set('st',o.status);if(o.who!=='all')p.set('who',o.who);if(o.s)p.set('s',o.s);if(o.lim>100)p.set('lim',o.lim);return '#/'+(isAdminNow()?'admin':'manager')+'/paylist?'+p}
+function plCust(p){const u=getUser(p.userId),b=p.buyer||{};const emp=p.role==='employer';
+ return {u,type:emp?'Employer':'Job seeker',name:(u&&u.name)||b.contact||b.name||(emp?'':'Deleted user'),company:emp?(u?.company?.name||p.company||b.name||''):'',mobile:u?.mobile||b.mobile||'',email:u?.email||b.email||'',
+  city:emp?(u?.company?.city||''):(u?.profile?.city||''),state:b.state||buyerState(u)||'',gstin:b.gstin||u?.company?.gst||'',address:b.address||u?.company?.address||u?.profile?.address||''}}
+function plRef(p){const g=p.gateway||{};return g.id||p.utr||p.txn||''}
+function isRzpPay(p){return /^pay_[A-Za-z0-9]+$/.test(String((p.gateway&&p.gateway.id)||p.txn||''))}
+/* the same customer paid for the same plan again within 3 days */
+function dupOf(p){if(!['Paid','Pending verification'].includes(payStatus(p)))return null;return (db.payments||[]).find(x=>x.id!==p.id&&x.userId===p.userId&&(x.planId?x.planId===p.planId:x.planName===p.planName)&&['Paid','Pending verification','Refunded'].includes(payStatus(x))&&Math.abs((+x.at||0)-(+p.at||0))<3*DAY&&((+x.at||0)<(+p.at||0)||((+x.at||0)===(+p.at||0)&&x.id<p.id)))||null}
+function plRows(st){const end=st.to+DAY,s=st.s.toLowerCase();
+ return (db.payments||[]).filter(p=>!p.sample&&!isDemoId(p.userId)&&(+p.at||0)>=st.from&&(+p.at||0)<end&&(st.who==='all'||p.role===st.who)&&(st.status==='all'||(st.status==='dup'?!!dupOf(p):payStatus(p)===st.status))
+  &&(!s||(()=>{const c=plCust(p);return [c.name,c.company,c.mobile,c.email,p.invoiceNo,plRef(p),p.planName,c.city].join(' ').toLowerCase().includes(s)})())).sort((a,b)=>(+b.at||0)-(+a.at||0))}
+function plChip(p){const s=payStatus(p);if(s==='Refunded')return '<span class="chip refd">Refunded</span>';return statusChip(s==='Pending verification'?'Waiting for approval':s==='Paid'?'Paid':s).replace('chip ','chip '+(s==='Paid'?'good ':''))}
+function plExport(st,L){return L.map(p=>{const c=plCust(p),r=p.refund||{},d=new Date(+p.at||0),dup=dupOf(p);return {'Date':fmtDate(p.at),'Time':d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),'Invoice no':p.invoiceNo||'','Customer type':c.type,'Customer name':c.name,'Company':c.company,'Mobile':c.mobile,'Email':c.email,'City':c.city,'State':c.state,'GSTIN':c.gstin,'Address':c.address,
+ 'Plan':p.planName||'','Valid from':p.validFrom?fmtDate(p.validFrom):'','Valid to':p.validTo?fmtDate(p.validTo):'','Amount (₹)':+p.amount||0,'GST (₹)':payGst(p),'Total (₹)':payTotal(p),'Method':p.method||'','Payment ref / UTR':plRef(p),'Status':payStatus(p),'Approved by':p.verifiedBy||'',
+ 'Refund (₹)':r.amount!=null&&payStatus(p)==='Refunded'?+r.amount:'','Refund date':r.at?fmtDate(r.at):'','Refund via':r.via||'','Refund ref':r.ref||'','Refund reason':r.reason||'','Refunded by':r.by||'','Possible duplicate of':dup?(dup.invoiceNo||plRef(dup)||fmtDate(dup.at)):''}})}
+let _plTab={rows:[],name:''};
+function plDownload(kind){const rows=_plTab.rows;if(!rows.length)return toast('No payments to download.');if(kind==='xlsx'){statRows=rows;statName=_plTab.name;return exportStat()}
+ const h=Object.keys(rows[0]),csv=[h,...rows.map(r=>h.map(k=>r[k]))].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ saveBlob('JobSetu1-'+_plTab.name.replace(/[^\w]+/g,'-').replace(/-+$/,'')+'.csv',new Blob(['﻿'+csv],{type:'text/csv'}),'CSV file')}
+function plApply(){const st=plState(new URLSearchParams(location.hash.split('?')[1]||''));const f=revDay(val('pl-from')),t=revDay(val('pl-to'));if(f==null||t==null)return toast('Choose both dates.');if(f>t)return toast('The start date is after the end date.');
+ go(plHref(st,{from:f,to:t,status:val('pl-st')||'all',who:val('pl-who')||'all',s:val('pl-s').trim(),lim:100}))}
+function plPreset(k){const t=new Date();t.setHours(0,0,0,0);const T=t.getTime();let f=T,to=T;
+ if(k==='y'){f=T-DAY;to=T-DAY}else if(k==='7')f=T-6*DAY;else if(k==='30')f=T-29*DAY;else if(k==='mtd'){const d=new Date(T);d.setDate(1);f=d.getTime()}else if(k==='lm'){const d=new Date(T);d.setDate(1);to=d.getTime()-DAY;const e=new Date(to);e.setDate(1);f=e.getTime()}else if(k==='all'){const a=(db.payments||[]).filter(p=>!p.sample).map(p=>+p.at||T);f=a.length?revKey(Math.min(...a),'day'):T-29*DAY}
+ const st=plState(new URLSearchParams(location.hash.split('?')[1]||''));go(plHref(st,{from:f,to,lim:100}))}
+function payList(q){const st=plState(q),L=plRows(st),adm=isAdminNow();
+ const tot=a=>r2(a.reduce((s,p)=>s+payTotal(p),0)),paid=L.filter(p=>payStatus(p)==='Paid'),pend=L.filter(p=>payStatus(p)==='Pending verification'),refd=L.filter(p=>payStatus(p)==='Refunded'),dups=L.filter(p=>dupOf(p));
+ _plTab={rows:plExport(st,L),name:'Payments '+isoDay(st.from)+' to '+isoDay(st.to)};
+ const pre=[['today','Today'],['y','Yesterday'],['7','Last 7 days'],['30','Last 30 days'],['mtd','This month'],['lm','Last month'],['all','All time']];
+ const rows=L.slice(0,st.lim).map(p=>{const c=plCust(p),r=p.refund||{},dup=dupOf(p),s=payStatus(p);
+  const acts=[];if(p.proofImg||p.proofFid)acts.push(`<button class="btn ghost sm" onclick="viewProof('${p.id}')">Screenshot</button>`);
+  if(s==='Pending verification'&&staffCan('payments'))acts.push(`<button class="btn sm" onclick="verifyPay('${p.id}',true)">✓ Approve</button><button class="btn ghost sm" onclick="verifyPay('${p.id}',false)">Reject</button>`);
+  if(s==='Paid'&&p.invoiceNo)acts.push(`<button class="btn ghost sm" onclick="downloadInvoice('${p.id}')">Invoice</button>`);
+  if(s==='Paid'&&adm)acts.push(`<button class="btn ${dup?'danger':'ghost'} sm" onclick="openRefund('${p.id}')">↩ Refund</button>`);
+  return `<tr><td>${fmtDate(p.at)}<br><span class="hint">${new Date(+p.at||0).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</span></td>
+  <td><div class="pl-cust"><b>${c.u?`<a href="#/${p.role==='employer'?'company':'candidate'}/${c.u.id}">${esc(c.company||c.name)}</a>`:esc(c.company||c.name)}</b>${c.company&&c.name?`<small>${esc(c.name)}</small>`:''}<small>${esc(c.type)}${c.city||c.state?' · '+esc([c.city,c.state].filter(Boolean).join(', ')):''}</small>${c.mobile?`<small>📞 <a href="tel:${esc(c.mobile)}">${esc(c.mobile)}</a></small>`:''}${c.email?`<small>✉ ${esc(c.email)}</small>`:''}${c.gstin?`<small>GSTIN ${esc(c.gstin)}</small>`:''}</div></td>
+  <td>${esc(p.planName||'')}<br><span class="hint">${esc(p.invoiceNo||'No invoice yet')}</span></td>
+  <td><b>${rupee2(payTotal(p))}</b><br><span class="hint">${rupee2(+p.amount||0)} + GST ${rupee2(payGst(p))}</span><br><span class="hint">${esc(p.method||'')}</span><div class="pl-ref">${esc(plRef(p))}</div></td>
+  <td>${plChip(p)}${dup?'<br><span class="chip dup" title="Same customer paid for the same plan within 3 days">Possible duplicate</span>':''}${s==='Refunded'?`<br><span class="hint">${rupee2(r.amount??payTotal(p))} on ${fmtDate(r.at)}${r.via?' · '+esc(r.via):''}${r.ref?'<br>Ref '+esc(r.ref):''}</span>`:''}</td>
+  <td><div class="pl-acts">${acts.join('')}</div></td></tr>`}).join('');
+ return `<div class="panel pl-filters"><h3>Payments</h3><p class="hint" style="margin:0 0 10px">Every payment with full customer details. Choose dates, filter, then download.${adm?' Only you (Admin) can refund a payment.':''}</p>
+  <div class="rv-pre">${pre.map(([k,l])=>`<button type="button" class="chip" onclick="plPreset('${k}')">${l}</button>`).join('')}</div>
+  <div class="rv-form"><div class="fld"><label for="pl-from">From</label><input id="pl-from" type="date" value="${isoDay(st.from)}" max="${isoDay(now())}"></div><div class="fld"><label for="pl-to">To</label><input id="pl-to" type="date" value="${isoDay(st.to)}" max="${isoDay(now())}"></div>
+  <div class="fld"><label for="pl-st">Status</label><select id="pl-st">${[['all','All'],['Paid','Paid'],['Pending verification','Waiting for approval'],['Rejected','Rejected'],['Refunded','Refunded'],['dup','Possible duplicates']].map(([v,l])=>`<option value="${esc(v)}" ${st.status===v?'selected':''}>${l}</option>`).join('')}</select></div>
+  <div class="fld"><label for="pl-who">Customer</label><select id="pl-who">${[['all','All'],['employer','Employers'],['candidate','Job seekers']].map(([v,l])=>`<option value="${v}" ${st.who===v?'selected':''}>${l}</option>`).join('')}</select></div>
+  <div class="fld wide"><label for="pl-s">Search</label><input id="pl-s" value="${esc(st.s)}" placeholder="Name, mobile, email, invoice, UTR" onkeydown="if(event.key==='Enter')plApply()"></div>
+  <button class="btn" onclick="plApply()">Show payments</button></div></div>
+ <div class="stats"><div class="stat"><b>${L.length}</b><span>Payments · ${fmtDate(st.from)} – ${fmtDate(st.to)}</span></div><div class="stat"><b>${rupee2(tot(paid))}</b><span>Received (${paid.length})</span></div><div class="stat"><b>${rupee2(tot(pend))}</b><span>Waiting for approval (${pend.length})</span></div><div class="stat"><b>${rupee2(refd.reduce((s,p)=>s+(+(p.refund?.amount??payTotal(p))||0),0))}</b><span>Refunded (${refd.length})</span></div><div class="stat"><b>${dups.length}</b><span>Possible duplicates</span></div></div>
+ ${dups.length&&st.status!=='dup'?`<div class="banner"><p><strong>${dups.length} possible duplicate payment${dups.length>1?'s':''}</strong> — the same customer paid for the same plan twice within 3 days. <a href="${plHref(st,{status:'dup'})}">Show them</a></p></div>`:''}
+ <div class="panel"><div class="rv-head"><h3>${L.length} payment${L.length===1?'':'s'}</h3>${L.length?`<div class="row-btns" style="margin:0"><button class="btn ghost sm" onclick="plDownload('xlsx')">⬇ Download Excel</button><button class="btn ghost sm" onclick="plDownload('csv')">⬇ Download CSV</button></div>`:''}</div>
+ <div class="tbl pl-tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Plan / invoice</th><th>Amount / method</th><th>Status</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="6">No payments in this range.</td></tr>'}</tbody></table></div>
+ ${L.length>st.lim?`<p style="margin-top:10px"><a href="${plHref(st,{lim:st.lim+200})}">Show more (${L.length-st.lim} more)</a> · the download always has all ${L.length}.</p>`:''}</div>`}
+
+/* ---------- refunds: Admin only ---------- */
+function openRefund(id){if(!isAdminNow())return toast('Only the Admin can refund payments.');const p=(db.payments||[]).find(x=>x.id===id);if(!p)return;if(payStatus(p)==='Refunded')return toast('This payment is already refunded.');
+ const c=plCust(p),dup=dupOf(p),rzp=isRzpPay(p)&&cloudOn();
+ openModal(`<h2>Refund payment</h2>
+ <div class="rf-box"><dl><dt>Customer</dt><dd>${esc(c.company||c.name)}${c.company&&c.name?' · '+esc(c.name):''}</dd><dt>Mobile</dt><dd>${esc(c.mobile||'—')}</dd><dt>Plan</dt><dd>${esc(p.planName||'')}</dd><dt>Invoice</dt><dd>${esc(p.invoiceNo||'—')}</dd><dt>Paid on</dt><dd>${fmtDate(p.at)}</dd><dt>Amount</dt><dd>${rupee2(payTotal(p))}</dd><dt>Method</dt><dd>${esc(p.method||'')} · <span class="pl-ref">${esc(plRef(p))}</span></dd></dl></div>
+ ${dup?`<div class="rf-warn">✓ Looks like a duplicate: the same customer also paid for <b>${esc(dup.planName||'this plan')}</b> on ${fmtDate(dup.at)} (${esc(dup.invoiceNo||plRef(dup))}).</div>`:`<div class="rf-warn">⚠ No second payment found for this plan. Our policy gives refunds only for duplicate payments — please check before refunding.</div>`}
+ <div class="fld"><label for="rf-reason">Reason</label><select id="rf-reason"><option>Duplicate payment</option><option>Paid by mistake</option><option>Other</option></select></div>
+ ${rzp?`<label class="rf-opt"><input type="radio" name="rf-via" value="rzp" checked onchange="rfVia()"><span><b>Refund through Razorpay now</b><small>The money goes back to the customer's card / UPI / bank automatically in 5–7 working days.</small></span></label>
+ <label class="rf-opt"><input type="radio" name="rf-via" value="man" onchange="rfVia()"><span><b>I already refunded it from the Razorpay dashboard</b><small>Just record the refund here.</small></span></label>`:''}
+ <div id="rf-man" ${rzp?'hidden':''}><p class="hint" style="margin:10px 0 6px">${rzp?'':'Send the money back to the customer first (UPI or bank transfer), then enter the reference here.'}</p>
+  <div class="form"><div class="fld"><label for="rf-mode">Refunded by</label><select id="rf-mode"><option>UPI</option><option>Bank transfer</option><option>Razorpay</option><option>Cash</option></select></div><div class="fld"><label for="rf-ref">Refund UTR / reference</label><input id="rf-ref" placeholder="e.g. 412345678901"></div></div></div>
+ <label class="rf-opt"><input type="checkbox" id="rf-plan" ${dup?'':'checked'}><span><b>Also cancel the plan bought with this payment</b><small>${dup?'Leave this off for a duplicate — the customer keeps the plan from the other payment.':'Turn off only if the customer should keep the plan.'}</small></span></label>
+ <div class="row-btns"><button class="btn danger" id="rf-go" onclick="doRefund('${p.id}')">↩ Refund ${rupee2(payTotal(p))}</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}
+function rfVia(){const m=document.querySelector('input[name="rf-via"]:checked')?.value;const b=$('#rf-man');if(b)b.hidden=m!=='man'}
+async function doRefund(id){if(!isAdminNow())return toast('Only the Admin can refund payments.');const p=(db.payments||[]).find(x=>x.id===id);if(!p||payStatus(p)==='Refunded')return;
+ const via=document.querySelector('input[name="rf-via"]:checked')?.value||'man',reason=val('rf-reason')||'Duplicate payment',cancel=!!$('#rf-plan')?.checked,u=getUser(p.userId);let rf;
+ if(via==='rzp'){const b=$('#rf-go');if(b){b.disabled=true;b.textContent='Refunding…'}
+  try{const r=await gsPost({action:'rzpRefund',token:myTok(),id:p.id,reason});rf=r.refund}catch(e){if(b){b.disabled=false;b.textContent='↩ Try again'}
+   const m=String(e.message||e);return toast(/admin_only|session/.test(m)?'Please log in again as Admin, then try.':/rzp_not_set/.test(m)?'Razorpay keys are not saved in Site settings.':/already/.test(m)?'This payment is already refunded.':/unknown collection/.test(m)?'Update the Google Sheet code to version 18 first (Deploy → New version).':'Razorpay could not refund: '+(e.j&&e.j.detail||cloudErr(e)),9000)}}
+ else{const ref=val('rf-ref').trim();if(ref.length<4)return toast('Enter the refund UTR / reference after sending the money back.');rf={at:now(),by:me().name||'Admin',via:val('rf-mode')||'UPI',ref,amount:payTotal(p),reason}}
+ p.status='Refunded';p.refund=rf;
+ if(cancel&&u&&u.plan&&u.plan.expires===p.validTo)u.plan=p.prevPlan||null;
+ if(u)notify(u.id,'Refund processed',`We refunded ${rupee2(rf.amount||payTotal(p))} for ${p.planName||'your plan'}${p.invoiceNo?' (invoice '+p.invoiceNo+')':''}. ${rf.via==='Razorpay'?'It reaches your account in 5–7 working days.':'Reference: '+rf.ref+'.'}`,'#/invoices');
+ save();closeModal();toast('Refund recorded ✓'+(rf.via==='Razorpay'?' Razorpay refund ID '+rf.ref:''),7000);route()}
+
+/* refunded payments are not revenue */
+{const _rp79=revPays;revPays=function(){return _rp79.apply(this,arguments).filter(p=>payStatus(p)!=='Refunded')}}
+{const _pc79=payChip;payChip=function(s){return s==='Refunded'?'<span class="chip refd">Refunded</span>':_pc79.apply(this,arguments)}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
