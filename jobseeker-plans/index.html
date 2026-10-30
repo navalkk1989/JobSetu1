@@ -1624,6 +1624,106 @@ html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!importan
 .g-ben{margin-top:12px}.g-chips{display:flex;flex-wrap:wrap;gap:6px}.g-chips span{font-size:12.5px;padding:4px 10px;border-radius:999px;background:#EEF4FF;color:#1E3A8A;font-weight:600}
 .g-end{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}.g-end p{margin:0}
 @media(max-width:640px){.g-th{width:76px;height:76px}.g-loc-in{flex-direction:column}.guide{padding-top:12px}}
+/* V95: Naukri-style 3 columns */
+.nk3{display:grid;grid-template-columns:250px minmax(0,1fr) 280px;gap:18px;align-items:start;max-width:1240px;padding-top:16px;padding-bottom:24px;font-size:14px}
+@media(max-width:1180px){.nk3{grid-template-columns:230px minmax(0,1fr)}.nk-side{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}}
+@media(max-width:900px){.nk3{grid-template-columns:minmax(0,1fr)}.af{order:0}}
+.nk3 .panel{border-radius:18px;border:1px solid #E6EAF1;box-shadow:0 1px 3px rgba(16,24,40,.05);padding:16px 18px}
+/* filters */
+.af{position:sticky;top:12px}
+@media(max-width:900px){.af{position:static}}
+.af-box{background:#fff;border:1px solid #E6EAF1;border-radius:18px;box-shadow:0 1px 3px rgba(16,24,40,.05);overflow:hidden}
+.af-h{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;font-weight:800;font-size:15px;border-bottom:1px solid #EEF1F6;cursor:pointer;list-style:none}
+.af-h::-webkit-details-marker{display:none}
+.af-clear{border:0;background:none;color:#2563EB;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.af-sec{border-bottom:1px solid #EEF1F6;padding:10px 16px}
+.af-sec>summary{font-weight:700;font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.af-sec>summary::-webkit-details-marker{display:none}
+.af-sec>summary::after{content:"⌃";font-size:12px;color:#6B7280;transform:rotate(180deg);transition:transform .2s}
+.af-sec[open]>summary::after{transform:none}
+.af-n{background:#2563EB;color:#fff;border-radius:999px;font-size:11px;padding:1px 7px;margin-left:6px}
+.af-opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.af-o{display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;cursor:pointer;line-height:1.3}
+.af-o input{width:15px!important;height:15px;min-height:0!important;margin:0;flex:none;accent-color:#2563EB}
+.af-o span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.af-o em{font-style:normal;color:#9CA3AF;font-size:12px}
+.af-wi{padding:12px 16px}
+.af-more{border:0;background:none;color:#2563EB;font:inherit;font-size:12.5px;font-weight:700;text-align:left;padding:2px 0;cursor:pointer}
+.af-exp .af-t{font-weight:700;font-size:14px;display:flex;justify-content:space-between}
+.af-exp input[type=range]{width:100%;accent-color:#111827;margin:10px 0 2px;min-height:0;padding:0;height:auto}
+.af-rng{display:flex;justify-content:space-between;font-size:11.5px;color:#6B7280}
+/* centre */
+.nk-head h1{font-size:20px;margin:0}
+.nk-head .lead{font-size:13.5px;margin:2px 0 0}
+.nk-head .dsearch{margin-top:10px;border-radius:999px;border:1px solid #DDE3EC;padding:4px;box-shadow:none;max-width:none}
+.nk-head .dsearch input{font-size:14px;height:40px}.nk-head .dsearch .btn{height:40px;padding:0 20px;font-size:14px;border-radius:999px}
+.nk-tabs{margin:10px 0 0!important;gap:2px}.nk-tabs a{padding:8px 12px;font-size:13.5px;font-weight:600;white-space:nowrap}.nk-tabs a.on{color:#111827;border-bottom-color:#2563EB}
+.nk-res{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 2px 8px;font-size:13.5px;flex-wrap:wrap}
+.nk-res select{font-size:13px}
+.nj-list{display:flex;flex-direction:column;gap:12px}
+.nj{background:#fff;border:1px solid #E6EAF1;border-radius:18px;box-shadow:0 1px 3px rgba(16,24,40,.05);transition:box-shadow .15s,border-color .15s;position:relative}
+.nj:hover{box-shadow:0 10px 26px -12px rgba(24,58,140,.25);border-color:#C9D6F2}
+.nj.walkin{border-left:4px solid #F59E0B}
+.nj-a{display:block;padding:14px 18px 6px;color:inherit;text-decoration:none!important}
+.nj-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.nj-tt{min-width:0;flex:1}
+.nj h3{margin:0;font-size:16px;font-weight:700;line-height:1.3;color:#111827}
+.nj-co{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px;font-size:13.5px;color:#374151}
+.nj-co b{font-weight:600}.nj-v{color:#16A34A;font-size:12px}
+.nj-f{font-size:11px;font-weight:700;color:#92400E;background:#FEF3C7;border-radius:999px;padding:1px 8px}
+.nj-logo{width:44px!important;height:44px!important;border-radius:10px!important;flex:none;font-size:18px!important;border:1px solid #EEF1F6;object-fit:contain;background:#fff}
+.nj-meta{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:13px;color:#4B5563}
+.nj-meta span+span{padding-left:14px;border-left:1px solid #E5E7EB}
+.nj-desc{margin-top:7px;font-size:12.8px;color:#4B5563;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nj-sk{margin-top:6px;font-size:12px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nj-foot{display:flex;justify-content:space-between;align-items:center;padding:4px 18px 12px;font-size:12px;color:#9CA3AF;gap:8px;flex-wrap:wrap}
+.nj-m{color:#15803D}.nj-wi{color:#B45309;font-weight:700}
+.nj-save{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:#374151;cursor:pointer;padding:4px 6px;border-radius:8px}
+.nj-save:hover,.nj-save.on{color:#1D4ED8;background:#EEF4FF}
+.nj-box{border-radius:18px;padding:12px 16px;background:#EEF4FF;border:1px solid #DCE6FB}
+.nj-box.loc{background:#FFF7E6;border-color:#F6E0B0}
+.nj-box h4{margin:0 0 10px;font-size:14px}
+.nj-chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media(max-width:640px){.nj-chips{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.nj-chips button{background:#fff;border:1px solid #E1E6EF;border-radius:12px;padding:8px 6px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nj-chips button:hover{border-color:#2563EB}
+.nj-chips b{font-size:12.5px}.nj-chips span{font-size:11.5px;color:#2563EB}
+.nj-pg{text-align:center;font-size:12px;color:#6B7280;margin:6px 0 0}
+.pager.pg2{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:16px}
+.pager.pg2 .btn{border-radius:999px;min-width:38px;padding:7px 12px}
+/* candidate cards */
+.nc .nc-av{width:46px;height:46px;font-size:16px;flex:none}
+.nc .nj-top{align-items:center}
+.nc-sm{display:flex;flex-direction:column;align-items:center;font-weight:800;color:#15803D;font-size:16px;line-height:1;background:#ECFDF3;border-radius:12px;padding:6px 10px}
+.nc-sm small{font-size:10px;font-weight:600;color:#4B5563;margin-top:3px}
+.nc-acts{display:flex;gap:6px}
+.cs3 input{min-width:0}
+/* right column */
+.nk-side{display:flex;flex-direction:column;gap:14px}
+.ps2{text-align:center}
+.ps2 .ring{width:82px;height:82px}.ps2 .ring-in{width:74px;height:74px;overflow:hidden}.ps2 .ring-in>*{transform:scale(.78)}
+.ps2 .ring-pct{font-size:11px;padding:0 7px;bottom:-8px}
+.ps2 h3{margin:14px 0 2px;font-size:16.5px}.ps2-d{margin:0;font-size:13px;color:#4B5563}
+.ps2 .hint{font-size:12.5px;margin:2px 0}
+.ps2-logo{width:64px!important;height:64px!important;border-radius:16px!important;margin:0 auto;font-size:26px!important}
+.ps2-btn{display:flex;justify-content:center;margin-top:12px;border-radius:999px;background:#2563EB!important;border-color:#2563EB!important;padding:9px 12px;font-size:13.5px}
+.ps2-links{display:flex;justify-content:center;gap:12px;margin-top:8px;flex-wrap:wrap}
+.ps2-links button,.ps2-links a{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:#2563EB;cursor:pointer;text-decoration:none}
+.ps2 .perf{text-align:left}
+.pro{position:relative;border-radius:18px;padding:18px 18px 16px;overflow:hidden;color:#FCEFD0;background:radial-gradient(130% 120% at 0% 0%,#5A3A0C 0%,#2E1C05 50%,#1A1003 100%);border:1.5px solid #D9A93A;box-shadow:0 12px 30px -16px rgba(60,35,0,.8)}
+.pro .pc-crown{width:58px;height:48px;display:block;margin-bottom:6px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+.pro-k{display:block;font-size:30px;font-weight:900;letter-spacing:.06em;line-height:1;background:linear-gradient(180deg,#FFF1B8,#F5C242 55%,#C98A12);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pro h4{margin:8px 0 6px;font-size:15.5px;color:#FFE9B0}
+.pro p{margin:0 0 12px;font-size:13px;color:#E9D9B4}
+.pro ul{list-style:none;margin:0 0 14px;padding:0;font-size:13px;line-height:1.7;color:#F1E4C4}
+.pro .pc-buy{width:100%;justify-content:center}
+.pro::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,230,160,.10) 50%,transparent 65%);transform:translateX(-100%);animation:pcShine 6s ease-in-out infinite;pointer-events:none}
+@media(max-width:1500px){.ug-top .ug-t{display:none}.ug-top{padding:6px 9px}}
+.nk-head .cs3{display:flex;flex-wrap:nowrap}
+.nk-head .cs3 input{flex:1 1 0;min-width:0}
+.nk-head .cs3 .btn{flex:none}
+@media(max-width:640px){.nk-head .dsearch{border-radius:16px;flex-wrap:wrap}.nk-head .dsearch input{flex:1 1 100%}.nk-head .dsearch .btn{width:100%;border-radius:12px}.nk-head .cs3{flex-wrap:wrap}}
+@media(min-width:901px) and (max-width:1500px){#top .umenu .who{display:none}}
 </style>
 </head>
 <body>
@@ -4394,7 +4494,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='93';
+const WEB_BUILD='95';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6532,7 +6632,7 @@ const GIMG={"s1": "m/99c2db9c2fc3.webp", "s2": "m/e5cf6074116d.webp", "s3": "m/d
 const GT={
  en:{title:'User Guide',sub:'Everything you need to start on JobSetu1 — in 2 minutes.',seek:'For job seekers',hire:'For employers',lang:'भाषा / Language',zoom:'Tap a picture to see it bigger',
   locT:'📍 Why add the job location?',
-  loc:['<b>Reach directly:</b> job seekers get the exact address, a map pin and <b>Get directions</b>. No need to call the employer to ask for the address.','<b>Saves the employer time:</b> fewer “where is the office?” calls, and candidates arrive on time for interviews.','<b>Fewer fake jobs:</b> a real place pinned on the map is easy to check, so people trust the job — and fake posters stay away.','<b>Nearby people apply:</b> job cards show the distance (for example “1.4 km”), so local candidates find you first.'],
+  loc:['<b>Reach directly:</b> job seekers get the exact address, a map pin and <b>Get directions</b>. No need to call the employer to ask for the address.','<b>Saves the employer time:</b> fewer “where is the office?” calls, and candidates arrive on time for interviews.','<b>More trust, real jobs:</b> a job with a real place on the map is easy to check, so job seekers apply with confidence.','<b>Nearby people apply:</b> job cards show the distance (for example “1.4 km”), so local candidates find you first.'],
   benT:'What you get',reg:'Register free',done:'Ready! Questions? Use “Ask JobSetu1” at the bottom right, or Contact us.',
   seekSteps:[
    ['s1','Register free','On the home page tap <b>I want a job</b> → <b>Register as a job seeker</b>.'],
@@ -6552,7 +6652,7 @@ const GT={
   hireBen:['Free job posting','Search candidates by skill and city','Applicants ranked by match','Verified company badge','Alert the moment someone applies','Walk-in interview drives','Android app']},
  hi:{title:'यूज़र गाइड',sub:'JobSetu1 शुरू करने के लिए सब कुछ — सिर्फ़ 2 मिनट में।',seek:'नौकरी चाहने वालों के लिए',hire:'नियोक्ता (Employer) के लिए',lang:'भाषा / Language',zoom:'बड़ा देखने के लिए फ़ोटो पर टैप करें',
   locT:'📍 जॉब की लोकेशन क्यों जोड़ें?',
-  loc:['<b>सीधे पहुँचें:</b> नौकरी चाहने वाले को पूरा पता, मैप पिन और <b>Get directions</b> मिलता है। पता पूछने के लिए employer को कॉल करने की ज़रूरत नहीं।','<b>Employer का समय बचता है:</b> “ऑफ़िस कहाँ है?” वाले कॉल कम होते हैं, और उम्मीदवार इंटरव्यू पर समय से पहुँचते हैं।','<b>फ़र्ज़ी नौकरियाँ कम:</b> मैप पर लगी असली जगह को जाँचना आसान है, इसलिए लोग नौकरी पर भरोसा करते हैं — और फ़र्ज़ी जॉब डालने वाले दूर रहते हैं।','<b>पास के लोग अप्लाई करते हैं:</b> जॉब कार्ड पर दूरी दिखती है (जैसे “1.4 km”), इसलिए आस-पास के उम्मीदवार आपको पहले ढूँढते हैं।'],
+  loc:['<b>सीधे पहुँचें:</b> नौकरी चाहने वाले को पूरा पता, मैप पिन और <b>Get directions</b> मिलता है। पता पूछने के लिए employer को कॉल करने की ज़रूरत नहीं।','<b>Employer का समय बचता है:</b> “ऑफ़िस कहाँ है?” वाले कॉल कम होते हैं, और उम्मीदवार इंटरव्यू पर समय से पहुँचते हैं।','<b>ज़्यादा भरोसा, असली नौकरियाँ:</b> मैप पर असली जगह वाली जॉब को जाँचना आसान है, इसलिए नौकरी चाहने वाले बेझिझक अप्लाई करते हैं।','<b>पास के लोग अप्लाई करते हैं:</b> जॉब कार्ड पर दूरी दिखती है (जैसे “1.4 km”), इसलिए आस-पास के उम्मीदवार आपको पहले ढूँढते हैं।'],
   benT:'आपको क्या मिलता है',reg:'फ़्री रजिस्टर करें',done:'हो गया! कोई सवाल? नीचे दाईं ओर “Ask JobSetu1” या Contact us का इस्तेमाल करें।',
   seekSteps:[
    ['s1','फ़्री रजिस्टर करें','होम पेज पर <b>I want a job</b> → <b>Register as a job seeker</b> पर टैप करें।'],
@@ -6592,6 +6692,155 @@ const UG_BTN=(cls,txt,href)=>`<a class="ug-btn ${cls||''}" href="${href||'#/guid
  .replace('<span class="rc-tag">For job seekers</span>','<span class="rc-tag">For job seekers</span><span class="ug-mini" role="link" tabindex="0" onclick="event.preventDefault();event.stopPropagation();go(\'#/guide?for=seek\')">📘 User guide</span>')
  .replace('<span class="rc-tag">For employers</span>','<span class="rc-tag">For employers</span><span class="ug-mini" role="link" tabindex="0" onclick="event.preventDefault();event.stopPropagation();go(\'#/guide?for=hire\')">📘 User guide</span>')}}
 {const _rh93=renderHeader;renderHeader=function(){const r=_rh93.apply(this,arguments);try{const u=me(),R=document.querySelector('#top .right');if(u&&R&&['candidate','employer'].includes(u.role)&&!R.querySelector('.ug-top'))R.insertAdjacentHTML('afterbegin',`<a class="ug-btn ug-top" href="#/guide?for=${u.role==='employer'?'hire':'seek'}" title="User Guide">📘<span class="ug-t"> Guide</span></a>`)}catch(e){}return r}}
+
+/* ==================================================================
+   V95: Naukri-style pages
+   - job seeker dashboard: All Filters (left) · jobs with pages (centre)
+     · profile + Premium card (right)
+   - employer Find candidates: the same layout for candidates
+   ================================================================== */
+const PER_PAGE=15;
+function afQ(){return new URLSearchParams((location.hash.split('?')[1])||'')}
+function afList(q,k){return String(q.get(k)||'').split('|').filter(Boolean)}
+function afGo(base,mut){const q=afQ();mut(q);q.delete('pg');go(base+'?'+q.toString())}
+function afToggle(base,k,v){afGo(base,q=>{const a=afList(q,k),i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);a.length?q.set(k,a.join('|')):q.delete(k)})}
+function afSet(base,k,v){afGo(base,q=>{v===''||v==null?q.delete(k):q.set(k,v)})}
+function afClear(base,keys){afGo(base,q=>keys.forEach(k=>q.delete(k)))}
+function afCount(list,fn){const m=new Map();list.forEach(x=>{[].concat(fn(x)||[]).forEach(v=>{if(v)m.set(v,(m.get(v)||0)+1)})});return [...m.entries()].sort((a,b)=>b[1]-a[1])}
+/* one filter section with tick boxes and counts */
+function afSec(base,title,k,entries,q,opt){opt=opt||{};const on=afList(q,k),show=opt.all?entries:entries.slice(0,5),more=entries.length>5&&!opt.all;
+ if(!entries.length)return '';
+ return `<details class="af-sec" ${opt.closed&&!on.length?'':'open'}><summary>${title}${on.length?` <span class="af-n">${on.length}</span>`:''}</summary><div class="af-opts" id="af-${k}">${show.map(([v,n,l])=>`<label class="af-o"><input type="checkbox" ${on.includes(String(v))?'checked':''} data-v="${esc(String(v))}" onchange="afToggle('${base}','${k}',this.dataset.v)"><span>${esc(l||v)}</span><em>(${n.toLocaleString('en-IN')})</em></label>`).join('')}
+ ${more?`<button type="button" class="af-more" onclick="this.closest('.af-sec').outerHTML=afSecMore(this)">View more</button>`:''}</div></details>`}
+let _afMore={};function afSecMore(b){const s=_afMore[b.closest('.af-opts').id];return s?s():''}
+function afSecR(base,title,k,entries,q,opt){const html=afSec(base,title,k,entries,q,opt);_afMore['af-'+k]=()=>afSec(base,title,k,entries,q,Object.assign({},opt,{all:true}));return html}
+function afPanel(base,inner,active,keys){return `<aside class="af"><details class="af-box" id="af-box" open><summary class="af-h"><span>All Filters</span>${active?`<button type="button" class="af-clear" onclick="event.preventDefault();afClear('${base}',${JSON.stringify(keys).replace(/"/g,"'")})">Clear (${active})</button>`:''}</summary>${inner}</details></aside>`}
+
+/* ---------------- job filters ---------------- */
+const SAL_B=[['0-15000','Up to ₹15k / month',0,15000],['15000-25000','₹15k – 25k',15000,25000],['25000-40000','₹25k – 40k',25000,40000],['40000-70000','₹40k – 70k',40000,70000],['70000+','₹70k+',70000,1e12]];
+const FRESH=[['1','Last 24 hours'],['3','Last 3 days'],['7','Last 7 days'],['15','Last 15 days'],['30','Last 30 days']];
+const JMODE=j=>j.jobType==='Work From Home'?'Work from home':j.jobType==='Field Job'?'Field job':'Work from office';
+const JIND=j=>emp(j.employerId)?.company?.industry||'';
+const JCT=j=>emp(j.employerId)?.company?.type||'';
+const JSAL=j=>{const s=+j.salary||0;const b=SAL_B.find(([,, lo,hi])=>s>lo&&s<=hi)||(s===0?SAL_B[0]:null);return b?b[0]:''};
+const JKEYS=['fx','fm','fl','fs','fi','ft','fe','fw','fd','fwi'];
+function jobFilter(list,q){const t=now(),fx=q.get('fx'),L=k=>afList(q,k);
+ return list.filter(j=>{if(fx!==null&&fx!==''&&+fx<31&&(+j.minExp||0)>+fx)return false;
+  const chk=(k,v)=>{const a=L(k);return !a.length||a.includes(String(v))};
+  if(!chk('fm',JMODE(j))||!chk('fl',j.city)||!chk('fs',JSAL(j))||!chk('fi',JIND(j))||!chk('ft',JCT(j))||!chk('fe',j.education)||!chk('fw',j.workStatus))return false;
+  if(q.get('fd')&&t-(+j.createdAt||0)>(+q.get('fd'))*DAY)return false;if(q.get('fwi')==='1'&&!isWalkin(j))return false;return true})}
+function jobFilters(base,all,q){const active=JKEYS.filter(k=>q.get(k)).length,fx=q.get('fx');const xv=fx===null||fx===''?31:+fx;
+ const sal=SAL_B.map(([k,l])=>[k,all.filter(j=>JSAL(j)===k).length,l]).filter(x=>x[1]);
+ const inner=`<div class="af-sec af-exp"><div class="af-t">Experience <span class="hint">${xv>=31?'Any':xv===0?'Fresher':xv+' yrs'}</span></div><input type="range" min="0" max="31" value="${xv}" aria-label="Your experience in years" oninput="this.previousElementSibling.querySelector('span').textContent=this.value>=31?'Any':this.value==0?'Fresher':this.value+' yrs'" onchange="afSet('${base}','fx',this.value>=31?'':this.value)"><div class="af-rng"><span>0 Yrs</span><span>Any</span></div></div>
+ ${afSecR(base,'Work mode','fm',afCount(all,JMODE),q)}
+ ${afSecR(base,'Location','fl',afCount(all,j=>j.city),q)}
+ ${afSecR(base,'Salary','fs',sal,q)}
+ ${afSecR(base,'Industry','fi',afCount(all,JIND),q)}
+ ${afSecR(base,'Company type','ft',afCount(all,JCT),q,{closed:1})}
+ ${afSecR(base,'Education','fe',afCount(all,j=>j.education),q,{closed:1})}
+ ${afSecR(base,'Fresher / Experienced','fw',afCount(all,j=>j.workStatus),q,{closed:1})}
+ <details class="af-sec" ${q.get('fd')?'open':''}><summary>Freshness</summary><div class="af-opts">${FRESH.map(([v,l])=>`<label class="af-o"><input type="radio" name="af-fd" ${q.get('fd')===v?'checked':''} onchange="afSet('${base}','fd','${v}')"><span>${l}</span></label>`).join('')}${q.get('fd')?`<button type="button" class="af-more" onclick="afSet('${base}','fd','')">Any time</button>`:''}</div></details>
+ <label class="af-o af-wi"><input type="checkbox" ${q.get('fwi')==='1'?'checked':''} onchange="afSet('${base}','fwi',this.checked?'1':'')"><span>🏢 Walk-in interviews only</span><em>(${all.filter(isWalkin).length})</em></label>`;
+ return afPanel(base,inner,active,JKEYS)}
+
+/* ---------------- job card (Naukri-like) ---------------- */
+function savedSet(){const u=me();try{return new Set(JSON.parse(localStorage.getItem('js1_saved_'+(u?u.id:''))||'[]'))}catch(e){return new Set()}}
+function toggleSaveJob(id,btn){const u=me();if(!u)return go('#/login');const s=savedSet();s.has(id)?s.delete(id):s.add(id);try{localStorage.setItem('js1_saved_'+u.id,JSON.stringify([...s]))}catch(e){}
+ if(btn){const on=s.has(id);btn.classList.toggle('on',on);btn.innerHTML=(on?'🔖 Saved':'🏷️ Save')}toast(s.has(id)?'Job saved ✓ Find it in the Saved tab.':'Removed from saved jobs.')}
+function njCard(j){const u=me(),m=u?.role==='candidate'?matchScore(j,u):null,e=emp(j.employerId),c=e?.company||{},sv=savedSet().has(j.id);
+ const sk=String(j.skills||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,6),desc=String(j.highlights||j.description||'').replace(/\s+/g,' ').trim();
+ return `<article class="nj ${isWalkin(j)?'walkin':''}"><a class="nj-a" href="#/job/${j.id}"><div class="nj-top"><div class="nj-tt"><h3>${esc(j.title)}</h3><div class="nj-co"><b>${esc(j.company||c.name||'')}</b>${c.verified?'<span class="nj-v" title="Documents verified">✔</span>':''}${isPremium(e)?'<span class="nj-f">★ Featured</span>':''}</div></div>${coMark(e,'nj-logo')}</div>
+ <div class="nj-meta"><span>💼 ${j.workStatus==='Fresher'?'Fresher':esc(j.minExp||0)+'+ Yrs'}</span><span>₹ ${j.salary?'Up to '+(+j.salary).toLocaleString('en-IN')+'/month':'Not disclosed'}</span><span>📍 ${esc(j.city)}${esc(distTxt(j))}</span></div>
+ ${desc?`<div class="nj-desc">📄 ${esc(desc.slice(0,120))}${desc.length>120?'…':''}</div>`:''}
+ ${sk.length?`<div class="nj-sk">${sk.map(esc).join(' · ')}</div>`:''}</a>
+ <div class="nj-foot"><span class="nj-ago">${isWalkin(j)?'<span class="nj-wi">Walk-in</span> ':''}${ago(j.createdAt)}${m!==null?` · <b class="nj-m">${m}% match</b>`:''}</span><button type="button" class="nj-save ${sv?'on':''}" onclick="toggleSaveJob('${j.id}',this)">${sv?'🔖 Saved':'🏷️ Save'}</button></div></article>`}
+function njInline(kind,base,all){if(kind==='sal'){const b=SAL_B.slice(0,4).map(([k,l])=>[k,l,all.filter(j=>JSAL(j)===k).length]).filter(x=>x[2]);if(!b.length)return '';
+  return `<div class="nj-box"><h4>₹ Filter jobs by salary</h4><div class="nj-chips">${b.map(([k,l,n])=>`<button type="button" onclick="afToggle('${base}','fs','${k}')"><b>${l}</b><span>${n.toLocaleString('en-IN')} jobs</span></button>`).join('')}</div></div>`}
+ const c=afCount(all,j=>j.city).slice(0,4);if(c.length<2)return '';
+ return `<div class="nj-box loc"><h4>📍 Filter jobs by location</h4><div class="nj-chips">${c.map(([v,n])=>`<button type="button" data-v="${esc(v)}" onclick="afToggle('${base}','fl',this.dataset.v)"><b>${esc(v)}</b><span>${n.toLocaleString('en-IN')} jobs</span></button>`).join('')}</div></div>`}
+function njList(list,base,all,q){const pg=Math.max(1,Math.min(Math.ceil(list.length/PER_PAGE)||1,+q.get('pg')||1)),rows=list.slice((pg-1)*PER_PAGE,pg*PER_PAGE);
+ const href=n=>{const p=afQ();p.set('pg',n);return base+'?'+p.toString()};let out='';
+ rows.forEach((j,i)=>{out+=njCard(j);if(pg===1&&i===2)out+=njInline('sal',base,all);if(pg===1&&i===7)out+=njInline('loc',base,all)});
+ return `<div class="nj-list">${out}</div>${pager(list.length,pg,PER_PAGE,href)}<p class="nj-pg">${list.length?`Showing ${((pg-1)*PER_PAGE+1).toLocaleString('en-IN')}–${Math.min(pg*PER_PAGE,list.length).toLocaleString('en-IN')} of ${list.length.toLocaleString('en-IN')}`:''}</p>`}
+{const _pg95=pager;pager=function(total,page,size,href){const h=_pg95.apply(this,arguments);return h.replace('<nav class="pager"','<nav class="pager pg2"')}}
+
+/* ---------------- right column: profile + Premium ---------------- */
+function proCard(u){const emp=u.role==='employer';
+ if(hasPremium(u))return `<div class="pro pro-on">${GOLD_CROWN}<b class="pro-k">PREMIUM</b><h4>Active till ${fmtDate(u.plan.expires)}</h4><p>${emp?'Your jobs are ★ Featured and every Premium tool is unlocked.':'Your resume is shown first to employers.'}</p><a class="pc-buy" href="#/premium">👑 Open Premium tools</a></div>`;
+ if(typeof freeForUser==='function'&&freeForUser(u))return `<div class="pro pro-free">${GOLD_CROWN}<b class="pro-k">PREMIUM</b><h4>FREE for you right now</h4><p>Every service is unlocked for your account. Enjoy!</p></div>`;
+ const pts=emp?['Refined resumes by skill','★ Featured jobs at the top','Applicant management & analytics']:['Resume shown first to employers','Auto-apply to matching jobs','See who viewed your profile'];
+ return `<div class="pro">${GOLD_CROWN}<b class="pro-k">PREMIUM</b><h4>${emp?'Hire faster with Premium':'Get noticed by employers first'}</h4><ul>${pts.map(p=>`<li>✓ ${p}</li>`).join('')}</ul><a class="pc-buy" href="#/premium">👑 Get Premium</a></div>`}
+function seekSide(u){const p=u.profile||{},pct=profilePct(u),apps=db.apps.filter(a=>a.candId===u.id).length,views=(()=>{try{return viewersOf(u.id).length}catch(e){return 0}})();
+ return `<div class="panel ps2"><div class="ring" style="--p:${pct}"><div class="ring-in">${avatar(u,'lg')}</div><span class="ring-pct">${pct}%</span></div><h3>${esc(u.name)}</h3><p class="ps2-d">${esc(p.designation||p.workStatus||'Add your work details')}</p><p class="hint">${p.city?esc(p.city)+(p.state?', '+esc(p.state):''):'Location not added'}</p>${isPremium(u)?`<p style="margin:6px 0 0">${premBadge(u)}</p>`:''}
+ <a class="btn ps2-btn" href="#/profile">${pct<100?'Complete profile':'View profile'}</a><div class="ps2-links"><button type="button" onclick="openResume()">📄 Update resume</button><button type="button" onclick="openPhoto()">📷 ${u.photo?'Change photo':'Add photo'}</button></div>
+ <div class="perf"><h4>Profile performance</h4><div class="mini"><div><b>${views}</b><span>Recruiter views</span></div><div><b>${apps}</b><span>Applied</span></div><div><b>${savedSet().size}</b><span>Saved</span></div></div></div></div>`}
+function sideLinks(u){const unread=(db.notes||[]).filter(n=>n.userId===u.id&&!n.read).length;return `<div class="panel qlinks"><h3>Quick links</h3>${u.role==='employer'?'<a href="#/employer">Dashboard</a><a href="#/post-job">Post a job</a><a href="#/company-profile">Company profile</a>':'<a href="#/jobs">Search jobs</a><a href="#/companies">Browse companies</a>'}<a href="#/notifications">Notifications${unread?' ('+unread+')':''}</a><a href="#/guide?for=${u.role==='employer'?'hire':'seek'}">📘 User Guide</a></div>`}
+
+/* ---------------- job seeker dashboard ---------------- */
+{const _cd95=pgCandDash;pgCandDash=function(q){q=q||new URLSearchParams();const g=gate(['candidate']);if(g.block)return g.block;const u=g.u;
+ const tab=q.get('tab')||'rec';if(tab==='applied')return _cd95.apply(this,arguments);
+ const base='#/dashboard',sq=(q.get('sq')||'').trim(),sl=(q.get('sl')||'').trim(),open=openJobs();
+ const recs=open.map(j=>({j,s:matchScore(j,u)})).filter(x=>x.s>=40).sort((a,b)=>b.s-a.s).map(x=>x.j);
+ const sv=savedSet(),saved=open.filter(j=>sv.has(j.id));
+ let pool;if(tab==='search'){const kw=sq.toLowerCase(),lc=sl.toLowerCase();pool=open.filter(j=>(!kw||[j.title,j.skills,j.company,j.description].join(' ').toLowerCase().includes(kw))&&(!lc||(j.city+' '+j.state+' '+j.address).toLowerCase().includes(lc)))}
+ else if(tab==='recent')pool=open.slice();else if(tab==='saved')pool=saved;else pool=recs;
+ const sortBy=q.get('sort')||(tab==='recent'?'date':tab==='search'&&(sq||sl)?'relevance':'recommended');
+ const list=sortJobs(jobFilter(pool,q),sortBy,sq,sl),apps=db.apps.filter(a=>a.candId===u.id).length,unread=(db.notes||[]).filter(n=>n.userId===u.id&&!n.read).length;
+ const keep=k=>{const p=new URLSearchParams();p.set('tab',k);JKEYS.forEach(x=>{if(q.get(x))p.set(x,q.get(x))});if(k==='search'){if(sq)p.set('sq',sq);if(sl)p.set('sl',sl)}return base+'?'+p.toString()};
+ const tabs=[['rec','Recommended',recs.length],['search','Search jobs',tab==='search'?pool.length:null],['applied','Applied',apps],['recent','All jobs',open.length],['saved','Saved',saved.length]];
+ return `<section class="wrap nk3">${jobFilters(base,pool,q)}
+ <div class="nk-mid"><div class="panel nk-head"><h1>Hello, ${esc(u.name.split(' ')[0])}</h1><p class="lead">${unread?`You have ${unread} new alert${unread===1?'':'s'}. <a href="#/notifications">See alerts</a>`:'Here are jobs picked for your profile.'}</p>
+  <form class="search dsearch" role="search" onsubmit="dashSearch(event)"><input id="ds-q" value="${esc(sq)}" placeholder="Search jobs: title, skill or company" aria-label="Search jobs"><input id="ds-l" list="cities" value="${esc(sl)}" placeholder="City" aria-label="City"><button class="btn alt">Search</button></form>
+  <div class="tabs nk-tabs" role="tablist">${tabs.map(([k,l,n])=>`<a role="tab" aria-selected="${tab===k}" class="${tab===k?'on':''}" href="${keep(k)}">${l}${n===null?'':' ('+n.toLocaleString('en-IN')+')'}</a>`).join('')}</div></div>
+  <div class="nk-res"><span><b>${list.length.toLocaleString('en-IN')}</b> job${list.length===1?'':'s'}${pool.length!==list.length?` <span class="hint">(filtered from ${pool.length.toLocaleString('en-IN')})</span>`:''}</span>${sortCtl(sortBy)}</div>
+  ${list.length?njList(list,base,pool,q):`<div class="empty">${tab==='saved'?'No saved jobs yet. Tap 🏷️ Save on any job to keep it here.':pool.length?'No jobs match these filters. Remove a filter to see more.':'No strong matches yet. Add more skills or a nearby city to your <a href="#/profile">profile</a>.'}</div>`}</div>
+ <aside class="nk-side">${seekSide(u)}${proCard(u)}${sideLinks(u)}</aside></section>`}}
+
+/* ---------------- employer: Find candidates ---------------- */
+const CKEYS=['cx','cw','cl','ce','ci','cn','cp'];
+const CEXP=c=>(+c.profile?.expYears||0)+(+c.profile?.expMonths||0)/12;
+function candFilter(list,q){const cx=q.get('cx'),L=k=>afList(q,k);return list.filter(({c})=>{const p=c.profile||{};
+ if(cx!==null&&cx!==''&&+cx<31&&CEXP(c)<+cx)return false;const chk=(k,v)=>{const a=L(k);return !a.length||a.includes(String(v))};
+ return chk('cw',p.workStatus)&&chk('cl',p.city)&&chk('ce',p.education)&&chk('ci',p.industry)&&chk('cn',p.notice)&&(q.get('cp')!=='1'||isPremium(c))})}
+function candFilters(base,all,q){const active=CKEYS.filter(k=>q.get(k)).length,cx=q.get('cx'),xv=cx===null||cx===''?31:+cx,C=all.map(x=>x.c);
+ const inner=`<div class="af-sec af-exp"><div class="af-t">Minimum experience <span class="hint">${xv>=31?'Any':xv===0?'Fresher':xv+'+ yrs'}</span></div><input type="range" min="0" max="31" value="${xv}" aria-label="Minimum experience in years" oninput="this.previousElementSibling.querySelector('span').textContent=this.value>=31?'Any':this.value==0?'Fresher':this.value+'+ yrs'" onchange="afSet('${base}','cx',this.value>=31?'':this.value)"><div class="af-rng"><span>0 Yrs</span><span>Any</span></div></div>
+ ${afSecR(base,'Fresher / Experienced','cw',afCount(C,c=>c.profile?.workStatus),q)}
+ ${afSecR(base,'Location','cl',afCount(C,c=>c.profile?.city),q)}
+ ${afSecR(base,'Education','ce',afCount(C,c=>c.profile?.education),q)}
+ ${afSecR(base,'Industry','ci',afCount(C,c=>c.profile?.industry),q,{closed:1})}
+ ${afSecR(base,'Notice period','cn',afCount(C,c=>c.profile?.notice),q,{closed:1})}
+ <label class="af-o af-wi"><input type="checkbox" ${q.get('cp')==='1'?'checked':''} onchange="afSet('${base}','cp',this.checked?'1':'')"><span>★ Premium job seekers only</span><em>(${C.filter(isPremium).length})</em></label>`;
+ return afPanel(base,inner,active,CKEYS)}
+function ncCard({c,s,k},want){const p=c.profile||{},sk=String(p.skills||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,7);
+ return `<article class="nj nc"><a class="nj-a" href="#/candidate/${c.id}"><div class="nj-top">${avatar(c,'nc-av')}<div class="nj-tt"><h3>${esc(c.name)} ${premBadge(c)}</h3><div class="nj-co"><b>${esc(p.designation||p.tech||p.workStatus||'Job seeker')}</b></div></div>${want.length?`<span class="nc-sm" title="Skill match">${k}%<small>skills</small></span>`:''}</div>
+ <div class="nj-meta"><span>💼 ${p.workStatus==='Experienced'?esc(p.expYears||0)+'y '+esc(p.expMonths||0)+'m':'Fresher'}</span><span>📍 ${esc(p.city||'—')}</span>${p.education?`<span>🎓 ${esc(p.education)}</span>`:''}${p.notice?`<span>⏱ ${esc(p.notice)}</span>`:''}</div>
+ ${sk.length?`<div class="nj-sk">${sk.map(esc).join(' · ')}</div>`:''}</a>
+ <div class="nj-foot"><span class="nj-ago">${s===null?'':`Profile match <b class="nj-m">${s}%</b>`}</span><span class="nc-acts"><a class="btn ghost sm" href="#/candidate/${c.id}">View profile</a>${contactBtn(c.id)}</span></div></article>`}
+function empSide(u){const c=u.company||{},jobs=db.jobs.filter(j=>j.employerId===u.id&&j.status==='open').length,apps=(typeof empApps==='function'?empApps(u.id):[]).length;
+ return `<div class="panel ps2">${coMark(u,'ps2-logo')}<h3>${esc(c.name||u.name)}</h3><p class="ps2-d">${esc(c.industry||'Industry not set')}</p><p class="hint">${c.verified?'<span class="chip good">Documents verified</span>':'Documents under review'}</p>
+ <a class="btn ps2-btn" href="#/post-job">+ Post a job</a><div class="ps2-links"><a href="#/company-profile">✏️ Edit profile</a><a href="#/company/${u.id}">👁 Public page</a></div>
+ <div class="perf"><h4>Hiring summary</h4><div class="mini"><div><b>${jobs}</b><span>Open jobs</span></div><div><b>${apps}</b><span>Applications</span></div><div><b>${(db.activity||[]).filter(a=>a.empId===u.id&&a.type==='view').length}</b><span>Profiles viewed</span></div></div></div></div>`}
+{const _pc95=pgCandidates;pgCandidates=function(q){const g=gate(['employer']);if(g.block)return g.block;const u=g.u;if(!userCan(u,'employer','find'))return _pc95.apply(this,arguments);
+ const base='#/candidates',kw=(q.get('q')||'').toLowerCase(),city=(q.get('city')||'').toLowerCase(),need=tokens(q.get('sk')||'');
+ const myJobs=db.jobs.filter(j=>j.employerId===u.id&&j.status==='open'),want=need.length?need:[...new Set(myJobs.flatMap(j=>tokens(j.skills)))];
+ let pool=db.users.filter(c=>c.role==='candidate'&&c.status==='active'&&!c.hideProfile&&!c.deleteReq&&profileReady(c));
+ if(kw)pool=pool.filter(c=>[c.profile.skills,c.profile.designation,c.profile.about,c.profile.tech].join(' ').toLowerCase().includes(kw));
+ if(city)pool=pool.filter(c=>(c.profile.city+' '+c.profile.state).toLowerCase().includes(city));
+ const best=c=>myJobs.length?Math.max(...myJobs.map(j=>matchScore(j,c))):null;
+ pool=pool.map(c=>({c,s:best(c),k:skillMatch(c,want)}));if(need.length)pool=pool.filter(x=>x.k>0);
+ pool.sort((a,b)=>premSort(a.c,b.c)||(need.length?b.k-a.k:0)||(b.s||0)-(a.s||0)||b.k-a.k);
+ const list=candFilter(pool,q),pg=Math.max(1,Math.min(Math.ceil(list.length/PER_PAGE)||1,+q.get('pg')||1)),rows=list.slice((pg-1)*PER_PAGE,pg*PER_PAGE);
+ const href=n=>{const p=afQ();p.set('pg',n);return base+'?'+p.toString()};
+ const go_=`event.preventDefault();const p=new URLSearchParams();['q','city','sk'].forEach((k,i)=>{const v=val(['cs-q','cs-c','cs-sk'][i]);if(v)p.set(k,v)});go('#/candidates?'+p.toString())`;
+ return `<section class="wrap nk3">${candFilters(base,pool,q)}
+ <div class="nk-mid"><div class="panel nk-head"><h1>Find candidates</h1><p class="lead">Premium job seekers first, then by how well their skills match ${need.length?'the skills you entered':'your open jobs'}.</p>
+  <form class="search dsearch cs3" onsubmit="${go_}"><input id="cs-sk" placeholder="Skills, e.g. Tally, GST" value="${esc(q.get('sk')||'')}" aria-label="Skills you need"><input id="cs-q" placeholder="Designation" value="${esc(q.get('q')||'')}" aria-label="Designation or keyword"><input id="cs-c" list="cities" placeholder="City" value="${esc(q.get('city')||'')}" aria-label="City"><button class="btn alt">Search</button></form></div>
+  ${accessBanner(u)}
+  <div class="nk-res"><span><b>${list.length.toLocaleString('en-IN')}</b> candidate${list.length===1?'':'s'}${pool.length!==list.length?` <span class="hint">(filtered from ${pool.length.toLocaleString('en-IN')})</span>`:''}</span></div>
+  ${list.length?`<div class="nj-list">${rows.map(x=>ncCard(x,want)).join('')}</div>${pager(list.length,pg,PER_PAGE,href)}<p class="nj-pg">Showing ${((pg-1)*PER_PAGE+1).toLocaleString('en-IN')}–${Math.min(pg*PER_PAGE,list.length).toLocaleString('en-IN')} of ${list.length.toLocaleString('en-IN')}</p>`:'<div class="empty">No candidates match. Try fewer skills, another city, or remove a filter.</div>'}</div>
+ <aside class="nk-side">${empSide(u)}${proCard(u)}${sideLinks(u)}</aside></section>`}}
+/* phones: filters start folded */
+{const _r95=route;route=function(){const r=_r95.apply(this,arguments);try{const b=document.getElementById('af-box');if(b&&window.innerWidth<=900){const q=afQ();if(!JKEYS.concat(CKEYS).some(k=>q.get(k)))b.open=false}}catch(e){}return r}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
