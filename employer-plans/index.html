@@ -1462,6 +1462,7 @@ html.app .ofb{font-size:13px}
 @media(prefers-reduced-motion:reduce){.hdr-rf.need{animation-duration:2.4s}}
 html.app #apkbar{display:none!important} /* the blinking refresh button on top replaces this bar */
 html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.4)!important}
+.ct-steps{line-height:1.7;padding-left:20px;margin:10px 0}
 </style>
 </head>
 <body>
@@ -4232,7 +4233,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='83';
+const WEB_BUILD='84';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6077,6 +6078,44 @@ async function devPushSetup(force){if(!canPush()||!cloudOn()||session||_dpBusy)r
 {const _lo83=logout;logout=function(){rememberWho();const r=_lo83.apply(this,arguments);try{localStorage.removeItem('js1_dptk')}catch(e){}setTimeout(()=>devPushSetup(true),800);return r}}
 {const _r83=route;route=function(){const r=_r83.apply(this,arguments);try{if(session)rememberWho();else if(APP)setTimeout(devPushSetup,1500)}catch(e){}return r}}
 if(APP)setTimeout(devPushSetup,5000);
+
+/* ==================================================================
+   V84: closed-app notifications always get switched on.
+   If the account's cloud login has expired, the app renews it by itself;
+   if that is not possible it still turns on basic alerts (device pass).
+   Plus a "Test with the app closed" button.
+   ================================================================== */
+async function pushRenew(){const u=me();if(!u||!session||session.kind==='staff'||!cloudOn())return false;const pw=u.password||u.gpw,id=u.mobile||u.email;if(!pw||!id)return false;
+ try{await cloudLogin('user',u.role,id,pw);return !!myTok()}catch(e){return false}}
+function pushSave(ptk,mode){const c=gsCfg();AndroidApp.setPush(c.url,c.key,ptk);try{localStorage.setItem('js1_ptk',ptk);localStorage.setItem('js1_push_for',session?session.id:'');localStorage.setItem('js1_pushmode',mode)}catch(e){}}
+{const _ps84=pushSetup;pushSetup=async function(force){if(!canPush()||!cloudOn()||!session||session.kind==='staff')return _ps84.apply(this,arguments);
+ let mode='',who='',on=false;try{mode=localStorage.getItem('js1_pushmode')||'';who=localStorage.getItem('js1_push_for')||'';on=!!AndroidApp.pushOn()}catch(e){}
+ if(on&&who===session.id&&mode==='full'&&!force)return;if(on&&who===session.id&&mode==='basic'&&!force&&Date.now()-(window._pushTry||0)<10*60e3)return;
+ if(_pushBusy)return;_pushBusy=true;window._pushTry=Date.now();let err='';
+ try{if(!myTok())await pushRenew();
+  for(let i=0;i<2&&myTok();i++){try{const r=await gsPost({action:'pushToken',token:myTok()});pushSave(r.ptk,'full');window._pushErr='';return}
+   catch(e){err=cloudErr(e);if(/session_expired/.test(err)){tokSet(session.id,null);if(!(await pushRenew()))break}else break}}
+  if(!err)err='login_expired';
+  /* could not use the account: still switch on alerts for this phone */
+  const u=me()||{},p=u.role==='employer'?(u.company||{}):(u.profile||{});
+  const r=await gsPost({action:'devPush',role:u.role||'',city:String(p.city||'').slice(0,40),state:String(p.state||'').slice(0,40)});pushSave(r.ptk,'basic');window._pushErr=''}
+ catch(e){window._pushErr=err&&err!=='login_expired'?err:cloudErr(e)}
+ finally{_pushBusy=false}}}
+function pushMode(){try{return localStorage.getItem('js1_pushmode')||''}catch(e){return ''}}
+function reLogin(){const n=location.hash;try{logout()}catch(e){}setTimeout(()=>go('#/login'),300)}
+async function closedTest(){let ptk='';try{ptk=localStorage.getItem('js1_ptk')||localStorage.getItem('js1_dptk')||''}catch(e){}let on=false;try{on=!!AndroidApp.pushOn()}catch(e){}
+ if(!on||!ptk){toast('Setting up alerts… try again in a few seconds.');return pushSetup(true).then(route)}
+ try{await gsPost({action:'pushTest',ptk})}catch(e){const m=cloudErr(e);return toast(/unknown collection/.test(m)?'Update the Google Sheet code to version 21 first (Deploy → New version).':/push_expired/.test(m)?'Alerts pass expired. Tap Retry above, then test again.':'Could not start the test: '+m,9000)}
+ openModal(`<h2>📴 Test with the app closed</h2><ol class="ct-steps"><li><b>Close the app now</b> — press the Home button, or swipe JobSetu1 away from recent apps.</li><li>Wait about <b>1 minute</b>.</li><li>A notification <b>“✅ JobSetu1 test notification”</b> should come with sound.</li></ol>
+ <p class="hint">Not there after 3 minutes? Open phone <b>Settings → Apps → JobSetu1</b>: Battery → <b>No restrictions / Unrestricted</b>, and turn on <b>Autostart</b> (Vivo, Oppo, Realme, Xiaomi). Then test again.</p><div class="row-btns"><button class="btn" onclick="closeModal()">OK, I'll close the app</button></div>`)}
+if(typeof appAlertsPanel==='function'){const _ap84=appAlertsPanel;appAlertsPanel=function(){let h=_ap84.apply(this,arguments);const m=pushMode();
+ if(m==='basic')h=h.replace('Alerts for your account are on.','Basic alerts are on: offers, messages from JobSetu1 and new jobs in your city. <b>Log in again</b> to also get alerts about your own applications.</small><button class="btn sm" onclick="reLogin()">Log in again</button><small hidden>');
+ if(window._pushErr)h=h.replace('<small>Connecting…</small>',`<small>Could not connect (${esc(String(window._pushErr).slice(0,60))}). Check the internet and tap Retry.</small>`);
+ const k='<div class="row-btns"><button class="btn ghost" onclick="AndroidApp.testNotify()';
+ if(h.includes(k))h=h.replace(k,'<div class="row-btns"><button class="btn" onclick="closedTest()">📴 Test with the app closed</button><button class="btn ghost" onclick="AndroidApp.testNotify()');
+ return h}}
+/* make sure the phone is set up whenever the app is opened */
+if(APP){setTimeout(()=>{try{if(session&&session.kind!=='staff')pushSetup()}catch(e){}},3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&session&&session.kind!=='staff')setTimeout(()=>pushSetup(),1500)})}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
