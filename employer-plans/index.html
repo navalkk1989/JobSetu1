@@ -4232,7 +4232,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='81';
+const WEB_BUILD='83';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6061,6 +6061,22 @@ async function rfSync(){const b=document.getElementById('hdr-rf');if(b){b.classL
 {const _rh81=renderHeader;renderHeader=function(){const r=_rh81.apply(this,arguments);try{if(APP){const R=document.querySelector('#top .right');if(R&&!R.querySelector('#hdr-rf'))R.insertAdjacentHTML('afterbegin',`<button type="button" class="btn ghost sm hdr-rf" id="hdr-rf" onclick="hdrRefresh()" aria-label="Refresh">${RF_SVG}</button>`);rfPaint()}}catch(e){}return r}}
 /* the app found a newer copy of the website: make the button blink */
 {const _sr81=window.appSiteReady;window.appSiteReady=function(got){if(got>0&&!window._siteWanted&&document.getElementById('hdr-rf')){const first=window._rfNeed!=='site';window._rfNeed='site';rfPaint();if(first)toast('✨ JobSetu1 has been updated. Tap the blinking refresh button on top.',6000);return}return _sr81&&_sr81.apply(this,arguments)}}
+
+/* ==================================================================
+   V83: the app keeps getting notifications (with sound) after logout,
+        and on phones where nobody has logged in yet
+   ================================================================== */
+function rememberWho(){try{const u=me();if(!u||!['candidate','employer'].includes(u.role))return;const p=u.role==='employer'?(u.company||{}):(u.profile||{});
+ localStorage.setItem('js1_lastwho',JSON.stringify({role:u.role,city:String(p.city||p.prefCity||'').slice(0,40),state:String(p.state||'').slice(0,40)}))}catch(e){}}
+let _dpBusy=false;
+async function devPushSetup(force){if(!canPush()||!cloudOn()||session||_dpBusy)return;
+ let have='',at=0,on=false;try{have=localStorage.getItem('js1_dptk')||'';at=+localStorage.getItem('js1_dptk_at')||0;on=!!AndroidApp.pushOn()}catch(e){}
+ if(!force&&have&&on&&now()-at<200*DAY)return;
+ let who={};try{who=JSON.parse(localStorage.getItem('js1_lastwho')||'{}')||{}}catch(e){}
+ _dpBusy=true;try{const r=await gsPost({action:'devPush',role:who.role||'',city:who.city||'',state:who.state||''});if(r&&r.ptk&&!session){const c=gsCfg();AndroidApp.setPush(c.url,c.key,r.ptk);try{localStorage.setItem('js1_dptk',r.ptk);localStorage.setItem('js1_dptk_at',String(now()))}catch(e){}}}catch(e){}finally{_dpBusy=false}}
+{const _lo83=logout;logout=function(){rememberWho();const r=_lo83.apply(this,arguments);try{localStorage.removeItem('js1_dptk')}catch(e){}setTimeout(()=>devPushSetup(true),800);return r}}
+{const _r83=route;route=function(){const r=_r83.apply(this,arguments);try{if(session)rememberWho();else if(APP)setTimeout(devPushSetup,1500)}catch(e){}return r}}
+if(APP)setTimeout(devPushSetup,5000);
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
