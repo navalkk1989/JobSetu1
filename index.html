@@ -1573,6 +1573,57 @@ html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!importan
 @media(max-width:640px){.crown-big{font-size:22px}.planbar.pb-gold p{font-size:13px}}
 .planbar.pb-gold .btn.pb-open{background:#1F1503!important;color:#FFD86B!important;border:1px solid #5A3E08!important;box-shadow:0 4px 10px -4px rgba(0,0,0,.5)!important}
 .planbar.pb-gold .btn.pb-up{background:#FFFDF5!important;color:#6B4500!important;border:1px solid #F2D27A!important;box-shadow:0 4px 10px -4px rgba(0,0,0,.35)!important}
+/* V92: premium banner card */
+.planbar.pcard-wrap{background:transparent!important;border:0!important;padding:10px 0 0}
+.planbar.pcard-wrap .wrap{display:block;padding-top:0;padding-bottom:0}
+.pcard{display:flex;align-items:center;gap:16px;padding:12px 18px;border-radius:16px;
+ background:radial-gradient(120% 160% at 0% 0%,#5A3A0C 0%,#2E1C05 45%,#1A1003 100%);
+ border:1.5px solid #D9A93A;box-shadow:0 0 0 1px rgba(255,214,120,.18) inset,0 10px 26px -14px rgba(60,35,0,.85);position:relative;overflow:hidden}
+.pcard::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,230,160,.10) 50%,transparent 65%);transform:translateX(-100%);animation:pcShine 6s ease-in-out infinite;pointer-events:none}
+.pc-crown{width:46px;height:38px;flex:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,.45))}
+.pc-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.pc-txt b{color:#FFE9B0;font-size:16px;font-weight:800;letter-spacing:.005em}
+.pc-txt span{color:#E9D9B4;font-size:13px;line-height:1.4;opacity:.92}
+.pc-btns{display:flex;gap:8px;align-items:center;flex:none;position:relative;z-index:1}
+.pc-buy{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:999px;font-weight:800;font-size:14.5px;color:#4A2E00!important;text-decoration:none!important;
+ background:linear-gradient(180deg,#FFE58A 0%,#F6C443 48%,#D99A1C 100%);border:1px solid #FFF0B8;box-shadow:0 0 0 1px #B37A12,0 6px 16px -6px rgba(255,190,60,.7),inset 0 1px 0 rgba(255,255,255,.7);transition:transform .15s}
+.pc-buy:hover{transform:translateY(-1px)}
+.pc-up{padding:9px 14px;border-radius:999px;background:transparent;color:#FFE09A;border:1px solid #C9973A;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}
+.pc-up:hover{background:rgba(255,220,140,.1)}
+@keyframes pcShine{0%,60%{transform:translateX(-100%)}90%,100%{transform:translateX(100%)}}
+@media(prefers-reduced-motion:reduce){.pcard::after{animation:none}}
+@media(max-width:640px){.pcard{flex-wrap:wrap;gap:10px 12px;padding:12px 14px}.pc-crown{width:38px;height:32px}.pc-txt b{font-size:15px}.pc-txt span{font-size:12.5px}.pc-btns{width:100%}.pc-buy{flex:1;justify-content:center}}
+/* V93: User Guide */
+.ug-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;font-weight:800;font-size:13px;text-decoration:none!important;color:#FFE7A6!important;
+ background:linear-gradient(180deg,#5A3A0C,#2A1A04);border:1px solid #C99A35;box-shadow:0 0 0 1px rgba(255,214,120,.15) inset,0 6px 14px -8px rgba(0,0,0,.7);white-space:nowrap}
+.ug-btn:hover{filter:brightness(1.12)}
+.ug-btn.hero{margin-left:auto}
+.ug-top{padding:6px 11px;font-size:12.5px}
+@media(max-width:640px){.ug-top .ug-t{display:none}.ug-top{padding:6px 9px}.ug-btn.hero{margin-left:0}}
+.ug-mini{margin-left:auto;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px;color:#FFE7A6;background:linear-gradient(180deg,#5A3A0C,#2A1A04);border:1px solid #C99A35;cursor:pointer;white-space:nowrap}
+.guide{max-width:860px;font-size:14px;padding-top:18px;padding-bottom:28px}
+.g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.g-head h1{font-size:22px;margin:0}.g-head p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.g-lang{display:inline-flex;border:1px solid #C99A35;border-radius:999px;overflow:hidden}
+.g-lang button{border:0;background:#fff;padding:6px 14px;font:inherit;font-size:13px;font-weight:700;color:#5A3A0C;cursor:pointer}
+.g-lang button.on{background:linear-gradient(180deg,#5A3A0C,#2A1A04);color:#FFE7A6}
+.g-tabs{display:flex;gap:6px;margin:14px 0 4px;flex-wrap:wrap}
+.g-tabs a{padding:7px 14px;border-radius:999px;border:1px solid #E1E6EF;background:#fff;text-decoration:none;font-weight:700;font-size:13.5px;color:#374151}
+.g-tabs a.on{background:#183A8C;border-color:#183A8C;color:#fff}
+.g-hint{font-size:12px;color:var(--muted);margin:6px 0 8px}
+.g-steps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.g-step{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid #E6EAF1;border-radius:14px;padding:10px 12px}
+.g-n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;color:#FFE7A6;background:linear-gradient(180deg,#5A3A0C,#2A1A04)}
+.g-tx{flex:1;min-width:0}.g-tx b{font-size:14.5px}.g-tx p{margin:2px 0 0;font-size:13px;line-height:1.5;color:#374151}
+.g-th{flex:none;width:96px;height:96px;padding:0;border:1px solid #E1E6EF;border-radius:10px;overflow:hidden;background:#F6F8FC;cursor:zoom-in}
+.g-th img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.g-loc{margin-top:14px;border-radius:16px;padding:12px 14px;background:linear-gradient(160deg,#FFF8E6,#fff 70%);border:1px solid #F0D48A}
+.g-loc h2,.g-ben h2{font-size:16px;margin:0 0 6px}
+.g-loc-in{display:flex;gap:12px;align-items:flex-start}.g-loc ul{flex:1;margin:0;padding-left:18px;font-size:13px;line-height:1.55}.g-loc li{margin-bottom:4px}
+.g-loc-imgs{display:flex;gap:8px;flex:none}
+.g-ben{margin-top:12px}.g-chips{display:flex;flex-wrap:wrap;gap:6px}.g-chips span{font-size:12.5px;padding:4px 10px;border-radius:999px;background:#EEF4FF;color:#1E3A8A;font-weight:600}
+.g-end{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}.g-end p{margin:0}
+@media(max-width:640px){.g-th{width:76px;height:76px}.g-loc-in{flex-direction:column}.guide{padding-top:12px}}
 </style>
 </head>
 <body>
@@ -1584,7 +1635,7 @@ html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!importan
     <div class="fbrand"><a class="logo" href="#/" id="flogo" aria-label="JobSetu1 home"></a><p>Connecting job seekers and employers across India. JobSetu1 never asks job seekers to pay an employer for a job.</p><div class="fcontact" id="fcontact"></div></div>
     <div><h4>Job seekers</h4><a href="#/jobs">Find jobs</a><a href="#/companies">Browse companies</a><a href="#/register/candidate">Create free profile</a><a href="#/plans/jobseeker">Job seeker plans</a></div>
     <div><h4>Employers</h4><a href="#/register/employer">Register free</a><a href="#/post-job">Post a job</a><a href="#/plans/employer">Employer plans</a></div>
-    <div><h4>Company</h4><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a><a href="JobSetu1.apk?v=2.9" download="JobSetu1.apk">📱 Android app</a></div>
+    <div><h4>Company</h4><a href="#/guide" class="f-guide">📘 User Guide</a><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/refund">Refund policy</a><a href="JobSetu1.apk?v=2.9" download="JobSetu1.apk">📱 Android app</a></div>
   </div>
   <div class="wrap fbottom"><span>© <span id="fyear">2026</span> JobSetu1. All rights reserved.<span id="fventure" class="fventure"></span></span><nav aria-label="Legal"><a href="#/privacy">Privacy policy</a><a href="#/terms">Terms &amp; conditions</a><a href="#/refund">Refund policy</a><a href="#/terms">Fraud alert</a></nav></div>
 </footer>
@@ -4317,7 +4368,7 @@ function appSheet(open){let sh=document.getElementById('appsheet');if(!sh){sh=do
  sh.hidden=false;requestAnimationFrame(()=>sh.classList.add('in'))}
 window.appBack=function(){try{if(!$('#modal').hidden){closeModal();return true}const sh=document.getElementById('appsheet');if(sh&&!sh.hidden){appSheet(false);return true}if(typeof cbOpen!=='undefined'&&cbOpen){cbToggle(false);return true}const d=document.querySelector('details.umenu[open]');if(d){d.removeAttribute('open');return true}}catch(e){}return false};
 function appFooter(){const a=document.getElementById('app');if(!a||a.querySelector('.app-foot'))return;const f=document.createElement('div');f.className='app-foot';
- f.innerHTML=`<nav><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/privacy">Privacy</a><a href="#/terms">Terms</a><a href="#/refund">Refund</a></nav><p>© ${new Date().getFullYear()} JobSetu1</p>${ventureLine('venture')}${appInfoHtml()}`;a.appendChild(f)}
+ f.innerHTML=`<nav><a href="#/guide">📘 User Guide</a><a href="#/about">About us</a><a href="#/contact">Contact us</a><a href="#/privacy">Privacy</a><a href="#/terms">Terms</a><a href="#/refund">Refund</a></nav><p>© ${new Date().getFullYear()} JobSetu1</p>${ventureLine('venture')}${appInfoHtml()}`;a.appendChild(f)}
 function appAfterRoute(){if(!APP)return;renderAppNav();appFooter();const sh=document.getElementById('appsheet');if(sh&&!sh.hidden)appSheet(false);const on=document.querySelector('.side a.on');if(on&&on.scrollIntoView)try{on.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
 /* downloads inside the Android app go through the native bridge */
 function appGuessMime(n){const e=(n.split('.').pop()||'').toLowerCase();return {pdf:'application/pdf',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',xls:'application/vnd.ms-excel',csv:'text/csv',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',html:'text/html',txt:'text/plain'}[e]||'application/octet-stream'}
@@ -4343,7 +4394,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='91';
+const WEB_BUILD='93';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6460,6 +6511,87 @@ function planbarHtml(u){const emp=u.role==='employer',act=hasPremium(u);
 {const _rh91=renderHeader;renderHeader=function(){const r=_rh91.apply(this,arguments);try{const u=me(),pb=$('#planbar');if(pb&&u&&(u.role==='candidate'||u.role==='employer'))pb.innerHTML=planbarHtml(u)}catch(e){}return r}}
 /* dashboards: no "Get Premium" box while everything is free */
 {const _r91=route;route=function(){const r=_r91.apply(this,arguments);try{const u=me();if(freeForUser(u))document.querySelectorAll('#app .goldpanel').forEach(p=>{p.classList.add('freepanel');p.innerHTML=`<h3>🎉 Premium is FREE for you</h3><p class="lead">Every service is unlocked for your account right now. Enjoy JobSetu1!</p>`})}catch(e){}return r}}
+
+/* ==================================================================
+   V92: one premium-style banner (dark gold card, golden crown) for all
+        three states: Premium active, Premium free, Upgrade to Premium.
+   ================================================================== */
+const GOLD_CROWN='<svg class="pc-crown" viewBox="0 0 64 52" aria-hidden="true"><defs><linearGradient id="gcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7A0"/><stop offset=".45" stop-color="#F5C242"/><stop offset="1" stop-color="#C98A12"/></linearGradient><linearGradient id="gcb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7CF5A"/><stop offset="1" stop-color="#B9790C"/></linearGradient></defs><path d="M6 16 L18 30 L32 8 L46 30 L58 16 L54 42 H10 Z" fill="url(#gcg)" stroke="#A86A08" stroke-width="1.6" stroke-linejoin="round"/><rect x="9" y="41" width="46" height="8" rx="2.5" fill="url(#gcb)" stroke="#A86A08" stroke-width="1.4"/><circle cx="32" cy="7" r="4" fill="#FFE7A0" stroke="#A86A08" stroke-width="1.2"/><circle cx="6" cy="15" r="3.4" fill="#FFE7A0" stroke="#A86A08" stroke-width="1.2"/><circle cx="58" cy="15" r="3.4" fill="#FFE7A0" stroke="#A86A08" stroke-width="1.2"/><circle cx="32" cy="31" r="4.2" fill="#E8336B" stroke="#9E1240" stroke-width="1"/><circle cx="20" cy="36" r="2.6" fill="#3B82F6"/><circle cx="44" cy="36" r="2.6" fill="#3B82F6"/></svg>';
+function pcard(title,sub,btns){return `<div class="planbar pcard-wrap"><div class="wrap"><div class="pcard">${GOLD_CROWN}<div class="pc-txt"><b>${title}</b><span>${sub}</span></div>${btns?`<div class="pc-btns">${btns}</div>`:''}</div></div></div>`}
+const PC_BUY=(t,href,on)=>`<a class="pc-buy" href="${href||'#/premium'}" ${on?`onclick="${on}"`:''}><span aria-hidden="true">👑</span> ${t}</a>`;
+planbarHtml=function(u){const emp=u.role==='employer';
+ if(hasPremium(u))return pcard(`Premium is active till ${fmtDate(u.plan.expires)}`,emp?'Your jobs show as ★ Featured and every Premium tool is unlocked.':'Your resume is listed first for employers, and every Premium tool is unlocked.',PC_BUY('Open Premium tools','#/premium')+`<button type="button" class="pc-up" onclick="openUpgrade()">⬆ Upgrade</button>`);
+ if(freeForUser(u))return pcard('Premium is FREE for you right now',emp?'Post jobs, search candidates, see their contact details and download resumes — all free during this offer.':'Search jobs, apply, see company contact numbers and exact locations — all free during this offer.','');
+ return pcard('Upgrade to Premium',emp?'Get refined resumes, applicant management, analytics and ★ Featured jobs that reach more job seekers.':'Get your resume on top, auto-apply to jobs, see company contacts and who viewed your profile.',PC_BUY('Buy Premium','#/premium'))};
+
+/* ==================================================================
+   V93: User Guide (English + हिंदी) for job seekers and employers,
+        with real screenshots. Opens at #/guide.
+   ================================================================== */
+const GIMG={"s1": "m/99c2db9c2fc3.webp", "s2": "m/e5cf6074116d.webp", "s3": "m/d60aa5e9162e.webp", "s4": "m/fe18814d897a.webp", "s5": "m/6bbec0c3bf0f.webp", "s6": "m/55ffb299e152.webp", "e1": "m/35fbd08d0d76.webp", "e2": "m/0d4ae2f8e83d.webp", "e3": "m/8b4270082991.webp", "e4": "m/32217c235ec8.webp"};
+const GT={
+ en:{title:'User Guide',sub:'Everything you need to start on JobSetu1 — in 2 minutes.',seek:'For job seekers',hire:'For employers',lang:'भाषा / Language',zoom:'Tap a picture to see it bigger',
+  locT:'📍 Why add the job location?',
+  loc:['<b>Reach directly:</b> job seekers get the exact address, a map pin and <b>Get directions</b>. No need to call the employer to ask for the address.','<b>Saves the employer time:</b> fewer “where is the office?” calls, and candidates arrive on time for interviews.','<b>Fewer fake jobs:</b> a real place pinned on the map is easy to check, so people trust the job — and fake posters stay away.','<b>Nearby people apply:</b> job cards show the distance (for example “1.4 km”), so local candidates find you first.'],
+  benT:'What you get',reg:'Register free',done:'Ready! Questions? Use “Ask JobSetu1” at the bottom right, or Contact us.',
+  seekSteps:[
+   ['s1','Register free','On the home page tap <b>I want a job</b> → <b>Register as a job seeker</b>.'],
+   ['s2','Fill the short form','Name, date of birth, mobile or email (verify one with OTP), a password, and the state and city where you want to work.'],
+   ['s3','Complete your profile','Add a photo, skills, experience and resume. A 100% profile gets more calls from employers.'],
+   ['s4','Find and apply','Search by job title, skill or city. Each job shows salary, distance and how well it matches you (% match). Apply in one tap.'],
+   ['s5','Reach the job location','Open a job to see the exact address and map pin. Tap <b>Get directions</b> — Google Maps takes you straight there.'],
+   ['s6','Track everything','Your dashboard shows recommended jobs and the status of every application. The app sends alerts with sound.']],
+  seekBen:['Free registration, search and apply','Jobs near you with distance','% match for every job','Instant job alerts with sound','Verified companies','Walk-in and work-from-home jobs','Direct company contact numbers','Android app'],
+  hireSteps:[
+   ['s1','Register free','On the home page tap <b>I want to hire</b> → <b>Register as an employer</b>.'],
+   ['e1','Create your account','Your name, mobile or email (verify one with OTP), a password and your company name.'],
+   ['e2','Company profile','Add logo, industry, address and documents (GST etc.). Verified documents give you the <b>Documents verified</b> badge.'],
+   ['e3','Post a job — add the location','Tap <b>📍 Use my current location</b> at your office, or <b>🗺️ Add location from Google Map</b>. Address, city, state and pincode fill in by themselves.'],
+   ['s5','What candidates see','The job page shows your address, a map pin and <b>Get directions</b>. Candidates come straight to you — no calls asking for the way.'],
+   ['e4','Manage your hiring','See applicants ranked by match, shortlist them, call or WhatsApp in one tap, and post more jobs.']],
+  hireBen:['Free job posting','Search candidates by skill and city','Applicants ranked by match','Verified company badge','Alert the moment someone applies','Walk-in interview drives','Android app']},
+ hi:{title:'यूज़र गाइड',sub:'JobSetu1 शुरू करने के लिए सब कुछ — सिर्फ़ 2 मिनट में।',seek:'नौकरी चाहने वालों के लिए',hire:'नियोक्ता (Employer) के लिए',lang:'भाषा / Language',zoom:'बड़ा देखने के लिए फ़ोटो पर टैप करें',
+  locT:'📍 जॉब की लोकेशन क्यों जोड़ें?',
+  loc:['<b>सीधे पहुँचें:</b> नौकरी चाहने वाले को पूरा पता, मैप पिन और <b>Get directions</b> मिलता है। पता पूछने के लिए employer को कॉल करने की ज़रूरत नहीं।','<b>Employer का समय बचता है:</b> “ऑफ़िस कहाँ है?” वाले कॉल कम होते हैं, और उम्मीदवार इंटरव्यू पर समय से पहुँचते हैं।','<b>फ़र्ज़ी नौकरियाँ कम:</b> मैप पर लगी असली जगह को जाँचना आसान है, इसलिए लोग नौकरी पर भरोसा करते हैं — और फ़र्ज़ी जॉब डालने वाले दूर रहते हैं।','<b>पास के लोग अप्लाई करते हैं:</b> जॉब कार्ड पर दूरी दिखती है (जैसे “1.4 km”), इसलिए आस-पास के उम्मीदवार आपको पहले ढूँढते हैं।'],
+  benT:'आपको क्या मिलता है',reg:'फ़्री रजिस्टर करें',done:'हो गया! कोई सवाल? नीचे दाईं ओर “Ask JobSetu1” या Contact us का इस्तेमाल करें।',
+  seekSteps:[
+   ['s1','फ़्री रजिस्टर करें','होम पेज पर <b>I want a job</b> → <b>Register as a job seeker</b> पर टैप करें।'],
+   ['s2','छोटा सा फ़ॉर्म भरें','नाम, जन्म तिथि, मोबाइल या ईमेल (किसी एक को OTP से वेरिफ़ाई करें), पासवर्ड, और वह राज्य व शहर जहाँ आप काम करना चाहते हैं।'],
+   ['s3','प्रोफ़ाइल पूरी करें','फ़ोटो, स्किल, अनुभव और रिज़्यूमे जोड़ें। 100% प्रोफ़ाइल को employers से ज़्यादा कॉल आते हैं।'],
+   ['s4','जॉब ढूँढें और अप्लाई करें','जॉब टाइटल, स्किल या शहर से सर्च करें। हर जॉब पर सैलरी, दूरी और आपसे कितना मैच है (% match) दिखता है। एक टैप में अप्लाई करें।'],
+   ['s5','जॉब की जगह तक पहुँचें','जॉब खोलें — पूरा पता और मैप पिन दिखेगा। <b>Get directions</b> दबाएँ — Google Maps आपको सीधे वहाँ ले जाएगा।'],
+   ['s6','सब कुछ ट्रैक करें','डैशबोर्ड पर आपके लिए चुनी हुई जॉब्स और हर एप्लिकेशन का स्टेटस दिखता है। ऐप आवाज़ के साथ अलर्ट भेजता है।']],
+  seekBen:['फ़्री रजिस्ट्रेशन, सर्च और अप्लाई','पास की नौकरियाँ, दूरी के साथ','हर जॉब पर % match','आवाज़ के साथ तुरंत जॉब अलर्ट','वेरिफ़ाइड कंपनियाँ','वॉक-इन और वर्क-फ्रॉम-होम जॉब्स','कंपनी के सीधे कॉन्टैक्ट नंबर','Android ऐप'],
+  hireSteps:[
+   ['s1','फ़्री रजिस्टर करें','होम पेज पर <b>I want to hire</b> → <b>Register as an employer</b> पर टैप करें।'],
+   ['e1','अकाउंट बनाएँ','आपका नाम, मोबाइल या ईमेल (किसी एक को OTP से वेरिफ़ाई करें), पासवर्ड और कंपनी का नाम।'],
+   ['e2','कंपनी प्रोफ़ाइल','लोगो, इंडस्ट्री, पता और दस्तावेज़ (GST आदि) जोड़ें। दस्तावेज़ वेरिफ़ाई होने पर <b>Documents verified</b> बैज मिलता है।'],
+   ['e3','जॉब पोस्ट करें — लोकेशन जोड़ें','ऑफ़िस में रहकर <b>📍 Use my current location</b> दबाएँ, या <b>🗺️ Add location from Google Map</b> से जगह चुनें। पता, शहर, राज्य और पिनकोड अपने-आप भर जाते हैं।'],
+   ['s5','उम्मीदवार को क्या दिखता है','जॉब पेज पर आपका पता, मैप पिन और <b>Get directions</b> दिखता है। उम्मीदवार रास्ता पूछने के लिए कॉल किए बिना सीधे आप तक पहुँचते हैं।'],
+   ['e4','हायरिंग संभालें','मैच के हिसाब से उम्मीदवार देखें, शॉर्टलिस्ट करें, एक टैप में कॉल या WhatsApp करें, और नई जॉब्स पोस्ट करें।']],
+  hireBen:['फ़्री जॉब पोस्टिंग','स्किल और शहर से उम्मीदवार खोजें','मैच के हिसाब से उम्मीदवार','वेरिफ़ाइड कंपनी बैज','किसी के अप्लाई करते ही अलर्ट','वॉक-इन इंटरव्यू ड्राइव','Android ऐप']}};
+function gLang(){try{return localStorage.getItem('js1_glang')==='hi'?'hi':'en'}catch(e){return 'en'}}
+function setGLang(l){try{localStorage.setItem('js1_glang',l)}catch(e){}route()}
+function gZoom(k){if(!GIMG[k])return;openModal(`<img src="${GIMG[k]}" alt="" style="width:100%;max-width:420px;display:block;margin:0 auto;border-radius:12px;border:1px solid #E5E7EB"><div class="row-btns" style="justify-content:center"><button class="btn ghost" onclick="closeModal()">Close</button></div>`)}
+function pgGuide(q){const L=gLang(),T=GT[L],who=q.get('for')==='hire'?'hire':'seek',steps=T[who+'Steps'],ben=T[who+'Ben'];
+ const step=([img,t,d],i)=>`<li class="g-step"><span class="g-n">${i+1}</span><div class="g-tx"><b>${t}</b><p>${d}</p></div>${GIMG[img]?`<button type="button" class="g-th" onclick="gZoom('${img}')" aria-label="${esc(t)}"><img src="${GIMG[img]}" alt="" loading="lazy"></button>`:''}</li>`;
+ return `<section class="wrap guide" lang="${L==='hi'?'hi':'en'}"><div class="g-head"><div><h1>📘 ${T.title}</h1><p>${T.sub}</p></div>
+  <div class="g-lang" role="group" aria-label="Language"><button type="button" class="${L==='en'?'on':''}" onclick="setGLang('en')">English</button><button type="button" class="${L==='hi'?'on':''}" onclick="setGLang('hi')">हिंदी</button></div></div>
+ <div class="g-tabs" role="tablist"><a role="tab" aria-selected="${who==='seek'}" class="${who==='seek'?'on':''}" href="#/guide?for=seek">🧑‍💼 ${T.seek}</a><a role="tab" aria-selected="${who==='hire'}" class="${who==='hire'?'on':''}" href="#/guide?for=hire">🏢 ${T.hire}</a></div>
+ <p class="g-hint">🔍 ${T.zoom}</p>
+ <ol class="g-steps">${steps.map(step).join('')}</ol>
+ <div class="g-loc"><h2>${T.locT}</h2><div class="g-loc-in"><ul>${T.loc.map(x=>`<li>${x}</li>`).join('')}</ul><div class="g-loc-imgs">${['e3','s5'].map(k=>GIMG[k]?`<button type="button" class="g-th" onclick="gZoom('${k}')"><img src="${GIMG[k]}" alt="" loading="lazy"></button>`:'').join('')}</div></div></div>
+ <div class="g-ben"><h2>✨ ${T.benT}</h2><div class="g-chips">${ben.map(b=>`<span>✓ ${b}</span>`).join('')}</div></div>
+ <div class="g-end"><p>${T.done}</p>${me()?'':`<a class="btn" href="#/register/${who==='hire'?'employer':'candidate'}">${T.reg}</a>`}</div></section>`}
+/* the page */
+{const _r93=route;route=function(){if(/^#\/guide\b/.test(location.hash||'')){const q=new URLSearchParams((location.hash.split('?')[1])||'');try{db=loadDb()}catch(e){}$('#app').innerHTML=pgGuide(q);try{renderHeader('guide')}catch(e){}document.title=(gLang()==='hi'?'यूज़र गाइड':'User Guide')+' · JobSetu1';window.scrollTo(0,0);return}return _r93.apply(this,arguments)}}
+/* buttons: home hero, the two role cards, header (logged in), footer */
+const UG_BTN=(cls,txt,href)=>`<a class="ug-btn ${cls||''}" href="${href||'#/guide'}">📘 ${txt||'User Guide'}</a>`;
+{const _bh93=bgvHero;bgvHero=function(u){return _bh93.apply(this,arguments).replace('<span>✓ Jobs near you</span></span>','<span>✓ Jobs near you</span></span>'+UG_BTN('hero'))}}
+{const _rc93=roleCards;roleCards=function(){return _rc93.apply(this,arguments)
+ .replace('<span class="rc-tag">For job seekers</span>','<span class="rc-tag">For job seekers</span><span class="ug-mini" role="link" tabindex="0" onclick="event.preventDefault();event.stopPropagation();go(\'#/guide?for=seek\')">📘 User guide</span>')
+ .replace('<span class="rc-tag">For employers</span>','<span class="rc-tag">For employers</span><span class="ug-mini" role="link" tabindex="0" onclick="event.preventDefault();event.stopPropagation();go(\'#/guide?for=hire\')">📘 User guide</span>')}}
+{const _rh93=renderHeader;renderHeader=function(){const r=_rh93.apply(this,arguments);try{const u=me(),R=document.querySelector('#top .right');if(u&&R&&['candidate','employer'].includes(u.role)&&!R.querySelector('.ug-top'))R.insertAdjacentHTML('afterbegin',`<a class="ug-btn ug-top" href="#/guide?for=${u.role==='employer'?'hire':'seek'}" title="User Guide">📘<span class="ug-t"> Guide</span></a>`)}catch(e){}return r}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
