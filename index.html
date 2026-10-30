@@ -1475,6 +1475,15 @@ html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!importan
 #offerbar{display:flex;justify-content:center;padding:8px 10px 0}
 .ofb{display:inline-flex;max-width:100%;border-radius:999px;padding:7px 40px 7px 14px;box-shadow:0 8px 20px -10px rgba(0,0,0,.5)}
 @media(max-width:560px){.ofr-in{padding:13px 14px}.ofr-emo{font-size:32px}}
+/* V87: demo companies picker */
+.dc-bar{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:8px;margin:14px 0 8px}
+@media(max-width:640px){.dc-bar{grid-template-columns:1fr}}
+.dc-acts{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:6px 0 10px}
+.dc-all{display:flex;gap:8px;align-items:center;font-weight:600}.dc-all input,.dc-row input{width:auto!important}
+.dc-list{max-height:460px;overflow:auto;border:1px solid #E5E7EB;border-radius:12px}
+.dc-row{display:flex;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #F0F2F5;cursor:pointer}
+.dc-row:last-child{border-bottom:0}.dc-row:hover{background:#F8FAFF}.dc-row.off .dc-nm{opacity:.6}
+.dc-nm{flex:1;display:flex;flex-direction:column;min-width:0}.dc-nm small{color:var(--muted);font-size:12.5px}
 </style>
 </head>
 <body>
@@ -4245,7 +4254,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='86';
+const WEB_BUILD='87';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6157,6 +6166,52 @@ async function verPoll(){if(!APP)return;try{const r=await fetch(SITE_URL+'versio
 function appUpdateTo(v){const url=SITE_URL+'JobSetu1.apk?v='+v;try{if(window.AndroidApp&&AndroidApp.openExternal){AndroidApp.openExternal(url);return toast('Download starts in your browser. Open the file to install the update.',7000)}}catch(e){}location.href=url}
 if(APP){setTimeout(verPoll,3000);setInterval(()=>{if(!document.hidden)verPoll()},3*60e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(verPoll,800)})}
 {const _rp86=rfPaint;rfPaint=function(){_rp86.apply(this,arguments);const b=document.getElementById('hdr-rf'),v=window._verLive;if(b&&rfNeed()==='apk'&&v&&v.apk){const t='New app version '+v.apk+' is ready. Tap to update';b.setAttribute('aria-label',t);b.title=t}}}
+
+/* ==================================================================
+   V87: hide demo (dummy) companies — all at once, or pick them one by one.
+   Hidden companies and their jobs disappear from the whole website and app.
+   ================================================================== */
+function demoOffCos(d){const s=(((d||db)||{}).settings||{}).demo||{};return new Set(Array.isArray(s.offCos)?s.offCos:[])}
+{const _da87=demoApply;demoApply=function(d){_da87.apply(this,arguments);const off=demoOffCos(d);if(!off.size)return;
+ d._hid=d._hid||{users:[],jobs:[],apps:[],payments:[],activity:[]};const H=d._hid;['users','jobs','apps','payments','activity'].forEach(k=>H[k]=H[k]||[]);
+ const gone=new Set();d.users=d.users.filter(u=>{const hide=u.role==='employer'&&isDemoUser(u)&&off.has(u.id);if(hide){gone.add(u.id);if(!u.dummy||u.edited)H.users.push(u)}return !hide});if(!gone.size)return;
+ const gj=new Set();d.jobs=d.jobs.filter(j=>{const hide=gone.has(j.employerId);if(hide){gj.add(j.id);if(!j.dummy||j.edited)H.jobs.push(j)}return !hide});
+ d.apps=(d.apps||[]).filter(a=>{const hide=gone.has(a.employerId)||gj.has(a.jobId);if(hide)H.apps.push(a);return !hide});
+ d.payments=(d.payments||[]).filter(p=>{const hide=gone.has(p.userId);if(hide)H.payments.push(p);return !hide});
+ d.activity=(d.activity||[]).filter(a=>{const hide=gone.has(a.empId)||(a.jobId&&gj.has(a.jobId));if(hide)H.activity.push(a);return !hide})}}
+function demoReapply(){try{injectDummy(db)}catch(e){}try{demoApply(db)}catch(e){}_cache={}}
+/* every demo company, also the hidden ones */
+function demoCosAll(){const m=new Map();[...(db.users||[]),...((db._hid&&db._hid.users)||[]),...((typeof _dummyCache!=='undefined'&&_dummyCache&&_dummyCache.users)||[])].forEach(u=>{if(u&&u.role==='employer'&&isDemoUser(u)&&!m.has(u.id))m.set(u.id,u)});
+ const jc={};[...(db.jobs||[]),...((db._hid&&db._hid.jobs)||[]),...((typeof _dummyCache!=='undefined'&&_dummyCache&&_dummyCache.jobs)||[])].forEach(j=>{if(j&&j.status!=='closed')jc[j.employerId]=(jc[j.employerId]||0)+1});
+ return [...m.values()].map(u=>({id:u.id,name:u.company?.name||u.name,ind:u.company?.industry||'',city:u.company?.city||'',jobs:jc[u.id]||0})).sort((a,b)=>a.name.localeCompare(b.name))}
+let _dcSel=new Set(),_dcQ='',_dcInd='',_dcShow='all';
+function dcState(){const v=demoCfg(),off=demoOffCos();return {allOff:!v.employers,off}}
+function dcHidden(id,st){return st.allOff||st.off.has(id)}
+function dcList(){const st=dcState(),q=_dcQ.toLowerCase();return demoCosAll().filter(c=>(!q||(c.name+' '+c.city+' '+c.ind).toLowerCase().includes(q))&&(!_dcInd||c.ind===_dcInd)&&(_dcShow==='all'||(_dcShow==='hidden')===dcHidden(c.id,st)))}
+function demoCosPanel(){const all=demoCosAll(),st=dcState(),hid=all.filter(c=>dcHidden(c.id,st)).length,L=dcList(),inds=[...new Set(all.map(c=>c.ind).filter(Boolean))].sort();
+ return `<div class="panel" id="dc-panel" style="margin-top:16px"><div class="rv-head"><div><h3>🏢 Demo companies</h3><p class="hint" style="margin:4px 0 0">${all.length} demo companies · <b>${all.length-hid} showing</b> · <b>${hid} hidden</b>. A hidden company and all its jobs disappear from the website and the app for everyone.</p></div>
+  <div class="row-btns" style="margin:0">${st.allOff?`<button class="btn" onclick="dcAll(true)">👁 Show all demo companies</button>`:`<button class="btn danger" onclick="dcAll(false)">🚫 Hide all demo companies</button>`}</div></div>
+ ${st.allOff?'<div class="rf-warn" style="margin-top:12px">All demo companies are hidden right now. Press <b>Show all demo companies</b> to pick them one by one.</div>':`
+ <div class="dc-bar"><input id="dc-q" value="${esc(_dcQ)}" placeholder="Search company, city or industry" oninput="_dcQ=this.value;dcPaint()">
+  <select id="dc-ind" onchange="_dcInd=this.value;dcPaint()"><option value="">All industries</option>${inds.map(i=>`<option ${_dcInd===i?'selected':''}>${esc(i)}</option>`).join('')}</select>
+  <select id="dc-show" onchange="_dcShow=this.value;dcPaint()">${[['all','Showing + hidden'],['shown','Only showing'],['hidden','Only hidden']].map(([v,l])=>`<option value="${v}" ${_dcShow===v?'selected':''}>${l}</option>`).join('')}</select></div>
+ <div class="dc-acts"><label class="dc-all"><input type="checkbox" id="dc-all" onchange="dcSelAll(this.checked)" ${L.length&&L.every(c=>_dcSel.has(c.id))?'checked':''}> Select all ${L.length} shown below</label><span class="hint" id="dc-n">${_dcSel.size} selected</span>
+  <button class="btn danger sm" onclick="dcSet(false)" ${_dcSel.size?'':'disabled'}>🚫 Hide selected</button><button class="btn ghost sm" onclick="dcSet(true)" ${_dcSel.size?'':'disabled'}>👁 Show selected</button></div>
+ <div class="dc-list" id="dc-list">${L.map(c=>{const h=dcHidden(c.id,st);return `<label class="dc-row ${h?'off':''}"><input type="checkbox" value="${c.id}" ${_dcSel.has(c.id)?'checked':''} onchange="dcPick(this)"><span class="dc-nm"><b>${esc(c.name)}</b><small>${esc([c.ind,c.city].filter(Boolean).join(' · '))} · ${c.jobs} job${c.jobs===1?'':'s'}</small></span><span class="chip ${h?'bad':'good'}">${h?'Hidden':'Showing'}</span></label>`}).join('')||'<p class="hint" style="padding:12px">No companies match.</p>'}</div>`}</div>`}
+function dcPaint(){const p=$('#dc-panel');if(!p)return;const a=document.activeElement&&document.activeElement.id;p.outerHTML=demoCosPanel();if(a){const e=document.getElementById(a);if(e){e.focus();try{if(e.setSelectionRange)e.setSelectionRange(e.value.length,e.value.length)}catch(x){}}}}
+function dcPick(cb){cb.checked?_dcSel.add(cb.value):_dcSel.delete(cb.value);const n=$('#dc-n');if(n)n.textContent=_dcSel.size+' selected';document.querySelectorAll('.dc-acts .btn').forEach(b=>b.disabled=!_dcSel.size)}
+function dcSelAll(on){dcList().forEach(c=>on?_dcSel.add(c.id):_dcSel.delete(c.id));dcPaint()}
+async function dcSave(what){demoReapply();save();try{await publishNow(what)}catch(e){}route()}
+function dcSet(show){if(!isAdminNow()||!_dcSel.size)return;db.settings=db.settings||{};const d=Object.assign({employers:true,candidates:true,jobs:true},db.settings.demo||{});const off=new Set(Array.isArray(d.offCos)?d.offCos:[]);
+ const n=_dcSel.size;_dcSel.forEach(id=>show?off.delete(id):off.add(id));d.offCos=[...off];db.settings.demo=d;_dcSel=new Set();
+ dcSave(show?'Demo companies shown':'Demo companies hidden').then(()=>toast(`${n} demo compan${n===1?'y':'ies'} ${show?'showing again':'hidden from the website and app'} ✓`,5000))}
+function dcAll(show){if(!isAdminNow())return;const go2=()=>{db.settings=db.settings||{};const d=Object.assign({employers:true,candidates:true,jobs:true},db.settings.demo||{});d.employers=!!show;if(show){d.jobs=true;d.offCos=[]}db.settings.demo=d;_dcSel=new Set();dcSave(show?'Demo companies shown':'Demo companies hidden').then(()=>toast(show?'All demo companies are showing again ✓':'All demo companies and their jobs are hidden ✓',5000))};
+ show?go2():askConfirm('Hide all demo companies and their jobs from the website and app?','Hide all',go2)}
+{const _dp87=demoPanel;demoPanel=function(){return _dp87.apply(this,arguments)+demoCosPanel()}}
+/* the old On/Off switches now apply at once, and other devices apply them as soon as settings arrive */
+{const _sd87=setDemo;setDemo=function(){const r=_sd87.apply(this,arguments);demoReapply();save();try{route()}catch(e){}return r}}
+{const _ca87=cfgApply;cfgApply=function(x){const r=_ca87.apply(this,arguments);if(r&&x&&x.demo){demoReapply();save()}return r}}
+demoReapply();
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
