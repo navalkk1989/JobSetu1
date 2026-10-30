@@ -1484,6 +1484,10 @@ html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!importan
 .dc-row{display:flex;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #F0F2F5;cursor:pointer}
 .dc-row:last-child{border-bottom:0}.dc-row:hover{background:#F8FAFF}.dc-row.off .dc-nm{opacity:.6}
 .dc-nm{flex:1;display:flex;flex-direction:column;min-width:0}.dc-nm small{color:var(--muted);font-size:12.5px}
+/* V88 */
+.dh-p{border-left:4px solid #F59E0B}
+.dh-hid{margin-top:12px}
+.chip.dmy{background:#FEF3C7;color:#92400E;font-size:11.5px}
 </style>
 </head>
 <body>
@@ -4254,7 +4258,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='87';
+const WEB_BUILD='88';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6212,6 +6216,54 @@ function dcAll(show){if(!isAdminNow())return;const go2=()=>{db.settings=db.setti
 {const _sd87=setDemo;setDemo=function(){const r=_sd87.apply(this,arguments);demoReapply();save();try{route()}catch(e){}return r}}
 {const _ca87=cfgApply;cfgApply=function(x){const r=_ca87.apply(this,arguments);if(r&&x&&x.demo){demoReapply();save()}return r}}
 demoReapply();
+
+/* ==================================================================
+   V88: 1) Save buttons: grey when nothing changed, highlighted only while
+           there are unsaved changes, grey again after saving.
+        2) Hide dummy job seekers / employers right from the admin
+           Job seekers and Employers tabs (tick boxes or all at once).
+   ================================================================== */
+/* --- 1) every Save / Update button follows the same rule --- */
+{const _ss88=saveScope;saveScope=function(b){const s=_ss88.apply(this,arguments);if(s!==document.body)return s;return (b.closest&&(b.closest('.split')||b.closest('#app section')))||s}}
+isSaveBtn=function(b){if(!(b&&b.matches&&b.matches('button,.btn'))||b.classList.contains('pw-eye')||b.closest('#login-card,.auth-card,#modal form'))return false;
+ if(!SAVE_RE.test(b.textContent||'')||/^\s*open/i.test(b.getAttribute('onclick')||''))return false;const sc=saveScope(b);return !!(sc&&sc!==document.body)};
+document.querySelectorAll('[data-sv]').forEach(b=>delete b.dataset.sv);try{markSaveBtns()}catch(e){}
+/* switching an option button inside a panel also counts as a change */
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('button,.btn');if(!t||t.dataset.sv)return;const sc=t.closest('.panel,form,.modal-card');if(!sc)return;
+ setTimeout(()=>{if(!document.contains(t))return;sc.querySelectorAll('[data-sv]').forEach(b=>{if(sc.contains(b)){b.classList.remove('is-clean');b.title='You have unsaved changes'}})},0)},true);
+/* after any successful save the button goes grey again */
+{const _so88=savedOk;savedOk=function(){_so88.apply(this,arguments);try{if(_lastSaveBtn&&Date.now()-_lastSaveAt<6000){const b=_lastSaveBtn;if(document.contains(b)){b.classList.add('is-clean');b.title='Saved. Change something to save again.';b.blur()}}}catch(e){}}}
+{const _pn88=publishNow;publishNow=async function(){const r=await _pn88.apply(this,arguments);try{savedOk()}catch(e){}return r}}
+
+/* --- 2) hidden dummy accounts: job seekers too --- */
+{const _da88=demoApply;demoApply=function(d){_da88.apply(this,arguments);const off=demoOffCos(d);if(!off.size)return;
+ d._hid=d._hid||{users:[],jobs:[],apps:[],payments:[],activity:[]};const H=d._hid;['users','jobs','apps','payments','activity'].forEach(k=>H[k]=H[k]||[]);
+ const gone=new Set();d.users=d.users.filter(u=>{const hide=u.role==='candidate'&&isDemoUser(u)&&off.has(u.id);if(hide){gone.add(u.id);if(!u.dummy||u.edited)H.users.push(u)}return !hide});if(!gone.size)return;
+ d.apps=(d.apps||[]).filter(a=>{const hide=gone.has(a.candId);if(hide)H.apps.push(a);return !hide});
+ d.payments=(d.payments||[]).filter(p=>{const hide=gone.has(p.userId);if(hide)H.payments.push(p);return !hide});
+ d.activity=(d.activity||[]).filter(a=>{const hide=gone.has(a.candId);if(hide)H.activity.push(a);return !hide})}}
+function demoAll(role){const m=new Map();[...(db.users||[]),...((db._hid&&db._hid.users)||[]),...((typeof _dummyCache!=='undefined'&&_dummyCache&&_dummyCache.users)||[])].forEach(u=>{if(u&&u.role===role&&isDemoUser(u)&&!m.has(u.id))m.set(u.id,u)});return [...m.values()]}
+function demoHiddenOf(role){const v=demoCfg(),off=demoOffCos(),all=demoAll(role);const allOff=role==='employer'?!v.employers:!v.candidates;return all.filter(u=>allOff||off.has(u.id))}
+async function demoSet(ids,show,label){if(!isAdminNow())return toast('Only the admin can do this.');db.settings=db.settings||{};const d=Object.assign({employers:true,candidates:true,jobs:true},db.settings.demo||{});const off=new Set(Array.isArray(d.offCos)?d.offCos:[]);
+ ids.forEach(id=>show?off.delete(id):off.add(id));d.offCos=[...off];db.settings.demo=d;ids.forEach(id=>selUsers.delete(id));demoReapply();save();try{await publishNow(label)}catch(e){}route()}
+function demoHideSel(role){const demo=new Set(demoAll(role).map(u=>u.id)),ids=[...selUsers].filter(id=>demo.has(id));const real=[...selUsers].filter(id=>!demo.has(id)).length;
+ if(!ids.length)return toast(real?'The selected accounts are real users. Only dummy (demo) accounts can be hidden here.':'Tick the dummy accounts you want to hide first.',6000);
+ askConfirm(`Hide ${ids.length} dummy ${role==='employer'?'compan'+(ids.length===1?'y':'ies')+' and their jobs':'job seeker'+(ids.length===1?'':'s')} from the website and app?`,'Hide',()=>demoSet(ids,false,'Dummy accounts hidden').then(()=>toast(`${ids.length} dummy account${ids.length===1?'':'s'} hidden ✓${real?' ('+real+' real account'+(real===1?'':'s')+' left as they are)':''}`,6000)))}
+function demoHideAll(role){const n=demoAll(role).length-demoHiddenOf(role).length;if(!n)return toast('All dummy accounts here are already hidden.');
+ askConfirm(`Hide all ${n} dummy ${role==='employer'?'companies and their jobs':'job seekers'} from the website and app?`,'Hide all',async()=>{db.settings=db.settings||{};const d=Object.assign({employers:true,candidates:true,jobs:true},db.settings.demo||{});if(role==='employer')d.employers=false;else d.candidates=false;db.settings.demo=d;demoReapply();save();try{await publishNow('Dummy accounts hidden')}catch(e){}route();toast('All dummy '+(role==='employer'?'companies':'job seekers')+' hidden ✓',5000)})}
+async function demoShowAll(role){db.settings=db.settings||{};const d=Object.assign({employers:true,candidates:true,jobs:true},db.settings.demo||{});const ids=new Set(demoAll(role).map(u=>u.id));
+ if(role==='employer'){d.employers=true;d.jobs=true}else d.candidates=true;d.offCos=(d.offCos||[]).filter(id=>!ids.has(id));db.settings.demo=d;demoReapply();save();try{await publishNow('Dummy accounts shown')}catch(e){}route();toast('Dummy '+(role==='employer'?'companies':'job seekers')+' are showing again ✓',5000)}
+let _dhOpen=false,_dhSel=new Set();
+function demoTabPanel(role){const all=demoAll(role),hid=demoHiddenOf(role),who=role==='employer'?'companies':'job seekers',W=role==='employer'?'Dummy companies':'Dummy job seekers';const v=demoCfg(),allOff=role==='employer'?!v.employers:!v.candidates;
+ return `<div class="panel dh-p" id="dh-panel"><div class="rv-head"><div><h3>🧪 ${W}</h3><p class="hint" style="margin:4px 0 0">${all.length} dummy ${who} · <b>${all.length-hid.length} showing</b> · <b>${hid.length} hidden</b>. Hidden ones ${role==='employer'?'(and their jobs) ':''}don't show anywhere on the website or app.</p></div>
+ <div class="row-btns" style="margin:0"><button class="btn danger sm" onclick="demoHideSel('${role}')">🚫 Hide ticked dummy ${who}</button>${allOff?'':`<button class="btn danger sm" onclick="demoHideAll('${role}')">🚫 Hide all dummy ${who}</button>`}${hid.length?`<button class="btn ghost sm" onclick="_dhOpen=!_dhOpen;route()">👁 ${_dhOpen?'Close':'See'} hidden (${hid.length})</button>`:''}</div></div>
+ <p class="hint" style="margin:8px 0 0">Tick the boxes in the list below (or "Select all"), then press <b>Hide ticked dummy ${who}</b>. Real accounts are never hidden by this.</p>
+ ${_dhOpen&&hid.length?`<div class="dh-hid"><div class="dc-acts"><button class="btn sm" onclick="demoShowAll('${role}')">👁 Show all dummy ${who} again</button>${allOff?'':`<button class="btn ghost sm" onclick="if(!_dhSel.size)return toast('Tick the ones to show again.');demoSet([..._dhSel],true,'Dummy accounts shown').then(()=>{_dhSel=new Set();toast('Showing again ✓')})">👁 Show ticked</button>`}</div>
+  <div class="dc-list">${hid.map(u=>`<label class="dc-row off"><input type="checkbox" value="${u.id}" ${allOff?'disabled':''} ${_dhSel.has(u.id)?'checked':''} onchange="this.checked?_dhSel.add(this.value):_dhSel.delete(this.value)"><span class="dc-nm"><b>${esc(role==='employer'?(u.company?.name||u.name):u.name)}</b><small>${esc(role==='employer'?(u.company?.industry||''):(u.profile?.city||u.email||''))}</small></span><span class="chip bad">Hidden</span></label>`).join('')}</div></div>`:''}</div>`}
+/* put the panel on the admin Job seekers and Employers tabs, and mark dummy rows */
+{const _r88=route;route=function(){const r=_r88.apply(this,arguments);try{const h=(location.hash||'').split('?')[0];const m=/^#\/admin\/(candidates|employers)$/.exec(h);
+ if(m&&isAdminNow()&&!document.getElementById('dh-panel')){const role=m[1]==='employers'?'employer':'candidate',t=document.querySelector('#app .tbl');if(t){const w=document.createElement('div');w.innerHTML=demoTabPanel(role);const at=t.previousElementSibling&&t.previousElementSibling.matches('p.hint')?t.previousElementSibling:t;at.parentNode.insertBefore(w.firstElementChild,at)}
+  const demo=new Set(demoAll(role).map(u=>u.id));document.querySelectorAll('#app .usel').forEach(cb=>{if(demo.has(cb.value)){const td=cb.closest('tr')&&cb.closest('tr').children[1];if(td&&!td.querySelector('.chip.dmy'))td.insertAdjacentHTML('beforeend',' <span class="chip dmy">Dummy</span>')}})}}catch(e){}return r}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
