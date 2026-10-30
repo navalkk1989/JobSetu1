@@ -1452,6 +1452,16 @@ html.app .ofb{font-size:13px}
 .of-item{display:flex;flex-direction:column;gap:10px;margin:0}
 .of-mini .ofr h3{font-size:20px}.of-mini .ofr-emo{font-size:34px}
 .of-meta p{margin:6px 0 8px}
+/* V81: refresh button in the app header */
+.hdr-rf{width:38px;height:38px;padding:0!important;display:inline-grid;place-items:center;border-radius:12px;position:relative;color:#1846A8}
+.hdr-rf.turn svg{animation:rfTurn .8s linear infinite}
+.hdr-rf.need{color:#fff;background:linear-gradient(135deg,#FF7A1A,#F5A623)!important;border-color:transparent!important;animation:rfBlink 1.1s ease-in-out infinite}
+.hdr-rf.need::after{content:"";position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:#E11D48;border:2px solid #fff}
+@keyframes rfBlink{0%,100%{box-shadow:0 0 0 0 rgba(255,122,26,.75);opacity:1}50%{box-shadow:0 0 0 9px rgba(255,122,26,0);opacity:.55}}
+@keyframes rfTurn{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.hdr-rf.need{animation-duration:2.4s}}
+html.app #apkbar{display:none!important} /* the blinking refresh button on top replaces this bar */
+html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.4)!important}
 </style>
 </head>
 <body>
@@ -4222,7 +4232,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='80';
+const WEB_BUILD='81';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6033,6 +6043,24 @@ if(APP)setTimeout(dailySync,6000);
 if(typeof appAlertsPanel==='function'){const _ap80=appAlertsPanel;appAlertsPanel=function(){let h=_ap80.apply(this,arguments);const d=ntCfg().daily,old='Up to 3 a day — morning, afternoon and evening — about new jobs and companies for you. Skipped when you already got a fresh alert.';
  if(!d.on)return h.replace(old,'Paused by JobSetu1 right now. Instant alerts still come.');
  if(window.AndroidApp&&AndroidApp.setDailyPlan)h=h.replace(old,`${d.times.length} a day at ${d.times.map(tLabel).join(', ')} — about new jobs, companies and offers for you.${d.skip?' Skipped when you already got a fresh alert.':''}`);return h}}
+
+/* ==================================================================
+   V81: refresh button on top of the app — it blinks when an update is ready
+   ================================================================== */
+window._rfNeed='';
+const RF_SVG='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>';
+function rfNeed(){if(window._rfNeed)return window._rfNeed;const v=appVer();return v&&verLess(v,APK_LATEST)?'apk':''}
+function rfPaint(){const b=document.getElementById('hdr-rf');if(!b)return;const n=rfNeed();b.classList.toggle('need',!!n);
+ const t=n==='apk'?'New app version '+APK_LATEST+' is ready. Tap to update':n==='site'?'JobSetu1 has been updated. Tap to refresh':'Refresh';b.setAttribute('aria-label',t);b.title=t}
+function hdrRefresh(){const n=rfNeed();
+ if(n==='site'){window._rfNeed='';try{AndroidApp.reloadPage()}catch(e){location.reload()}return}
+ if(n==='apk')return openModal(`<h2>🎉 New app version ${APK_LATEST} is ready</h2><p class="lead">Update the app to get the newest features. It takes less than a minute, and your login and data stay safe.</p><div class="row-btns"><button class="btn" onclick="closeModal();appUpdate()">⬇ Update app</button><button class="btn ghost" onclick="closeModal();rfSync()">Just refresh now</button></div>`);
+ rfSync()}
+async function rfSync(){const b=document.getElementById('hdr-rf');if(b){b.classList.add('turn');b.disabled=true}
+ try{await serverRefresh()}catch(e){}finally{const c=document.getElementById('hdr-rf');if(c){c.classList.remove('turn');c.disabled=false}rfPaint()}}
+{const _rh81=renderHeader;renderHeader=function(){const r=_rh81.apply(this,arguments);try{if(APP){const R=document.querySelector('#top .right');if(R&&!R.querySelector('#hdr-rf'))R.insertAdjacentHTML('afterbegin',`<button type="button" class="btn ghost sm hdr-rf" id="hdr-rf" onclick="hdrRefresh()" aria-label="Refresh">${RF_SVG}</button>`);rfPaint()}}catch(e){}return r}}
+/* the app found a newer copy of the website: make the button blink */
+{const _sr81=window.appSiteReady;window.appSiteReady=function(got){if(got>0&&!window._siteWanted&&document.getElementById('hdr-rf')){const first=window._rfNeed!=='site';window._rfNeed='site';rfPaint();if(first)toast('✨ JobSetu1 has been updated. Tap the blinking refresh button on top.',6000);return}return _sr81&&_sr81.apply(this,arguments)}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
