@@ -1463,6 +1463,18 @@ html.app .ofb{font-size:13px}
 html.app #apkbar{display:none!important} /* the blinking refresh button on top replaces this bar */
 html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.4)!important}
 .ct-steps{line-height:1.7;padding-left:20px;margin:10px 0}
+/* V85: offer banner only as wide as its text */
+.ofr-sec{width:fit-content;max-width:100%;margin:0 auto}
+.ofr-track>.ofr{flex:0 0 auto;width:max-content;max-width:min(100%,560px)}
+.ofr-in{padding:14px 18px 14px;gap:10px}
+.ofr h3{font-size:clamp(18px,2.6vw,24px)}
+.ofr p{font-size:14px}
+.ofr-emo{font-size:38px}
+.ofr-glow{width:180px;height:180px;right:-50px;top:-80px}
+.of-mini .ofr-sec,.of-mini{display:flex;justify-content:flex-start}
+#offerbar{display:flex;justify-content:center;padding:8px 10px 0}
+.ofb{display:inline-flex;max-width:100%;border-radius:999px;padding:7px 40px 7px 14px;box-shadow:0 8px 20px -10px rgba(0,0,0,.5)}
+@media(max-width:560px){.ofr-in{padding:13px 14px}.ofr-emo{font-size:32px}}
 </style>
 </head>
 <body>
@@ -4233,7 +4245,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='84';
+const WEB_BUILD='86';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6116,6 +6128,35 @@ if(typeof appAlertsPanel==='function'){const _ap84=appAlertsPanel;appAlertsPanel
  return h}}
 /* make sure the phone is set up whenever the app is opened */
 if(APP){setTimeout(()=>{try{if(session&&session.kind!=='staff')pushSetup()}catch(e){}},3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&session&&session.kind!=='staff')setTimeout(()=>pushSetup(),1500)})}
+
+/* ==================================================================
+   V86: the app always notices a new version — a tiny version.json on the
+   website is checked every few minutes; the ⟳ button blinks as soon as
+   a newer website or a newer app is out.
+   ================================================================== */
+window._verLive=null;
+function siteSaved(){try{return window.AndroidApp&&AndroidApp.siteBuild?+AndroidApp.siteBuild()||0:0}catch(e){return 0}}
+{const _rn86=rfNeed;rfNeed=function(){const n=_rn86.apply(this,arguments);if(n)return n;const v=window._verLive,run=+WEB_BUILD;
+ if(v&&v.apk&&appVer()&&verLess(appVer(),String(v.apk)))return 'apk';
+ if((v&&+v.web>run)||siteSaved()>run)return 'site';return ''}}
+async function verPoll(){if(!APP)return;try{const r=await fetch(SITE_URL+'version.json?t='+Date.now().toString(36),{cache:'no-store'});if(!r.ok)return;const j=await r.json();if(!j||!j.web)return;
+ const was=rfNeed();window._verLive=j;
+ /* a newer website is out: start downloading it quietly so the refresh is instant */
+ if(+j.web>+WEB_BUILD&&siteSaved()<+j.web){try{AndroidApp.checkSite&&AndroidApp.checkSite()}catch(e){}}
+ const now=rfNeed();rfPaint();if(now&&now!==was)toast(now==='apk'?`🎉 New app version ${j.apk} is ready. Tap the blinking button on top.`:'✨ A new version of JobSetu1 is ready. Tap the blinking refresh button on top.',6000)}catch(e){}}
+/* tapping the blinking button */
+{const _hr86=hdrRefresh;hdrRefresh=function(){const n=rfNeed();
+ if(n==='apk'&&window._verLive&&window._verLive.apk&&verLess(APK_LATEST,String(window._verLive.apk))){const a=String(window._verLive.apk);
+  return openModal(`<h2>🎉 New app version ${esc(a)} is ready</h2><p class="lead">Update the app to get the newest features. Your login and data stay safe.</p><div class="row-btns"><button class="btn" onclick="closeModal();appUpdateTo('${esc(a)}')">⬇ Update app</button><button class="btn ghost" onclick="closeModal();rfSync()">Just refresh now</button></div>`)}
+ if(n==='site'){const want=+(window._verLive&&window._verLive.web)||0;
+  if(siteSaved()>+WEB_BUILD&&siteSaved()>=want){window._rfNeed='';try{AndroidApp.reloadPage()}catch(e){location.reload()}return}
+  const b=document.getElementById('hdr-rf');if(b){b.classList.add('turn');b.disabled=true}toast('Getting the new version…',4000);window._siteWanted=true;
+  try{AndroidApp.checkSite()}catch(e){location.reload()}
+  setTimeout(()=>{if(siteSaved()>+WEB_BUILD){try{AndroidApp.reloadPage()}catch(e){location.reload()}}else{const c=document.getElementById('hdr-rf');if(c){c.classList.remove('turn');c.disabled=false}}},20000);return}
+ return _hr86.apply(this,arguments)}}
+function appUpdateTo(v){const url=SITE_URL+'JobSetu1.apk?v='+v;try{if(window.AndroidApp&&AndroidApp.openExternal){AndroidApp.openExternal(url);return toast('Download starts in your browser. Open the file to install the update.',7000)}}catch(e){}location.href=url}
+if(APP){setTimeout(verPoll,3000);setInterval(()=>{if(!document.hidden)verPoll()},3*60e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(verPoll,800)})}
+{const _rp86=rfPaint;rfPaint=function(){_rp86.apply(this,arguments);const b=document.getElementById('hdr-rf'),v=window._verLive;if(b&&rfNeed()==='apk'&&v&&v.apk){const t='New app version '+v.apk+' is ready. Tap to update';b.setAttribute('aria-label',t);b.title=t}}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
