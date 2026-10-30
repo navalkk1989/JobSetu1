@@ -1724,6 +1724,10 @@ html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!importan
 .nk-head .cs3 .btn{flex:none}
 @media(max-width:640px){.nk-head .dsearch{border-radius:16px;flex-wrap:wrap}.nk-head .dsearch input{flex:1 1 100%}.nk-head .dsearch .btn{width:100%;border-radius:12px}.nk-head .cs3{flex-wrap:wrap}}
 @media(min-width:901px) and (max-width:1500px){#top .umenu .who{display:none}}
+.af-hint{margin:0 0 4px;font-size:11.5px;color:#6B7280}
+.af-othin{display:flex;gap:6px;margin-top:2px}.af-othin[hidden]{display:none}
+.af-othin input{flex:1;min-width:0;font-size:12.5px;height:32px;min-height:0;padding:4px 8px;border-radius:8px}
+.af-othin button{border:0;border-radius:8px;background:#2563EB;color:#fff;font:inherit;font-size:12px;font-weight:700;padding:0 10px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -4494,7 +4498,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='95';
+const WEB_BUILD='96';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6694,6 +6698,21 @@ const UG_BTN=(cls,txt,href)=>`<a class="ug-btn ${cls||''}" href="${href||'#/guid
 {const _rh93=renderHeader;renderHeader=function(){const r=_rh93.apply(this,arguments);try{const u=me(),R=document.querySelector('#top .right');if(u&&R&&['candidate','employer'].includes(u.role)&&!R.querySelector('.ug-top'))R.insertAdjacentHTML('afterbegin',`<a class="ug-btn ug-top" href="#/guide?for=${u.role==='employer'?'hire':'seek'}" title="User Guide">📘<span class="ug-t"> Guide</span></a>`)}catch(e){}return r}}
 
 /* ==================================================================
+   V96: yearly salary ranges (Lakhs) and the full education list with "Other"
+   ================================================================== */
+const EDU_ALL=['Below 10th','10th (SSC)','12th (HSC)','ITI','Diploma','B.A.','B.Com','B.Sc','BBA','BCA','B.Tech / B.E.','B.Pharm','B.Ed','MBBS','LLB','Nursing (GNM / B.Sc)','CA','CS','M.A.','M.Com','M.Sc','MBA / PGDM','MCA','M.Tech / M.E.','M.Pharm','Ph.D'];
+const EDU_LVL=o=>o==='Below 10th'?0:o==='10th (SSC)'?1:o==='12th (HSC)'||o==='ITI'?2:o==='Diploma'?3:/^(M\.|MBA|MCA|Ph\.D)/.test(o)?5:4;
+const JOB_LVL=e=>({'Below 10th':0,'10th pass':1,'12th pass':2,'ITI':2,'Diploma':3,'Graduate':4,'Post Graduate':5})[e]??-1;
+function eduOk(j,opt){const r=JOB_LVL(j.education);return r<0||EDU_LVL(opt)>=r}
+function eduOther(base,k,q){const v=q.get(k)||'';return `<label class="af-o af-oth"><input type="checkbox" ${v?'checked':''} onchange="if(!this.checked)afSet('${base}','${k}','');else this.closest('.af-oth').nextElementSibling.hidden=false"><span>Other</span></label><div class="af-othin" ${v?'':'hidden'}><input placeholder="Type your course, e.g. Hotel Management" value="${esc(v)}" onkeydown="if(event.key==='Enter'){event.preventDefault();afSet('${base}','${k}',this.value.trim())}"><button type="button" onclick="afSet('${base}','${k}',this.previousElementSibling.value.trim())">Apply</button></div>`}
+function eduSec(base,title,k,ok,list,q,hint){const on=afList(q,k),cnt=EDU_ALL.map(o=>[o,list.filter(x=>ok(x,o)).length]);const show=window._eduAll?cnt:cnt.slice(0,6);
+ return `<details class="af-sec" ${on.length||q.get(k+'o')?'open':''}><summary>${title}${on.length?` <span class="af-n">${on.length}</span>`:''}</summary><div class="af-opts">${hint?`<p class="af-hint">${hint}</p>`:''}${show.map(([o,n])=>`<label class="af-o"><input type="checkbox" ${on.includes(o)?'checked':''} data-v="${esc(o)}" onchange="afToggle('${base}','${k}',this.dataset.v)"><span>${esc(o)}</span><em>(${n.toLocaleString('en-IN')})</em></label>`).join('')}
+ ${window._eduAll?'':`<button type="button" class="af-more" onclick="window._eduAll=1;route()">View all ${EDU_ALL.length}</button>`}${eduOther(base,k+'o',q)}</div></details>`}
+const eduTxt=(s,t)=>String(s||'').toLowerCase().includes(String(t||'').toLowerCase());
+
+function candEdu(c,o){const p=c.profile||{},all=[p.degree,...(p.edus||[]).map(e=>e&&(e.degree||e.course||e.name))].filter(Boolean).map(x=>String(x).toLowerCase());
+ if(all.includes(o.toLowerCase()))return true;const m={'Below 10th':'Below 10th','10th (SSC)':'10th pass','12th (HSC)':'12th pass','ITI':'ITI','Diploma':'Diploma'};return m[o]?p.education===m[o]:false}
+/* ==================================================================
    V95: Naukri-style pages
    - job seeker dashboard: All Filters (left) · jobs with pages (centre)
      · profile + Premium card (right)
@@ -6717,27 +6736,27 @@ function afSecR(base,title,k,entries,q,opt){const html=afSec(base,title,k,entrie
 function afPanel(base,inner,active,keys){return `<aside class="af"><details class="af-box" id="af-box" open><summary class="af-h"><span>All Filters</span>${active?`<button type="button" class="af-clear" onclick="event.preventDefault();afClear('${base}',${JSON.stringify(keys).replace(/"/g,"'")})">Clear (${active})</button>`:''}</summary>${inner}</details></aside>`}
 
 /* ---------------- job filters ---------------- */
-const SAL_B=[['0-15000','Up to ₹15k / month',0,15000],['15000-25000','₹15k – 25k',15000,25000],['25000-40000','₹25k – 40k',25000,40000],['40000-70000','₹40k – 70k',40000,70000],['70000+','₹70k+',70000,1e12]];
+const SAL_B=[['0-3','0 – 3 Lakhs',0,300000],['3-6','3 – 6 Lakhs',300000,600000],['6-10','6 – 10 Lakhs',600000,1000000],['10-15','10 – 15 Lakhs',1000000,1500000],['15-25','15 – 25 Lakhs',1500000,2500000],['25-50','25 – 50 Lakhs',2500000,5000000],['50+','50+ Lakhs',5000000,1e13]];
 const FRESH=[['1','Last 24 hours'],['3','Last 3 days'],['7','Last 7 days'],['15','Last 15 days'],['30','Last 30 days']];
 const JMODE=j=>j.jobType==='Work From Home'?'Work from home':j.jobType==='Field Job'?'Field job':'Work from office';
 const JIND=j=>emp(j.employerId)?.company?.industry||'';
 const JCT=j=>emp(j.employerId)?.company?.type||'';
-const JSAL=j=>{const s=+j.salary||0;const b=SAL_B.find(([,, lo,hi])=>s>lo&&s<=hi)||(s===0?SAL_B[0]:null);return b?b[0]:''};
-const JKEYS=['fx','fm','fl','fs','fi','ft','fe','fw','fd','fwi'];
+const JSAL=j=>{const s=(+j.salary||0)*12;const b=SAL_B.find(([,, lo,hi])=>s>lo&&s<=hi)||(s===0?SAL_B[0]:null);return b?b[0]:''};
+const JKEYS=['fx','fm','fl','fs','fi','ft','fe','feo','fw','fd','fwi'];
 function jobFilter(list,q){const t=now(),fx=q.get('fx'),L=k=>afList(q,k);
  return list.filter(j=>{if(fx!==null&&fx!==''&&+fx<31&&(+j.minExp||0)>+fx)return false;
   const chk=(k,v)=>{const a=L(k);return !a.length||a.includes(String(v))};
-  if(!chk('fm',JMODE(j))||!chk('fl',j.city)||!chk('fs',JSAL(j))||!chk('fi',JIND(j))||!chk('ft',JCT(j))||!chk('fe',j.education)||!chk('fw',j.workStatus))return false;
-  if(q.get('fd')&&t-(+j.createdAt||0)>(+q.get('fd'))*DAY)return false;if(q.get('fwi')==='1'&&!isWalkin(j))return false;return true})}
+  if(!chk('fm',JMODE(j))||!chk('fl',j.city)||!chk('fs',JSAL(j))||!chk('fi',JIND(j))||!chk('ft',JCT(j))||!chk('fw',j.workStatus))return false;
+  {const fe=L('fe');if(fe.length&&!fe.some(o=>eduOk(j,o)))return false;const fo=q.get('feo');if(fo&&!eduTxt([j.education,j.title,j.description,j.highlights].join(' '),fo))return false}if(q.get('fd')&&t-(+j.createdAt||0)>(+q.get('fd'))*DAY)return false;if(q.get('fwi')==='1'&&!isWalkin(j))return false;return true})}
 function jobFilters(base,all,q){const active=JKEYS.filter(k=>q.get(k)).length,fx=q.get('fx');const xv=fx===null||fx===''?31:+fx;
  const sal=SAL_B.map(([k,l])=>[k,all.filter(j=>JSAL(j)===k).length,l]).filter(x=>x[1]);
  const inner=`<div class="af-sec af-exp"><div class="af-t">Experience <span class="hint">${xv>=31?'Any':xv===0?'Fresher':xv+' yrs'}</span></div><input type="range" min="0" max="31" value="${xv}" aria-label="Your experience in years" oninput="this.previousElementSibling.querySelector('span').textContent=this.value>=31?'Any':this.value==0?'Fresher':this.value+' yrs'" onchange="afSet('${base}','fx',this.value>=31?'':this.value)"><div class="af-rng"><span>0 Yrs</span><span>Any</span></div></div>
  ${afSecR(base,'Work mode','fm',afCount(all,JMODE),q)}
  ${afSecR(base,'Location','fl',afCount(all,j=>j.city),q)}
- ${afSecR(base,'Salary','fs',sal,q)}
+ ${afSecR(base,'Salary (yearly)','fs',sal,q)}
  ${afSecR(base,'Industry','fi',afCount(all,JIND),q)}
  ${afSecR(base,'Company type','ft',afCount(all,JCT),q,{closed:1})}
- ${afSecR(base,'Education','fe',afCount(all,j=>j.education),q,{closed:1})}
+ ${eduSec(base,'Your education','fe',eduOk,all,q,'Jobs you qualify for with this education')}
  ${afSecR(base,'Fresher / Experienced','fw',afCount(all,j=>j.workStatus),q,{closed:1})}
  <details class="af-sec" ${q.get('fd')?'open':''}><summary>Freshness</summary><div class="af-opts">${FRESH.map(([v,l])=>`<label class="af-o"><input type="radio" name="af-fd" ${q.get('fd')===v?'checked':''} onchange="afSet('${base}','fd','${v}')"><span>${l}</span></label>`).join('')}${q.get('fd')?`<button type="button" class="af-more" onclick="afSet('${base}','fd','')">Any time</button>`:''}</div></details>
  <label class="af-o af-wi"><input type="checkbox" ${q.get('fwi')==='1'?'checked':''} onchange="afSet('${base}','fwi',this.checked?'1':'')"><span>🏢 Walk-in interviews only</span><em>(${all.filter(isWalkin).length})</em></label>`;
@@ -6797,16 +6816,16 @@ function sideLinks(u){const unread=(db.notes||[]).filter(n=>n.userId===u.id&&!n.
  <aside class="nk-side">${seekSide(u)}${proCard(u)}${sideLinks(u)}</aside></section>`}}
 
 /* ---------------- employer: Find candidates ---------------- */
-const CKEYS=['cx','cw','cl','ce','ci','cn','cp'];
+const CKEYS=['cx','cw','cl','ce','ceo','ci','cn','cp'];
 const CEXP=c=>(+c.profile?.expYears||0)+(+c.profile?.expMonths||0)/12;
 function candFilter(list,q){const cx=q.get('cx'),L=k=>afList(q,k);return list.filter(({c})=>{const p=c.profile||{};
  if(cx!==null&&cx!==''&&+cx<31&&CEXP(c)<+cx)return false;const chk=(k,v)=>{const a=L(k);return !a.length||a.includes(String(v))};
- return chk('cw',p.workStatus)&&chk('cl',p.city)&&chk('ce',p.education)&&chk('ci',p.industry)&&chk('cn',p.notice)&&(q.get('cp')!=='1'||isPremium(c))})}
+ const ce=L('ce');if(ce.length&&!ce.some(o=>candEdu(c,o)))return false;if(q.get('ceo')&&!eduTxt([p.degree,p.degreeOther,p.education,p.university,(p.edus||[]).map(e=>[e.degree,e.course,e.name].join(' ')).join(' ')].join(' '),q.get('ceo')))return false;return chk('cw',p.workStatus)&&chk('cl',p.city)&&chk('ci',p.industry)&&chk('cn',p.notice)&&(q.get('cp')!=='1'||isPremium(c))})}
 function candFilters(base,all,q){const active=CKEYS.filter(k=>q.get(k)).length,cx=q.get('cx'),xv=cx===null||cx===''?31:+cx,C=all.map(x=>x.c);
  const inner=`<div class="af-sec af-exp"><div class="af-t">Minimum experience <span class="hint">${xv>=31?'Any':xv===0?'Fresher':xv+'+ yrs'}</span></div><input type="range" min="0" max="31" value="${xv}" aria-label="Minimum experience in years" oninput="this.previousElementSibling.querySelector('span').textContent=this.value>=31?'Any':this.value==0?'Fresher':this.value+'+ yrs'" onchange="afSet('${base}','cx',this.value>=31?'':this.value)"><div class="af-rng"><span>0 Yrs</span><span>Any</span></div></div>
  ${afSecR(base,'Fresher / Experienced','cw',afCount(C,c=>c.profile?.workStatus),q)}
  ${afSecR(base,'Location','cl',afCount(C,c=>c.profile?.city),q)}
- ${afSecR(base,'Education','ce',afCount(C,c=>c.profile?.education),q)}
+ ${eduSec(base,'Education','ce',candEdu,C,q)}
  ${afSecR(base,'Industry','ci',afCount(C,c=>c.profile?.industry),q,{closed:1})}
  ${afSecR(base,'Notice period','cn',afCount(C,c=>c.profile?.notice),q,{closed:1})}
  <label class="af-o af-wi"><input type="checkbox" ${q.get('cp')==='1'?'checked':''} onchange="afSet('${base}','cp',this.checked?'1':'')"><span>★ Premium job seekers only</span><em>(${C.filter(isPremium).length})</em></label>`;
