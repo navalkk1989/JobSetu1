@@ -1554,6 +1554,25 @@ html.app .hdr-rf:not(.need){color:#fff;background:rgba(255,255,255,.14)!importan
 #app .search input{font-size:14.5px}
 #app .split{grid-template-columns:230px minmax(0,1fr);gap:18px}
 @media (max-width:760px){#app .split{grid-template-columns:minmax(0,1fr)}}
+/* V91: golden Premium bar, free bar */
+.planbar.pb-gold{background:linear-gradient(100deg,#7A4E06 0%,#B8860B 22%,#F5C842 50%,#D9A21B 74%,#8A5A08 100%);background-size:200% 100%;animation:pbShine 8s ease-in-out infinite;border-bottom:1px solid #E6B83A;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.planbar.pb-gold p{color:#FFFBEA;text-shadow:0 1px 2px rgba(80,45,0,.45);font-size:14px}
+.planbar.pb-gold b{color:#fff}
+.crown-big{font-size:26px;line-height:1;filter:drop-shadow(0 2px 3px rgba(80,45,0,.45));animation:crownBob 3s ease-in-out infinite}
+.planbar.pb-gold .pb-open{background:#1F1503;color:#FFD86B!important;border:1px solid #5A3E08}
+.planbar.pb-gold .pb-open svg{color:#FFD86B}
+.planbar.pb-gold .pb-up{background:rgba(255,255,255,.92);color:#5A3B00!important;border:0}
+.planbar.pb-free{background:linear-gradient(90deg,#ECFDF3,#F0F9FF);border-bottom:1px solid #BBF7D0}
+.planbar.pb-free p{color:#14532D;font-weight:600}.planbar.pb-free p b{color:#166534}
+.pb-ic{font-size:20px}
+.freepill{background:linear-gradient(90deg,#16A34A,#22C55E)!important;color:#fff!important;border:0!important;font-weight:700}
+.freepanel{border:1px solid #BBF7D0!important;background:linear-gradient(160deg,#ECFDF3,var(--surface) 70%)!important}
+@keyframes pbShine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes crownBob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-2px) rotate(6deg)}}
+@media(prefers-reduced-motion:reduce){.planbar.pb-gold,.crown-big{animation:none}}
+@media(max-width:640px){.crown-big{font-size:22px}.planbar.pb-gold p{font-size:13px}}
+.planbar.pb-gold .btn.pb-open{background:#1F1503!important;color:#FFD86B!important;border:1px solid #5A3E08!important;box-shadow:0 4px 10px -4px rgba(0,0,0,.5)!important}
+.planbar.pb-gold .btn.pb-up{background:#FFFDF5!important;color:#6B4500!important;border:1px solid #F2D27A!important;box-shadow:0 4px 10px -4px rgba(0,0,0,.35)!important}
 </style>
 </head>
 <body>
@@ -4324,7 +4343,7 @@ setInterval(idleCheck,15000);
 if(session&&session.kind==='staff'){const last=idleGet();if(last&&Date.now()-last>=STAFF_IDLE_MS){try{localStorage.removeItem(IDLE_KEY)}catch(e){}setSession(null);setTimeout(()=>toast('You were logged out after 10 minutes without activity. Please log in again.',8000),600);if(/^#\/(admin|manager)/.test(location.hash))history.replaceState(null,'','#/office')}}
 
 /* ============ V58: cross-device sync (login anywhere, admin sees every device) ============ */
-const WEB_BUILD='90';
+const WEB_BUILD='91';
 const TOK_KEY='jobsetu_cloud_tok';
 function tokAll(){try{return JSON.parse(localStorage.getItem(TOK_KEY)||'{}')||{}}catch(e){return {}}}
 function tokSet(id,t){const m=tokAll();if(t)m[id]=t;else delete m[id];try{localStorage.setItem(TOK_KEY,JSON.stringify(m))}catch(e){}}
@@ -6424,6 +6443,23 @@ invoiceHtml=function(d,logo){const x=d.x,sup=supportInfo(),[st]=invStatus(x),r=(
  const tick=async()=>{tries++;try{await gsPush(false)}catch(e){}try{_cloudAt=0;await cloudPull(true)}catch(e){}
   const x=(db.payments||[]).find(p=>pay&&p.id===pay.id);if(x&&payStatus(x)==='Paid'){toast('🎉 Payment confirmed — your Premium plan is active!',7000);try{route()}catch(e){}return}
   if(tries<8)setTimeout(tick,5000)};setTimeout(tick,2500);return r}}
+
+/* ==================================================================
+   V91: "Premium is FREE for you" while every free service is on;
+        golden bar when Premium is active; Upgrade only when needed.
+   ================================================================== */
+function allFree(role){if(role!=='candidate'&&role!=='employer')return false;if(!svcOn(role==='employer'?'freeEmployer':'freeCandidate'))return false;return (FREE_RIGHTS[role]||[]).every(([k])=>freeRight(role,k))}
+function freeForUser(u){return !!(u&&(u.role==='candidate'||u.role==='employer')&&!hasPremium(u)&&allFree(u.role))}
+const CROWN_BIG='<span class="crown-big" aria-hidden="true">👑</span>';
+{const _gb91=goldBtn;goldBtn=function(u){if(freeForUser(u))return `<a class="btn sm freepill" href="#/plans" title="All Premium services are free for you right now">🎉<span class="gl"> Premium is FREE for you</span></a>`;
+ if(u&&!hasPremium(u))return `<a class="btn gold sm" href="#/premium" title="See Premium Service benefits and prices">${CROWN}<span class="gl">⬆ Upgrade Premium</span></a>`;return _gb91.apply(this,arguments)}}
+function planbarHtml(u){const emp=u.role==='employer',act=hasPremium(u);
+ if(act){const until=fmtDate(u.plan.expires);return `<div class="planbar pb-gold"><div class="wrap">${CROWN_BIG}<p>Premium Service is active until <b>${until}</b>. ${emp?'Your jobs show as ★ Featured and every Premium tool is unlocked.':'Your resume is listed first for employers.'}</p><span class="row-btns" style="margin:0;gap:6px"><a class="btn sm pb-open" href="#/premium">${CROWN}Open Premium tools</a><button type="button" class="btn sm pb-up" onclick="openUpgrade()">⬆ Upgrade</button></span></div></div>`}
+ if(freeForUser(u))return `<div class="planbar pb-free"><div class="wrap"><span class="pb-ic" aria-hidden="true">🎉</span><p><b>Premium is FREE for you right now.</b> ${emp?'Post jobs, search candidates, see their details and download resumes — all free.':'Search jobs, apply, see company contacts and exact locations — all free.'}</p></div></div>`;
+ return `<div class="planbar"><div class="wrap"><p>${emp?'Get Premium Service: refined resumes, applicant management, analytics and ★ Featured jobs.':(typeof candFree==='function'&&candFree(u)?'🎉 Job search and apply are free for you. Want more? Upgrade to Premium.':'Get your resume on top, auto-apply to jobs and see who viewed your profile.')}</p><span class="row-btns" style="margin:0;gap:6px"><a class="btn gold sm" href="#/premium">${CROWN}⬆ Upgrade Premium</a></span></div></div>`}
+{const _rh91=renderHeader;renderHeader=function(){const r=_rh91.apply(this,arguments);try{const u=me(),pb=$('#planbar');if(pb&&u&&(u.role==='candidate'||u.role==='employer'))pb.innerHTML=planbarHtml(u)}catch(e){}return r}}
+/* dashboards: no "Get Premium" box while everything is free */
+{const _r91=route;route=function(){const r=_r91.apply(this,arguments);try{const u=me();if(freeForUser(u))document.querySelectorAll('#app .goldpanel').forEach(p=>{p.classList.add('freepanel');p.innerHTML=`<h3>🎉 Premium is FREE for you</h3><p class="lead">Every service is unlocked for your account right now. Enjoy JobSetu1!</p>`})}catch(e){}return r}}
 
 try{if(SITECFG)cfgApply(SITECFG)}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.btn');if(b&&e.detail>0)setTimeout(()=>{try{if(document.activeElement===b)b.blur()}catch(_){}},0)});
